@@ -1,0 +1,22 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="Profile.php">{LANG-TITLE}</a> &#187; {LANG-EDITEMAIL}</div><br />
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<form method="post" action="#/ucp/updateEmail" id="updateEmail">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td class="ui-widget-header" colspan="2" align="center">{LANG-EDITEMAIL}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CURREMAIL}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="curemail" class="text" size="30" id="curemail" onblur="validateEmail('curemail', 'curemailerr');" /><div id="curemailerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-NEWEMAIL}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="newemail" class="text" size="30" id="newemail" onblur="validateEmail('newemail', 'newemailerr');" /><div id="newemailerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CONFIRMEMAIL}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="conemail" class="text" size="30" id="vemail" onblur="validateEmail('vemail', 'vemailerr');" /><div id="vemailerr"></div></td>
+</tr><tr>
+<td class="ui-widget-header" colspan="2" align="center"><input type="submit" value="{LANG-UPDATEEMAIL}" class="submit" /></td>
+</tr>
+</table>
+</form><br />

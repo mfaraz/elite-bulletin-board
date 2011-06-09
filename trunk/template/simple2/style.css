@@ -1,0 +1,721 @@
+/*
+========================================
+Filename: style.css
+Last Modified: 6/5/2011
+========================================
+*/
+
+/*
+==============================
+AJAX CSS
+==============================
+*/
+
+#groupRoster{
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+    font-size : 10px;
+	font-weight:bold;
+	background-color: #9FB6CD;
+	color: #000;
+	border: 1px solid #163061;
+	padding: 0;
+	width: 40%;
+	margin-left: 30%;
+	display:none;
+}
+
+/* CONSIDER EITHER MERGING OR REMOVING */
+#update{
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+    font-size : 10px;
+	font-weight:bold;
+	background-color: #9FB6CD;
+	color: #000;
+	padding: 0;
+	width: 40%;
+	text-align: center;
+	margin-left: 30%;
+}
+
+/*
+==============================
+ERROR CSS (REPLACED)
+==============================
+*/
+#errorTitle{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+#error{
+	color: #9C0006;
+	background-color: #FFC7CE;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 1em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */
+	padding: 0px 10px 0px 10px;
+	width: 50%;
+}
+
+/*
+==============================
+INFORMATION CSS (REPLACED)
+==============================
+*/
+#info{
+	color:#9C6500;
+	background:#FFEB9C;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */
+	padding: 0px 10px 0px 10px;
+	width: 50%;
+}
+
+/*
+==============================
+OK CSS (REPLACE)
+==============================
+*/
+#ok{
+	color:#006100;
+	background-color:#C6EFCE;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */
+	padding: 0px 10px 0px 10px;
+	width: 50%;
+}
+
+/*
+==============================
+LOGIN CSS
+==============================
+*/
+
+/* we could probably remove this. */
+.panel{
+	position:absolute;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+    font-size : 10px;
+	font-weight:bold;
+	background-color: #9FB6CD;
+	color: #000;
+	border: 1px solid #163061;
+	padding: 0;
+	width: 40%;
+	margin-left: 30%;
+	margin-top: 20%;
+	z-index: 1000;
+}
+
+/*
+==============================
+NEWS TICKER CSS
+==============================
+*/
+#news {
+	list-style-type: none;
+	padding: 3px;
+	margin: 0;
+}
+
+/*
+==============================
+USER PORTAL CSS
+==============================
+*/
+.innertube{
+margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
+margin-top: 0;
+}
+#contentwrapper{
+float: left;
+width: 100%;
+}
+
+#contentcolumn{
+	margin-left: 260px; /*Set left margin to LeftColumnWidth*/
+}
+
+#leftcolumn{
+float: left;
+width: 260px; /*Width of left column in percentage*/
+margin-left: -100%;
+}
+
+.avatar{
+	float:right;
+	border: 0px;
+}
+
+/*
+==============================
+LOADER CSS
+==============================
+*/
+
+#loadingBackGround {
+	display:none;
+	position:fixed;
+	top:0px;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	overflow:hidden;
+	padding:0;
+	margin:0;
+	background-color:#aaaaaa;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+	z-index:1000;
+}
+
+#loadingMessage {
+	position:fixed;
+	text-align: center;
+	top:30%;
+	left:43%;
+	padding:10px;
+	width:14%;
+	z-index:1001;
+	background-color:#A1B3C7;
+	border:solid 1px #000;
+}
+
+/*
+==============================
+PAGINATION CSS
+==============================
+*/
+
+.pagination{
+padding: 2px;
+}
+
+.pagination ul{
+margin: 0;
+padding: 0;
+text-align: left; /*Set to "right" to right align pagination interface*/
+font-size: 12px;
+}
+
+.pagination li{
+list-style-type: none;
+display: inline;
+padding-bottom: 1px;
+}
+
+.pagination a, .pagination a:visited{
+padding: 0 5px;
+border: 1px solid #163061;
+text-decoration: none; 
+color: #C3C9D5;
+}
+
+.pagination a:hover, .pagination a:active{
+border: 1px solid #163061;
+color: #CC6600;
+background-color: #8494B4;
+}
+
+.pagination li.currentpage{
+font-weight: bold;
+padding: 0 5px;
+border: 1px solid #163061;
+background-color: #8494B4;
+color: #000000;
+}
+
+.pagination li.disablepage{
+padding: 0 5px;
+border: 1px solid #163061;
+color: #929292;
+}
+
+.pagination li.nextpage{
+font-weight: bold;
+}
+
+* html .pagination li.currentpage, * html .pagination li.disablepage{ /*IE 6 and below. Adjust non linked LIs slightly to account for bugs*/
+margin-right: 5px;
+padding-right: 0;
+}
+
+/*
+==============================
+PASSWORD STRENGTH TESTER CSS
+==============================
+*/
+.pwd0{background:url(../../images/meter.png) no-repeat 0 0;width:138px;height:7px;}
+.pwd10{background-position:0 -7px;}
+.pwd20{background-position:0 -14px;}
+.pwd30{background-position:0 -21px;}
+.pwd40{background-position:0 -28px;}
+.pwd50{background-position:0 -35px;}
+.pwd60{background-position:0 -42px;}
+.pwd70{background-position:0 -49px;}
+.pwd80{background-position:0 -56px;}
+.pwd90{background-position:0 -63px;}
+.pwd100{background-position:0 -70px;}
+
+/*
+==============================
+LINK CSS
+==============================
+*/
+A:link {
+	color : #546078;
+	text-decoration : none;
+	}
+A:visited {
+	color : #546078;
+	text-decoration : none;
+}
+A:active {
+	color : #546078;
+}
+A:hover {
+	color : #CC6600;
+	text-decoration : none;
+}
+
+/*
+==============================
+MISC. CSS
+==============================
+*/
+
+BODY {
+	background-color: #3C4049;
+	color : #fff;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	/*font-size : 12px;*/
+	font-size: .7em;
+}
+
+div.container {
+	position: absolute;
+	left: 45px;
+	width: 90%;
+	line-height: 100%;
+}
+
+img{
+	border: 0px;
+}
+
+div#loading2{
+	background: #E9E9E9 url(../../template/simple2/images/loading.gif) no-repeat right;
+	width: 200px;
+}
+
+.close{
+	float:right;
+}
+
+/*
+==============================
+UPLOAD CSS
+==============================
+*/
+.uploadData {
+	padding: 5px;
+	width: 420px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	background-color: #8494B4;
+	color: #ffffff;
+	border: 1px solid #163061;
+	position: relative;
+}
+.uploadData .fname {
+	padding-right: 10px;
+	width: 120px;
+	word-wrap: break-word;
+}
+.uploadData .loader {
+	width: 140px;
+	text-align: center;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #999999;
+}
+.uploadData .result {
+	display: block;
+	float: left;
+	width: 130px;
+	padding-left: 10px;
+}
+.uploadData .close {
+	background-image: url(../../template/simple2/images/close.gif);
+	height: 16px;
+	width: 16px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	cursor: pointer;
+}
+
+/*
+==============================
+TABLE CSS
+==============================
+*/
+
+.table {
+	width : 100%;
+	background-color : #3C4049;
+	empty-cells: show;
+}
+.td {
+    background-color : #3C4049;
+    font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size : 10px; 
+}
+
+/*
+==============================
+FORM STLYING CSS
+==============================
+*/
+
+.text {
+	background-color : #e9e9e9;
+	border-color : #163061;
+	border-style : solid;
+	border-width : thin;
+	color : #163061;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size : 9pt;
+}
+.submit {
+	background-color : #e9e9e9;
+	border-color : #163061;
+	border-style : solid;
+	border-width : thin;
+	color : #163061;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size : 9pt;
+}
+
+/*
+==============================
+MODCP WARNING CSS
+==============================
+*/
+
+.raisewarn{
+	color:#CD0000;
+	font-weight:bold;
+}
+.lowerwarn{
+	color: #238E23;
+	font-weight:bold;
+}
+
+/*
+==============================
+BBCODE TAG CSS
+==============================
+*/
+
+.quote, .attachment, .styleinstaller, .smileinstaller, .modinstaller{
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+	background-color: #8494B4;
+	border: 1px solid #163061;
+	margin: 1px;
+	padding: 1px;
+	font-size: x-small;
+	line-height: 1.4em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */ 
+	padding: 0px 10px 0px 10px;
+}
+.code{
+	color: #000000;
+	background-color: #8494B4;
+	font-family: "courier new", "times new roman", monospace;
+	font-size: 9px;
+	line-height: 1.3em;
+	border: 1px solid #163061;
+	margin: 1px auto 1px auto;
+	padding: 1px;
+	width: 98%;
+	white-space: nowrap;
+	overflow: auto;
+	max-height: 24em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */ 
+	padding: 0px 10px 0px 10px;
+}
+.warnlevel{
+    font-family : Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+	background-color: #C3C9D5;
+	border: 1px solid #163061;
+	margin: 1px;
+	padding: 1px;
+	font-size: x-small;
+	line-height: 1.4em;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */ 
+	padding: 0px 10px 0px 10px;
+}
+.quoteheader, .codeheader, .attachheader, .warningheader{
+    font-family : Verdana, Arial, Helvetica, sans-serif;
+	color: #000000;
+	text-decoration: none;
+	font-style: normal;
+	font-weight: bold;
+	font-size: x-small;
+	line-height: 1.2em;
+}
+.postopt{
+	float: right;
+}
+
+/*
+==============================
+ACP MENU CSS
+==============================
+*/
+
+.anylinkcss{
+	position:absolute;
+	visibility: hidden;
+	border:1px solid black;
+	border-bottom-width: 0;
+	font:normal 12px Verdana, Arial, Helvetica, sans-serif;
+	line-height: 18px;
+	z-index: 100;
+	background-color: #8494B4;
+	width: 205px;
+	text-align: left;
+}
+
+.anylinkcss a{
+	width: 100%;
+	display: block;
+	text-indent: 3px;
+	border-bottom: 1px solid black;
+	padding: 1px 0;
+	text-decoration: none;
+	font-weight: bold;
+	text-indent: 5px;
+}
+
+.anylinkcss a:hover{ /*hover background color*/
+	background-color: #C3C9D5;
+}
+
+/*
+==============================
+HINT CSS
+==============================
+*/
+
+a.hint{
+	font-weight: bold;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin: 3px 8px;
+}
+
+a.hint span {
+	display:none;
+	padding:2px 3px;
+	margin-left:8px;
+	width:130px;
+}
+
+a.hint:hover span{
+	display:inline;
+	position:absolute;
+	background-color: #8494B4;
+	color: #000;
+	width: 150px; /*Default width of hint.*/
+	border:1px solid #163061;
+	font:normal 11px Verdana, Arial, Helvetica, sans-serif;
+	line-height:18px;
+	z-index:100;
+	border-right: 3px solid #9FBCD;
+	border-bottom: 3px solid #9FBCD;
+	-webkit-border-radius: 10px; /* Safari prototype */
+	-moz-border-radius: 10px; /* Gecko browsers */
+	border-radius: 10px; /* Everything else - limited support at the moment */
+	padding: 0px 10px 0px 10px;
+}
+
+/* Spell check CSS */
+.spellcheck-suggestbox {
+	position: absolute;
+	display: none;
+	z-index: 9999;
+	overflow: none;
+	padding: 0px 9px 9px 0px;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-sixe: 13px;
+	color: #000000;
+	background-color: #C3C9D5;
+	border: 1px solid #163061;
+}
+.spellcheck-suggestbox em {
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	padding: 3px 6px 3px 6px;
+	display: block;
+	margin: 0px;
+	text-decoration: none;
+	color: #333;
+	font-style: italic;
+}
+.spellcheck-suggestbox a, .spellcheck-suggestbox a:visited {
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	padding: 3px 6px 3px 6px;
+	display: block;
+	margin: 0px;
+	text-decoration: none;
+	color: #333;
+	outline: none;
+}
+.spellcheck-suggestbox a.first, .spellcheck-suggestbox a.first:visited {
+	border-top: 1px solid #ccc;
+}
+.spellcheck-suggestbox a:hover {
+	color: #000;
+	background: #ddd;
+}
+.spellcheck-suggestbox-words {
+	background: #fff;
+}
+.spellcheck-suggestbox-foot {
+	border-top: 1px solid #ddd;
+	background: #fff;
+}
+.spellcheck-suggestbox-foot a, .spellcheck-suggestbox-foot a:visited {
+	outline: none;
+}
+.pellcheck-focus-helper {
+	position: absolute;
+	top: -2000px;
+	z-index: 0;
+}
+.spellcheck-word-highlight {
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1.2em;
+	color: #fff;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: pointer;
+}
+.spellcheck-badwords {
+	margin-bottom: 2em;
+	margin-top: -0.5em;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	border: 1px solid #bbb;
+	padding: 4px 6px;
+}
+.spellcheck-sep {
+	padding-right: 0.5em;
+}
+.spellcheck-sep-last {
+	display: none;
+}
+
+/*
+==============================
+Notification CSS
+==============================
+*/
+
+.jnotify-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 100000;
+}
+
+.jnotify-container .jnotify-notification {
+	position: relative;
+}
+
+.jnotify-container .jnotify-notification .jnotify-background {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #e3f0db;
+	filter: alpha(opacity=90);
+	-moz-opacity: 0.90;
+	opacity: 0.90;
+	z-index: 1;
+}
+
+.jnotify-container .jnotify-notification a.jnotify-close,
+.jnotify-container .jnotify-notification a.jnotify-close:link,
+.jnotify-container .jnotify-notification a.jnotify-close:visited,
+.jnotify-container .jnotify-notification a.jnotify-close:focus,
+.jnotify-container .jnotify-notification a.jnotify-close:hover {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	padding: 0 5px;
+	font: bold 1.4em Arial,Helvetica,sans-serif;
+	line-height: 1em;
+	color: #567b1b;
+	text-decoration: none;
+	z-index: 3;
+	cursor: pointer;
+}
+
+.jnotify-container .jnotify-notification .jnotify-message {
+	position: relative;
+	z-index: 2;
+	padding: 20px;
+	text-align: center;
+	color: #567b1b;
+	font: bold 1.4em Arial,Helvetica,sans-serif;
+	line-height: 1.2em;
+}
+
+.jnotify-container .jnotify-notification .jnotify-message * {
+	font-size: 1em;
+}
+
+/* notification type == "error" */
+.jnotify-container .jnotify-notification-error .jnotify-background {
+	background-color: #d79eac;
+}
+
+.jnotify-container .jnotify-notification-error .jnotify-close,
+.jnotify-container .jnotify-notification-error .jnotify-message {
+	color: #a72947 !important;
+}
+
+/* notification type == "warning" */
+.jnotify-container .jnotify-notification-warning .jnotify-background {
+	background-color: #fff7d1;
+}
+
+.jnotify-container .jnotify-notification-warning .jnotify-close,
+.jnotify-container .jnotify-notification-warning .jnotify-message {
+	color: #c2a928 !important;
+}

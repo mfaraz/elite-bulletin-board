@@ -1,0 +1,30 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<script type="text/javascript" src="includes/js/bbcode.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="PM.php">{LANG-TITLE}</a> &#187; {LANG-REPLYPM}</div><br />
+
+<form method="post" action="PM.php?action=reply_process">
+<table border="0" class="table" align="center" cellpadding="1" cellspacing="1">
+<tr>
+<td colspan="2" align="center" class="ui-widget-header">{LANG-REPLYPM}</td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header">{BBCODE}</td>
+</tr><tr>
+<td class="ui-widget-header" width="20%">{LANG-USERNAME}</td>
+<td class="ui-widget-header" width="80%">{USERNAME}</td>
+</tr><tr>
+<td class="ui-widget-header" width="20%">{LANG-TO}</td>
+<td class="ui-widget-header" width="80%"><input type="text" name="send" value="{TO}" size="30" class="text" id="sendto" onblur="validateAlphaNumeric('sendto', 'sendtoerr');" /><div id="sendtoerr"></div></td>
+</tr><tr>
+<td class="ui-widget-header" width="20%">{LANG-SUBJECT}</td>
+<td class="ui-widget-header" width="80%">{SUBJECT}</td>
+</tr><tr>
+<td class="ui-widget-content" align="center" width="20%">{SMILES}<br />
+<a href="#" OnClick="open_win('smiles.php', 455, 200);">{LANG-SMILES}</a></td>
+<td class="ui-widget-header" width="80%"><textarea name="message" rows="5" cols="90" wrap="soft" class="text" id="body" onblur="validateNotNull('body', 'bodyerr');"></textarea><div id="bodyerr"></div></td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header">
+<input type="hidden" name="subject" value="{SUBJECT}" />
+<input type="submit" value="{LANG-SENDPM}" class="submit" /></td>
+</tr>
+</table>
+</form>

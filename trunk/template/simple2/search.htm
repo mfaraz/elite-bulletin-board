@@ -1,0 +1,26 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; {LANG-TITLE}</div><br />
+
+<div class="ui-widget-content">{LANG-TEXT}</div><br />
+<form method="post" action="Search.php?action=result">
+<br><table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td class="ui-widget-header" width="50%">&nbsp;</td>
+<td class="ui-widget-header" width="50%">&nbsp;</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-KEYWORD}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="keyword" size="30" class="text" id="keyword" onblur="validateNotNull('keyword', 'keyworderr');" /><div id="keyworderr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-USERNAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text"name="poster" size="30" class="text" id="author" onblur="validateAlphaNumeric('author', 'authorerr');" /><div id="authorerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-SELBOARD}</td>
+<td class="ui-widget-content" width="50%">{BOARDLIST}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-TEXT2}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="search_type" value="topic" />{LANG-TOPIC}<br /><input type="radio" name="search_type" value="post" />{LANG-POST}</td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header"><input type="submit" name="submit" value="{LANG-SEARCH}" class="submit" /></td>
+</tr>
+</table>
+</form>

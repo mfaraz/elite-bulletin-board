@@ -1,0 +1,18 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-PRUNE}</div><br />
+
+<form method="post" action="boardcp.php?action=prune_process">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-PRUNE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-TEXT}<a href="#" class="hint">[?]<span>{LANG-PRUNERULE}</span></a></td>
+<td class="ui-widget-content" width="50%"><input type="text" name="prune_age" maxlength="3" size="10" class="text" id="age" onblur="validateNumeric('age', 'ageerr');" /><div id="ageerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BOARDLIST}</td>
+<td class="ui-widget-content" width="50%">{BOARDLIST}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form>
