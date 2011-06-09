@@ -1,0 +1,120 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<!-- START parentBoardTitle -->
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-ADDPARENTBOARD}</div><br />
+<!-- END parentBoardTitle -->
+
+<!-- START boardTitle -->
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-ADDBOARD}</div><br />
+<!-- END boardTitle -->
+
+<!-- START childBoardTitle -->
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-ADDCHILDBOARD}</div><br />
+<!-- END childBoardTitle -->
+
+<!-- START parentBoard -->
+<form method="post" action="boardcp.php?action=board_add_process&amp;type=1">
+<table border="0" class="table"" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-ADDPARENTBOARD}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BOARDNAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="board_name" size="30" class="text" id="boardname" onblur="validateNotNull('boardname', 'boarderr');" /><div id="boarderr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDPERMISSION}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-READACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="readaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3">{LANG-ACCESS-REG}</option>
+<option value="0" selected=selected>{LANG-ACCESS-ALL}</option>
+</select></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
+<!-- END parentBoard -->
+
+<!-- START childBoard -->
+<form method="post" action="boardcp.php?action=board_add_process&amp;type={BOARDTYPE}">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-ADDCHILDBOARD}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BOARDNAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="board_name" size="30" class="text" id="boardname" onblur="validateNotNull('boardname', 'boarderr');" /><div id="boarderr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-DESCRIPTION}</td>
+<td class="ui-widget-content" width="50%"><textarea name="description" rows="3" cols="50" wrap="soft" class="text" id="description" onblur="validateNotNull('description', 'descriptionerr');"></textarea><div id="descriptionerr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDPERMISSION}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-READACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="readaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3">{LANG-ACCESS-REG}</option>
+<option value="0" selected=selected>{LANG-ACCESS-ALL}</option>
+</select></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-WRITEACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="writeaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3" selected=selected>{LANG-ACCESS-REG}</option>
+<option value="4">{LANG-ACCESS-NONE}</option>
+</select></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-REPLYACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="replyaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3" selected=selected>{LANG-ACCESS-REG}</option>
+<option value="4">{LANG-ACCESS-NONE}</option>
+</select></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-VOTEACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="voteaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3" selected=selected>{LANG-ACCESS-REG}</option>
+<option value="4">{LANG-ACCESS-NONE}</option>
+</select></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-POLLACCESS}</td>
+<td class="ui-widget-content" width="50%"><select name="pollaccess" class="text">
+<option value="5">{LANG-ACCESS-PRIVATE}</option>
+<option value="1">{LANG-ACCESS-ADMINS}</option>
+<option value="2">{LANG-ACCESS-ADMINSMODS}</option>
+<option value="3" selected=selected>{LANG-ACCESS-REG}</option>
+<option value="4">{LANG-ACCESS-NONE}</option>
+</select></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDSETTINGS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-PARENT}</td>
+<td class="ui-widget-content" width="50%">{PARENT}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-POSTINCREMENT}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="increment" value="1" />{LANG-YES} <input type="radio" name="increment" value="0" />{LANG-NO}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BBCODE}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="bbcode" value="1" />{LANG-ON} <input type="radio" name="bbcode" value="0" />{LANG-OFF}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-SMILE}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="smiles" value="1" />{LANG-ON} <input type="radio" name="smiles" value="0" />{LANG-OFF}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-IMG}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="img" value="1" />{LANG-ON} <input type="radio" name="img" value="0" />{LANG-OFF}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
+<!-- END childBoard -->

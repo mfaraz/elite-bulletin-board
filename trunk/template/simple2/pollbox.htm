@@ -1,0 +1,17 @@
+<form  method="post" action="vote.php?bid={BID}&amp;tid={TID}">
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+<td align="center" class="ui-widget-header">{QUESTION}</td>
+</tr>
+<!-- START pollopt -->
+<tr>
+<td align="center" class="ui-widget-content">
+<input type="radio" name="vote" value="{option_id}" />{Poll_Option}<br />
+</td>
+</tr>
+<!-- END pollopt -->
+<tr>
+<td align="center" class="ui-widget-content">
+<input type="hidden" name="user_name" value="{USERNAME}" />
+<input type="submit" name="submit" value="{LANG-VOTE}" class="submit" /></td>
+</table></form>

@@ -1,0 +1,19 @@
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="PM.php">{LANG-TITLE}</a> &#187; {LANG-BANUSER}</div><br />
+
+<p class="ui-widget-content">{TEXT}</p>
+
+<form method="post" action="PM.php?action=ban_process" onsubmit="return validate(ftype);">
+<table border="0" class="table" align="center" cellpadding="1" cellspacing="1">
+<tr>
+<td colspan="2" align="center" class="ui-widget-header">{LANG-BANUSER}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-USERNAME}</td>
+<td class="ui-widget-content" width="50%">{USERNAME}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BAN}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="banned_user" value="{BAN}" size="30" class="text" id="banuser" /><div id="banusererr"></div></td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form>

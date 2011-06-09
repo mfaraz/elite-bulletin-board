@@ -1,0 +1,20 @@
+<!-- START searchBar -->
+<div id="qSearch" style="display:none" title="{LANG-QUICKSEARCH}">
+<form method="get" action="#">
+<input type="text" id="searchKeyword" class="text" size="30" />&nbsp;
+<input type="button" value="{LANG-SEARCH}" id="iSearch" class="submit" />
+</form>
+<div id="smloading"></div>
+<div id="livesearch"></div>
+</div>
+<!-- END searchBar -->
+
+<table border="0" class="table" cellspacing="1" cellpadding="3">
+<tr>
+<td align="center" class="td" valign="top"><img src="../template/simple2/images/boardlogo.png" alt="{TITLE}" title="{TITLE}" /></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-WELCOME} <b>{LOGGEDUSER}</b> [<a href="../login.php?mode=logout">{LANG-LOGOUT}</a>]<br /><a href="../PM.php">{NEWPM}</a><br /><a href="index.php">{LANG-CP}</a><br /><a href="../Search.php?action=newposts">{LANG-NEWPOSTS}</a></td>
+</tr><tr>
+<td class="ui-widget-content" align="center"><a href="{ADDRESS}">{LANG-HOME}</a> - <a href="#" id="showSearch">{LANG-SEARCH}</a> - <a href="#" onclick="$('#help').dialog('open');">{LANG-HELP}</a> - <a href="../Members.php">{LANG-MEMBERLIST}</a> - <a href="../Profile.php">{LANG-PROFILE}</a></td>
+</tr><tr>
+<td valign="top" class="td">

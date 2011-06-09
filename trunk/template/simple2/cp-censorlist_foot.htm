@@ -1,0 +1,18 @@
+</table><br />
+
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<form method="post" action="generalcp.php?action=censor_add">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-CENSORLIST}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-ADDCENSOR}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="addcensor" size="30" class="text" id="censor" onblur="validateNotNull('censor', 'censorerr');" /><div id="censorerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CENSORACTION}<a href="#" class="hint">[?]<span>{LANG-CENSORACTIONHINT}</span></a></td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="censoraction" value="1" />{LANG-CENSORBAN}&nbsp;<input type="radio" name="censoraction" value="2" />{LANG-CENSORSPAM}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
