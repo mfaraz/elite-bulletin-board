@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Profile.php
-Last Modified: 6/5/2011
+Last Modified: 6/8/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -153,41 +153,39 @@ if($groupAccess == 1){
 #output top template file.
 echo $tpl->outputHtml();
 
-//display profile
-switch ($mode){
-	default:
-		#parse html.
-		$tpl = new templateEngine($style, "profile");
-		$tpl->parseTags(array(
-		"TITLE" => "$title",
-		"LANG-TITLE" => "$lang[profile]",
-		"LANG-ACCTMENU" => "$lang[accountmenu]",
-		"LANG-PROFILEMENU" => "$lang[profilemenu]",
-		"LANG-PMMENU" => "$lang[pmmenu]",
-		"LANG-NOTESMENU" => "$lang[notesmenu]",
-		"LANG-PRIVACYMENU" => "$lang[privacymenu]",
-		"LANG-EDITPROFILE" => "$lang[editinfo]",
-		"LANG-EDITSIG" => "$lang[editsig]",
-		"LANG-AVATARSETTINGS" => "$lang[avatarsetting]",
-		"LANG-UPDATEEMAIL" => "$lang[emailupdate]",
-		"LANG-CHANGEPASSWORD" => "$lang[changepassword]",
-		"LANG-MANAGEGROUPS" => "$lang[managegroups]",
-		"LANG-MANAGEATTACHMENTS" => "$lang[manageattach]",
-		"LANG-MANAGESUBSCRIPTIONS" => "$lang[subscriptionsetting]",
-		"LANG-NEWPM" => "$lang[PostPM]",
-		"LANG-PM-INBOX" => "$lang[inbox]",
-		"NEW-PM-COUNT" => $userData->getNewPMCount(true),
-		"LANG-PM-OUTBOX" => "$lang[outbox]",
-		"LANG-PM-ARCHIVE" => "$lang[archive]",
-		"LANG-NEWNOTES" => "$lang[newnote]",
-		"LANG-MANAGENOTES" => "$lang[managenotes]",
-		"LANG-NOTESSETTINGS" => "$lang[notessettings]",
-		"LANG-FRIENDSLIST" => "$lang[friendslist]",
-		"PROFILESETTINGS" => "$lang[profilesettings]",
-		"LANG-OPTION" => "$lang[profilemenu]"));
+#parse html.
+$tpl = new templateEngine($style, "profile");
+$tpl->parseTags(array(
+"TITLE" => "$title",
+"LANG-TITLE" => "$lang[profile]",
+"LANG-ACCTMENU" => "$lang[accountmenu]",
+"LANG-PROFILEMENU" => "$lang[profilemenu]",
+"LANG-PMMENU" => "$lang[pmmenu]",
+"LANG-NOTESMENU" => "$lang[notesmenu]",
+"LANG-PRIVACYMENU" => "$lang[privacymenu]",
+"LANG-EDITPROFILE" => "$lang[editinfo]",
+"LANG-EDITSIG" => "$lang[editsig]",
+"LANG-AVATARSETTINGS" => "$lang[avatarsetting]",
+"LANG-UPDATEEMAIL" => "$lang[emailupdate]",
+"LANG-CHANGEPASSWORD" => "$lang[changepassword]",
+"LANG-MANAGEGROUPS" => "$lang[managegroups]",
+"LANG-MANAGEATTACHMENTS" => "$lang[manageattach]",
+"LANG-MANAGESUBSCRIPTIONS" => "$lang[subscriptionsetting]",
+"LANG-NEWPM" => "$lang[PostPM]",
+"LANG-PM-INBOX" => "$lang[inbox]",
+"NEW-PM-COUNT" => $userData->getNewPMCount(true),
+"LANG-PM-OUTBOX" => "$lang[outbox]",
+"LANG-PM-ARCHIVE" => "$lang[archive]",
+"LANG-PM-RELATIONSHIP" => "",
+"LANG-NEWNOTES" => "$lang[newnote]",
+"LANG-MANAGENOTES" => "$lang[managenotes]",
+"LANG-NOTESSETTINGS" => "$lang[notessettings]",
+"LANG-FRIENDSLIST" => "$lang[friendslist]",
+"PROFILESETTINGS" => "$lang[profilesettings]",
+"LANG-OPTION" => "$lang[profilemenu]"));
 
-		echo $tpl->outputHtml();
-}
+echo $tpl->outputHtml();
+
 #display footer
 $tpl = new templateEngine($style, "footer");
 $tpl->parseTags(array(

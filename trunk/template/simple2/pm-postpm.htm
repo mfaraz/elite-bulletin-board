@@ -1,28 +1,36 @@
 <script type="text/javascript" src="includes/js/validation.js"></script>
-<script type="text/javascript" src="includes/js/bbcode.js"></script>
-<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="PM.php">{LANG-TITLE}</a> &#187; {LANG-POSTPM}</div><br />
+<script type="text/javascript" src="includes/js/jquery.spellchecker.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="includes/js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="includes/js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="includes/js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="includes/js/pmEditor.js"></script>
 
-<form method="post" action="PM.php?action=write_process">
-<table border="0" class="table" align="center" cellpadding="1" cellspacing="1">
-<tr>
-<td colspan="2" align="center" class="ui-widget-header">{LANG-POSTPM}</td>
-</tr><tr>
-<td colspan="2" align="center" class="ui-widget-header">{BBCODE}</td>
-</tr><tr>
-<td class="ui-widget-header" width="20%">{LANG-USERNAME}</td>
-<td class="ui-widget-header" width="80%">{USERNAME}</td>
-</tr><tr>
-<td class="ui-widget-header" width="20%">{LANG-TO}</td>
-<td class="ui-widget-header" width="80%"><input type="text" name="send" value="{TO}" size="30" class="text" id="sendto" onblur="validateAlphaNumeric('sendto', 'sendtoerr');" /><div id="sendtoerr"></div></td>
-</tr><tr>
-<td class="ui-widget-header" width="20%">{LANG-SUBJECT}</td>
-<td class="ui-widget-header" width="80%"><input type="text" name="subject" class="text" size="30" id="subject" onblur="validateNotNull('subject', 'subjecterr');" /><div id="subjecterr"></div></td>
-</tr><tr>
-<td class="ui-widget-content" align="center" width="20%">{SMILES}<br />
-<a href="#" OnClick="open_win('smiles.php', 455, 200);">{LANG-SMILES}</a></td>
-<td class="ui-widget-header" width="80%"><textarea name="message" rows="5" cols="90" wrap="soft" class="text" id="body" onblur="validateNotNull('body', 'bodyerr');"></textarea><div id="bodyerr"></div></td>
-</tr><tr>
-<td colspan="2" align="center" class="ui-widget-header"><input type="submit" value="{LANG-SENDPM}" class="submit" /></td>
-</tr>
-</table>
-</form><br />
+<!-- warning container -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+<div align="center">
+	<form method="post" action="#/PM-Msg/sendPM" id="sendPM">
+
+	<div id="emoticons" style="width:500px;" align="center">
+		{SMILES}
+	</div>
+	<div class="ui-widget-header" style="width:400px;text-align:left;">
+		{LANG-TO}:&nbsp;<input type="text" name="send" value="{TO}" size="30" class="text" id="sendto" onblur="validateAlphaNumeric('sendto', 'sendtoerr');" /><div id="sendtoerr"></div><br />
+		{LANG-SUBJECT}:&nbsp;<input type="text" name="subject" class="text" size="30" id="subject" onblur="validateNotNull('subject', 'subjecterr');" /><div id="subjecterr"></div><br />
+		<div align="center"><a href="#editor" class="toggle"><span>{LANG-DISABLERTF}</span></a> -  <a href="#smiles" id="showAllSmiles">{LANG-SMILES}</a></div>
+	</div>
+	<textarea name="message" rows="5" cols="90" wrap="soft" class="text" id="pmMsg" onblur="validateNotNull('pmMsg', 'bodyerr');"></textarea><div id="bodyerr"></div>
+	<br /><input type="submit" value="{LANG-SENDPM}" class="submit" />
+	</form><br />
+</div>
