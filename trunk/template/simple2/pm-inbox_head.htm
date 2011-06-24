@@ -1,25 +1,48 @@
 <br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; {LANG-TITLE}</div><br />
+<script type="text/javascript">
+//Our select all toggle.
+function toggleChecked(status) {
+	$(".PM-MsgList input").attr('checked',status);
+}
 
-<div class="ui-widget-content">{PAGENATION}</div><br />
+$(document).ready(function() {
 
-<a href="PM.php?action=banlist"><img src="template/simple2/images/viewbanlist.gif" border="0" alt="{LANG-VIEWBANLIST}" /></a>&nbsp;<a href="PM.php?action=write"><img src="template/simple2/images/newtopic.gif" border="0" alt="{LANG-POSTPM}" /></a><br />
+	//see what was clicked and then do something.
+	$('.PM-MsgList a').click(function(e){
+		e.preventDefault(); //we don't want to leave this page.
 
-<p class="ui-widget-content">
+		var PMID = $(this).attr("id");
+
+		//get our selected Message.
+		$.ajax({
+			type: "get", url: "quicktools/pm.ajax.php?action=viewMsg", data: "id="+ PMID,
+			success: function(html){ //so, if data is retrieved, store it in html
+				$("#PM-messages").html(html); //show the html inside .content div
+			}, error: function(xhr, tStat, err){
+				var msg = lang.jsError + ": ";
+				FormResults("error", msg + xhr.status + " " + xhr.statusText);
+			}
+		}); //close $.ajax(
+	});
+
+});//END document.
+</script>
+
+<p class="ui-widget-content" style="width:150px;">
 <b>{LANG-PMRULE}</b>&nbsp;{PMRULE}<br />
-<b>{LANG-CURRENTAMOUNT}</b>&nbsp;<img src="template/simple2/images/bar.gif" height="8" width="{CURRENTAMOUNT}" alt="{CURRENTAMOUNT}%" title="{CURRENTAMOUNT}%" />&nbsp;{CURRENTAMOUNT}%
+<b>{LANG-CURRENTAMOUNT}</b>&nbsp;<img src="template/simple2/images/bar.gif" height="8" width="{CURRENTAMOUNT}%" alt="{CURRENTAMOUNT}%" title="{CURRENTAMOUNT}%" />&nbsp;{CURRENTAMOUNT}%
 </p>
 
-<div align="center" class="ui-widget-content"><a href="PM.php?folder=Inbox">{LANG-INBOX}</a> - <a href="PM.php?folder=Outbox">{LANG-OUTBOX}</a> - <a href="PM.php?folder=Archive">{LANG-ARCHIVE}</a></div><br />
+<div align="center" class="ui-widget-content"><a href="Profile.php#/PM/Inbox">{LANG-INBOX}</a> - <a href="Profile.php#/PM/Outbox">{LANG-OUTBOX}</a> - <a href="Profile.php#/PM/Archive">{LANG-ARCHIVE}</a></div><br />
+<div id="PM-messages"></div>
+<hr />
+<div class="ui-widget-content">
+	<input type="checkbox" onclick="toggleChecked(this.checked)" />Select/Deselect All &nbsp;<a href="#" id="cmdDeleteSelected">Delete Selected</a>
+</div>
+<div id="pmList">
 
-<table border="0" class="table" cellspacing="1" cellpadding="1">
-<tr>
-<th class="ui-widget-header" width="5%">&nbsp;</th>
-<th class="ui-widget-header" width="50%">{LANG-SUBJECT}</th>
-<th class="ui-widget-header" width="25%">{LANG-SENDER}</th>
-<th class="ui-widget-header" width="20%">{LANG-PMDATE}</th>
-</tr>
 <!-- START noresults -->
-<tr>
-<td class="ui-widget-content" colspan="4" align="center">{LANG-NOPM}</td>
-</tr>
+<div class="ui-widget-content">
+	<span style="text-align:center;">{LANG-NOPM}</span>
+</div>
 <!-- END noresults -->

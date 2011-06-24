@@ -1,6 +1,6 @@
 /**
 Filename: pEditor.js
-Last Modified: 1/15/2011
+Last Modified: 6/9/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,8 @@ $(document).ready(function()	{
 	$('#replyBody').markItUp(myBbcodeSettings);
 
 	//smile BBCode Handler.
-	$('#emoticons a').click(function() {
+	$('#emoticons a').click(function(e) {
+		e.preventDefault(); //we don't want to leave this page.
         emoticon = $(this).attr("title");
         $.markItUp( { replaceWith:emoticon } );
     });

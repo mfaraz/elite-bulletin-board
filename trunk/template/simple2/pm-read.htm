@@ -1,15 +1,9 @@
-<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="PM.php">{LANG-TITLE}</a> &#187; {LANG-READPM}</div><br />
-
-<!-- START reply -->
-<a href="PM.php?action=reply&amp;id={ID}"><img src="template/simple2/images/reply.gif" border="0" alt="{LANG-REPLY}" /></a><br /><br />
-<!-- END reply -->
-
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
 <td colspan="2" class="ui-widget-header" align="center">{LANG-READPM}</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{LANG-FROM}</td>
-<td class="ui-widget-content" width="50%">{FROM} [<a href="PM.php?action=ban&amp;ban_user={FROM}">{LANG-BANUSER}</a>]</td>
+<td class="ui-widget-content" width="50%">{FROM}</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{LANG-TO}</td>
 <td class="ui-widget-content" width="50%">{TO}</td>
@@ -23,12 +17,15 @@
 <td colspan="2" class="ui-widget-content">{PM-MESSAGE}<br><br>{SIGNATURE}</td>
 </tr><tr>
 <td colspan="2" class="ui-widget-content">
-<!-- START inbox -->
-<input type="button" value="{LANG-DELETEPM}" onclick="confirmDlg('{LANG-DELPROMPT}', '{BOARDDIR}/PM.php?action=delete&id={ID}');return false;" class="submit" /> - <input type="button" value="{LANG-MOVEPM}" onclick="confirmDlg('{LANG-MOVEPROMPT}', '{BOARDDIR}/PM.php?action=movemsg&id={ID}');return false;" class="submit" />
-<!-- END inbox -->
+<input type="button" id="PMcmd-Delete" value="{LANG-DELETEPM}" title="{ID}" class="submit" />
 
-<!-- START archive -->
-<input type="button" value="{LANG-DELETEPM}" onclick="confirmDlg('{LANG-DELPROMPT}', '{BOARDDIR}/PM.php?action=delete&id={ID}');return false;" class="submit" />
-<!-- END archive -->
+<!-- START inbox -->
+- <input type="button" id="PMcmd-Move" value="{LANG-MOVEPM}" title="{ID}" class="submit" />
+
+<!-- START reply -->
+- <input type="button" id="PMcmd-Reply" value="{LANG-REPLY}" title="{ID}" class="submit" />
+<!-- END reply -->
+
+<!-- END inbox -->
 </td>
 </table><br />

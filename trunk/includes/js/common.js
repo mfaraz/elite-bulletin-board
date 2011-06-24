@@ -1,6 +1,6 @@
 /**
 Filename: common.js
-Last Modified: 1/15/2011
+Last Modified: 6/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,8 @@ $(document).ready(function(){
 		} else {
 			$("#fbWarn").hide();
 		}
+	} else {
+		$("#fbWarn").hide();
 	}
 
 	//small loader
@@ -214,7 +216,7 @@ function updateOnline(){
 	$("#online").load("quicktools/online.php", function(response, status, xhr) {
 		if (status == "error") {
 	    	var msg = lang.jsError + ": ";
-	    	$("#online").html(msg + xhr.status + " " + xhr.statusText).addClass("#error");
+	    	$("#online").html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
 	  	}
 	}); //END $.load
 }

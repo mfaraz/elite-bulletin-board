@@ -1,5 +1,5 @@
 /**
-Filename: tEditor.js
+Filename: pmEditor.js
 Last Modified: 6/9/2011
 
 Term of Use:
@@ -11,7 +11,7 @@ the Free Software Foundation; either version 2 of the License, or
 
 $(document).ready(function()	{
 	//add jquery.markitup plugin to textarea.
- 	$('#body').markItUp(myBbcodeSettings);
+	$('#pmMsg').markItUp(limitedBbcodeSettings);
 
 	//smile BBCode Handler.
 	$('#emoticons a').click(function(e) {
@@ -20,14 +20,21 @@ $(document).ready(function()	{
         $.markItUp( { replaceWith:emoticon } );
     });
 
+	$('#showAllSmiles').click(function(e) {
+		e.preventDefault(); //we don't want to leave this page.
+        $('#moreSmiles').dialog('open');
+    });
+
 	// And you can add/remove markItUp! whenever you want
-	$('.toggle').live("click", function() {
-		if ($("#body.markItUpEditor").length === 1) {
- 			$("#body").markItUpRemove();
+	$('.toggle').live("click", function(e) {
+		e.preventDefault(); //we don't want to leave this page.
+
+		if ($("#pmMsg.markItUpEditor").length === 1) {
+ 			$("#pmMsg").markItUpRemove();
  			$("#emoticons").hide();
 			$("span", this).html(lang['enableRTF']);
 		} else {
-			$('#body').markItUp(myBbcodeSettings);
+			$('#pmMsg').markItUp(limitedBbcodeSettings);
 			$("#emoticons").show();
 			$("span", this).html(lang['disableRTF']);
 		}

@@ -4,7 +4,7 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 6/4/2011
+ * @version 6/23/2011
 */
 
 $(document).ready(function() {
@@ -46,6 +46,40 @@ $(document).ready(function() {
 			//window.title = this.params['mode'];			
         });
 
+		//PM Inbox
+		this.get('#/PM/', function() {
+          this.partial('quicktools/quicktools/pm.ajax.php');
+        });
+
+		//Send out a new PM.
+		this.get('#/PM/compose', function() {
+			//see if the page exists.
+			this.partial('quicktools/pm.ajax.php?action=newMsg');
+			//window.title = this.params['mode'];
+        });
+
+		//Send out a new PM to a define user.
+		this.get('#/PM/compose/:user', function() {
+			//see if the page exists.
+			this.partial('quicktools/pm.ajax.php?action=newMsg&user=' + this.params['user']);
+			//window.title = this.params['mode'];
+        });
+
+		//Send out a new PM to a define user.
+		this.get('#/PM/replyPM/:id', function() {
+			//see if the page exists.
+			this.partial('quicktools/pm.ajax.php?action=replyMsg&id=' + this.params['id']);
+			this.title(this.params['mode']);
+			//window.title = this.params['mode'];
+        });
+
+		//PM folder selection.
+		this.get('#/PM/:folder', function() {
+			//see if the page exists.
+			this.partial('quicktools/pm.ajax.php?folder=' + this.params['folder']);
+			//window.title = this.params['mode'];
+        });
+
 		//
 		//POST Events
 		//
@@ -67,7 +101,11 @@ $(document).ready(function() {
 
 				FormResults(type, message); //display message.
 				$('#pwd').val(''); //clear the password field.
-				ucp.clearTemplateCache(); //clear the cache
+
+				//perform only if its successful.
+				if(type == "success") {
+					ucp.clearTemplateCache(); //clear the cache
+				}
 			}).error(function(xhr, tStat, err) {
 				var msg = lang.jsError + ": ";
 				FormResults("error", msg + xhr.status + " " + xhr.statusText);
@@ -90,7 +128,11 @@ $(document).ready(function() {
 				var message = $('#message').text();
 
 				FormResults(type, message); //display message.
-				ucp.clearTemplateCache(); //clear the cache
+
+				//perform only if its successful.
+				if(type == "success") {
+					ucp.clearTemplateCache(); //clear the cache
+				}
 			}).error(function(xhr, tStat, err) {
 				var msg = lang.jsError + ": ";
 				FormResults("error", msg + xhr.status + " " + xhr.statusText);
@@ -114,7 +156,11 @@ $(document).ready(function() {
 					var message = $('#message').text();
 
 					FormResults(type, message); //display message.
-					ucp.clearTemplateCache(); //clear the cache
+
+					//perform only if its successful.
+					if(type == "success") {
+						ucp.clearTemplateCache(); //clear the cache
+					}
 				},
 				error: function(xhr, tStat, err){
 					var msg = lang.jsError + ": ";
@@ -140,7 +186,11 @@ $(document).ready(function() {
 					var message = $('#message').text();
 
 					FormResults(type, message); //display message.
-					ucp.clearTemplateCache(); //clear the cache
+
+					//perform only if its successful.
+					if(type == "success") {
+						ucp.clearTemplateCache(); //clear the cache
+					}
 				},
 				error: function(xhr, tStat, err){
 					var msg = lang.jsError + ": ";
@@ -166,8 +216,12 @@ $(document).ready(function() {
 					var message = $('#message').text();
 
 					FormResults(type, message); //display message.
-					ucp.clearTemplateCache(); //clear the cache
-					ucp.partial('quicktools/ucp.php?mode=avatar');
+					
+					//perform only if its successful.
+					if(type == "success") {
+						ucp.clearTemplateCache(); //clear the cache
+						ucp.partial('quicktools/ucp.php?mode=avatar');
+					}
 				},
 				error: function(xhr, tStat, err){
 					var msg = lang.jsError + ": ";
@@ -192,7 +246,11 @@ $(document).ready(function() {
 				var message = $('#message').text();
 
 				FormResults(type, message); //display message.
-				ucp.clearTemplateCache(); //clear the cache
+
+				//perform only if its successful.
+				if(type == "success") {
+					ucp.clearTemplateCache(); //clear the cache
+				}
 			}).error(function(xhr, tStat, err) {
 				var msg = lang.jsError + ": ";
 				FormResults("error", msg + xhr.status + " " + xhr.statusText);
@@ -201,9 +259,11 @@ $(document).ready(function() {
 
 		/**
 		 * deletes the selected attachment.
-		 * @version 6/5/2011
+		 * @version 6/23/2011
 		*/
 		$('#deleteAttachment').live('click', function() {
+
+			var attachID = $(this).attr("title");
 
 			//setup confirmation message.
 			$('#confirmMsg').html(lang.cfmDel);
@@ -213,7 +273,7 @@ $(document).ready(function() {
 			 btnConf[lang.Yes] = function() {
 				//call .ajax to call server.
 				$.ajax({
-					method: "get", url: "quicktools/ucp.php?mode=deleteAttachment", data: "id=" + $(this).attr("title"),
+					method: "get", url: "quicktools/ucp.php?mode=deleteAttachment", data: "id=" + attachID,
 					success: function(html){
 						//add results to our container.
 						$("#notifyContainer").html(html);
@@ -223,7 +283,11 @@ $(document).ready(function() {
 						var message = $('#message').text();
 
 						FormResults(type, message); //display message.
-						ucp.clearTemplateCache(); //clear the cache
+
+						//perform only if its successful.
+						if(type == "success") {
+							ucp.clearTemplateCache(); //clear the cache
+						}
 					},
 					error: function(xhr, tStat, err){
 						var msg = lang.jsError + ": ";
@@ -251,9 +315,11 @@ $(document).ready(function() {
 
 		/**
 		 * Deletes the selected topic subscription.
-		 * @version 6/5/2011
+		 * @version 6/23/2011
 		*/
 		$('#deleteSubscription').live('click', function() {
+
+			var del = $(this).attr("title");
 
 			//setup confirmation message.
 			$('#confirmMsg').html(lang.cfmDel);
@@ -263,7 +329,7 @@ $(document).ready(function() {
 			 btnConf[lang.Yes] = function() {
 				//call .ajax to call server.
 				$.ajax({
-					method: "get", url: "quicktools/ucp.php?mode=deleteAttachment", data: "del=" + $(this).attr("title"),
+					method: "get", url: "quicktools/ucp.php?mode=deleteAttachment", data: "del=" + del,
 					success: function(html){
 						//add results to our container.
 						$("#notifyContainer").html(html);
@@ -273,7 +339,11 @@ $(document).ready(function() {
 						var message = $('#message').text();
 
 						FormResults(type, message); //display message.
-						ucp.clearTemplateCache(); //clear the cache
+
+						//perform only if its successful.
+						if(type == "success") {
+							ucp.clearTemplateCache(); //clear the cache
+						}
 					},
 					error: function(xhr, tStat, err){
 						var msg = lang.jsError + ": ";
@@ -315,7 +385,11 @@ $(document).ready(function() {
 				var message = $('#message').text();
 
 				FormResults(type, message); //display message.
-				ucp.clearTemplateCache(); //clear the cache
+
+				//perform only if its successful.
+				if(type == "success") {
+					ucp.clearTemplateCache(); //clear the cache
+				}
 			}).error(function(xhr, tStat, err) {
 				var msg = lang.jsError + ": ";
 				FormResults("error", msg + xhr.status + " " + xhr.statusText);
@@ -338,7 +412,6 @@ $(document).ready(function() {
 				var message = $('#message').text();
 
 				FormResults(type, message); //display message.
-				ucp.clearTemplateCache(); //clear the cache
 
 				//let user they need to re-login to finalize password change.
 				if(type == "success") {
@@ -371,6 +444,259 @@ $(document).ready(function() {
 				FormResults("error", msg + xhr.status + " " + xhr.statusText);
 			}); //END $.ajax(
 		}); //END updateEmail
+
+		/**
+		 * Deletes PM message.
+		 * @version 6/22/2011
+		*/
+		function pmDelete(pmID){
+
+			//setup confirmation message.
+			$('#confirmMsg').html(lang.cfmDel);
+
+			//setup buttons
+			var btnConf = {};
+			 btnConf[lang.Yes] = function() {
+				//call .ajax to call server.
+				$.ajax({
+					method: "get", url: "quicktools/pm.ajax.php?action=deleteMsg", data: "id=" + pmID,
+					success: function(html){
+
+						//add results to our container.
+						$("#notifyContainer").html(html);
+
+						//see what message to display.
+						var type = $('#output').text();
+						var message = $('#message').text();
+
+						FormResults(type, message); //display message.
+
+						//close dialog.
+						$("#confirmDlg").dialog('close');
+
+						//perform only if its successful.
+						if(type == "success") {
+							setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
+						}
+					},
+					error: function(xhr, tStat, err){
+						var msg = lang.jsError + ": ";
+						FormResults("error", msg + xhr.status + " " + xhr.statusText);
+					}
+				}); //END $.ajax(
+			};
+			btnConf[lang.No] = function() {
+				$(this).dialog('close');
+			};
+
+			//add buttons to dialog.
+			$("#confirmDlg").dialog({
+			  title: lang.confDel,
+			  buttons : btnConf,
+			  open: function(event, ui) {
+				  $(".ui-dialog-titlebar-close", ui.dialog).hide();
+			  }
+			});
+
+			//show dialog.
+			$("#confirmDlg").dialog('open');
+
+		}
+
+		//deletes all selected records.
+		$('#cmdDeleteSelected').live('click', function(e){
+
+			e.preventDefault(); //we don't want to leave this page.
+
+			var deleted = 0;
+			var count = 0;
+
+			//loop through checked messages.
+			$('.PM-MsgList input').each(function () {
+				if (this.checked) {
+					$.ajax({
+						method: "get", url: "quicktools/pm.ajax.php?action=deleteMsg", data: "id=" + $(this).attr("title"),
+						success: function(){
+							//don't really do anything.
+						}
+					}); //END $.ajax(
+					deleted = deleted + 1;
+				}
+
+				count = count + 1;
+			});
+
+			var deleteRes = deleted +" of " + count + " deleted. Reloading in 3 seconds.";
+
+			//setup confirmation message.
+			$('#confirmMsg').html(deleteRes);
+
+			//add buttons to dialog.
+			$("#confirmDlg").dialog({
+			  title: lang.genSuccess,
+			  open: function(event, ui) {
+				  $(".ui-dialog-titlebar-close", ui.dialog).hide();
+			  }
+			});
+
+			//show dialog.
+			$("#confirmDlg").dialog('open');
+
+			//perform only if successful.
+			if (deleted > 0){
+				setTimeout("window.location.reload()", 3000); //reload after 3 seconds.
+			}
+
+		});
+
+		//link click on main inbox.
+		$('#lnkDelete').live('click', function(e) {
+			e.preventDefault(); //we don't want to leave this page.
+
+			pmDelete($(this).attr("title"));
+
+		});
+
+		//button click on message.
+		$('#PMcmd-Delete').live('click', function() {
+
+			pmDelete($(this).attr("title"));
+
+		}); //END PMcmd-Delete
+
+		/**
+		 * Archive PM message.
+		 * @version 6/22/2011
+		*/
+		$('#PMcmd-Move').live('click', function() {
+
+			var pmID = $(this).attr("title");
+
+			//setup confirmation message.
+			$('#confirmMsg').html(lang.archiveConf);
+
+			//setup buttons
+			var btnConf = {};
+			 btnConf[lang.Yes] = function() {
+				//call .ajax to call server.
+				$.ajax({
+					method: "get", url: "quicktools/pm.ajax.php?action=moveMsg", data: "id=" + pmID,
+					success: function(html){
+						//add results to our container.
+						$("#notifyContainer").html(html);
+
+						//see what message to display.
+						var type = $('#output').text();
+						var message = $('#message').text();
+
+						FormResults(type, message); //display message.
+
+						//close dialog.
+						$("#confirmDlg").dialog('close');
+
+						//perform only if its successful.
+						if(type == "success") {
+							setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
+						}
+					},
+					error: function(xhr, tStat, err){
+						var msg = lang.jsError + ": ";
+						FormResults("error", msg + xhr.status + " " + xhr.statusText);
+					}
+				}); //END $.ajax(
+			};
+			btnConf[lang.No] = function() {
+				$(this).dialog('close');
+			};
+
+			//add buttons to dialog.
+			$("#confirmDlg").dialog({
+			  title: lang.confDel,
+			  buttons : btnConf,
+			  open: function(event, ui) {
+				  $(".ui-dialog-titlebar-close", ui.dialog).hide();
+			  }
+			});
+
+			//show dialog.
+			$("#confirmDlg").dialog('open');
+
+		}); //END PMcmd-Move (PMcmd-Reply)
+
+		/**
+		 * Post a reply to PM Message.
+		 * @version 6/9/2011
+		*/
+		$('#PMcmd-Reply').live('click', function() {
+
+			//setup confirmation message.
+			gotoUrl('Profile.php#/PM/replyPM/'+ $(this).attr("title"));
+
+		}); //END PMcmd-Reply
+
+		/**
+		 * Send User a PM Message.
+		 * @version 6/22/2011
+		*/
+		this.post('#/PM-Msg/sendPM', function(context) {
+
+			//call .ajax to call server.
+			$.post("quicktools/pm.ajax.php?action=sendPM", $('#sendPM').serialize(), function(html){
+				
+				//add results to our container.
+				$("#notifyContainer").html(html);
+
+				//see what message to display.
+				var type = $('#output').text();
+				var message = $('#message').text();
+
+				FormResults(type, message); //display message.
+
+				//clear our form if its successful.
+				if(type == "success") {
+					//clear form.
+					$('#sendto').val('');
+					$('#subject').val('');
+					$('#pmMsg').val('');
+					ucp.clearTemplateCache(); //clear the cache
+				}
+			}).error(function(xhr, tStat, err) {
+				var msg = lang.jsError + ": ";
+				FormResults("error", msg + xhr.status + " " + xhr.statusText);
+			}); //END $.ajax(
+		}); //END sendPM
+
+		/**
+		 * Send User a PM Reply.
+		 * @version 6/9/2011
+		*/
+		this.post('#/PM-Msg/sendPMReply', function(context) {
+
+			//call .ajax to call server.
+			$.post("quicktools/pm.ajax.php?action=sendPMReply", $('#sendPMReply').serialize(), function(html){
+
+				//add results to our container.
+				$("#notifyContainer").html(html);
+
+				//see what message to display.
+				var type = $('#output').text();
+				var message = $('#message').text();
+
+				FormResults(type, message); //display message.
+
+				//clear our form if its successful.
+				if(type == "success") {
+					//clear form.
+					$('#sendto').val('');
+					$('#subject').val('');
+					$('#pmMsg').val('');
+					ucp.clearTemplateCache(); //clear the cache
+				}
+			}).error(function(xhr, tStat, err) {
+				var msg = lang.jsError + ": ";
+				FormResults("error", msg + xhr.status + " " + xhr.statusText);
+			}); //END $.ajax(
+		}); //END sendPM
 
       });//END .sammy
 

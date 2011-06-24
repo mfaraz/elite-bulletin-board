@@ -128,9 +128,8 @@ $lang['closed'] = 'Membership Closed';
 $lang['nomembers'] = 'No users currently belong to this group.';
 $lang['notexist'] = 'This group does not exist!';
 #Private Message Language Tags
+$lang['pm'] = 'Private Messages';
 $lang['pm_access_user'] = 'The user you wish to send a PM to does not have the rights to access this area.';
-$lang['replyalt'] = 'reply to this PM';
-$lang['postpmalt'] = 'Write an PM to a user';
 $lang['readpm'] = 'Read Message';
 $lang['from'] = 'From';
 $lang['to'] = 'To';
@@ -138,7 +137,9 @@ $lang['invalidfolder'] = 'You have requested an invalid folder name.';
 $lang['inbox'] = 'Inbox';
 $lang['outbox'] = 'Outbox';
 $lang['archive'] = 'Archive';
+
 $lang['moveconfirm'] = 'Archive message, are you sure?';
+
 $lang['movemsg'] = 'Archive Message';
 $lang['pmquota'] = 'PM Quota:';
 $lang['archivequota'] = 'Archive Quota:';
@@ -164,19 +165,16 @@ $lang['nosend'] = 'You did not add a user to send this to.';
 $lang['nosubject'] = 'You did not place a subject for this post.';
 $lang['nomessage'] = 'You did not add anything to this post.';
 $lang['overquota'] = 'Sorry but the user who your trying to send an PM to currently is over their quota space.';
-$lang['blocked'] = 'Sorry but this user has blocked you from sending them any form of PMs. If you think you recieved this in error, please contact the admin about this.';
+$lang['blocked'] = 'Sorry but this user has blocked you from sending them any form of PMs. If you think you received this in error, please contact the admin about this.';
 $lang['longuser'] = 'Username your sending to is too long.';
 $lang['longsubject'] = 'Your subject is too long.';
+
 $lang['confirmdelete'] = 'Are you sure you wish to delete this message?';
-$lang['banusertitle'] ='Ban A User';
-$lang['pmbantxt'] = 'Is a user spamming your PM inbox? if so, you may blacklist them from posting PMs to you. Depending on the content of the PMs, contacing the admin about this would be good too.';
-$lang['usertoban'] = 'User to Ban';
-$lang['blankfield'] = 'You did not select a user to ban.';
-$lang['longbanuser'] = 'Username your banning to is too long.';
-$lang['banlisttitle'] = 'View Banlist';
-$lang['pmbanlist'] = 'Below is the list of people that is banned from giving you PMs. You may remove them from the list by clicking on delete next to their name.';
-$lang['delbanuser'] = 'Delete Banned User';
-$lang['banlistconfirm'] = 'Are you sure you want to remove this user from your banlist?';
+
+$lang['sentpmsuccessfully'] = 'PM Sent Successfully';
+$lang['delpmsuccessfully'] = 'PM Deleted Successfully';
+$lang['archpmsuccessfully'] = 'PM Archived Successfully';
+
 #Login language tags
 $lang['blank'] = 'Please enter ALL of the information.';
 $lang['invaliduser'] = 'An Invalid Username was Entered.';

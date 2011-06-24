@@ -27,10 +27,12 @@ lang = {
     attachLoading: "Uploading File...",
     attachLimit: "You have reached your upload limit.",
 	confDel: "Confirm Deletion",
+	genSuccess: "Success!",
 	cfmDel: "Are you sure you wish to delete this?",
 	Yes: "Yes",
 	No: "No",
 	reloginTitle: "Re-login Notice",
 	logoffNotice: "You need to re-login to finalize the password change.",
-	Ok: 'Ok'
+	Ok: 'Ok',
+	archiveConf: 'Archive message, are you sure?'
 };

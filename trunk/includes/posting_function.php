@@ -4,7 +4,7 @@ die("<b>!!ACCESS DENIED HACKER!!</b>");
 }
 /**
 Filename: posting_function.php
-Last Modified: 1/15/2011
+Last Modified: 6/9/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ function form_smiles(){
 
 	global $bName, $db;
 
+	//TODO improve this so that it works with pages not needing this check.
 	if ($bName['Smiles'] == 0){
 		$smile = '';
 	}else{

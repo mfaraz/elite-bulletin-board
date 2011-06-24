@@ -23,9 +23,9 @@ function FormResults(type, message) {
 	$(function(){
 		//see how we're rendering this notification.
 		if (type == "success") {
-			$.jnotify(message);
+			$.jnotify(message, 3000);
 		} else {
-			$.jnotify(message, type);
+			$.jnotify(message, type, 3000);
 		}
 	});
 }

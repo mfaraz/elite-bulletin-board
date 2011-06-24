@@ -8,7 +8,7 @@ if (!defined('IN_EBB')) {
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 4/13/2011
+ * @version 6/22/2011
 */
 
 class PM {
@@ -28,6 +28,32 @@ class PM {
 			 * @var int
 		 */
 	public $pmID;
+
+	//
+	// Constructors & Destructors
+	//
+
+	/**
+			 * Creates our PM Object.
+			 * @param int $pmID PM ID
+			 * @param string $pmUsr PM User.
+			 * @access Public
+			 * @version 6/11/2011
+			*/
+	public function __construct($pmID, $pmUsr){
+		$this->pmID = $pmID;
+		$this->user = $pmUsr;
+	}
+
+	/**
+			 * Resets our PM Object.
+			 * @access Public
+			 * @version 6/8/2011
+			*/
+	public function __destruct(){
+		unset($this->pmID);
+		unset($this->user);
+	}
 
 	//
 	// Methods
@@ -56,7 +82,7 @@ class PM {
 	}
 
 	/**
-			 * Gets the amount of message inside of a PM Folder.
+			 * Gets the amount of messages inside of a PM Folder.
 			 * @param string $folder
 			 * @return int
 			 * @access Public
@@ -155,14 +181,14 @@ class PM {
 	/**
 			 * Archives a selected PM Message.
 			 * @access Public
-			 * @version 4/9/2011
+			 * @version 6/22/2011
 		 */
 	public function ArchiveMessage() {
 
 		global $db, $boardPref, $lang;
 
 		#see if user has enough space to save message.
-		$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$this-user."' AND Folder='Archive'";
+		$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$this->user."' AND Folder='Archive'";
 		$check_archive = $db->affectedRows();
 
 		if ($check_archive == $boardPref->getPreferenceValue("archive_quota")){
@@ -178,7 +204,7 @@ class PM {
 	/**
 			 * Performs a check to see if the user viewing the message has access to this message.
 			 * @access Public
-			 * @version 4/9/2011
+			 * @version 6/8/2011
 			 * @return boolean
 		 */
 	public function IsPMOwner() {
@@ -186,31 +212,30 @@ class PM {
 		global $db;
 		
 			#get PM data.
-		$db->SQL = "SELECT Reciever FROM ebb_pm WHERE id='".$this->pmID."'";
+		$db->SQL = "SELECT id FROM ebb_pm WHERE id='".$this->pmID."' AND Reciever='".$this->user."'";
 		$validateOwner = $db->affectedRows();
 
 		//see if pm message belong to the right user.
-		if ($validateOwner['Reciever'] == $this->user){
+		if ($validateOwner == 1){
 			return true;
 		} else {
 			return false;
 		}
-
 	}
 
 	/**
-			 * Performs a check to see if the user postnig a message isn't blocked by the deisred sender.
-			 * @param string $bUser - User to check against.
-			 * @access Private
-			 * @version 4/9/2011
+			 * Performs a check to see if the user posting a message isn't blocked by the desired sender.
+			 * @param string $bUser User to check against.
+			 * @access Public
+			 * @version 6/22/2011
 			 * @return boolean
 		 */
-	private function IsBannedByUser($bUser) {
+	public function IsBannedByUser($bUser) {
 
 		global $db;
 
 		//check to see if this user is on the ban list.
-		$db->SQL = "SELECT id FROM ebb_relationship WHERE status='2' AND friend='$bUser' AND uid='".$this->user."'";
+		$db->SQL = "SELECT rid FROM ebb_relationship WHERE status='2' AND friend='$bUser' AND uid='".$this->user."'";
 		$validateBan = $db->affectedRows();
 
 		if ($validateBan == 1) {
@@ -222,17 +247,25 @@ class PM {
 
 	/**
 			 * Checks to see user has space for message.
-			 * @access Private
-			 * @version 4/9/2011
+			 * @access Public
+			 * @version 6/22/2011
+			 * @param $folder the folder we're checking for quota.
 			 * @return boolean
 		 */
-	private function QuotaCheck($folder) {
+	public function QuotaCheck($folder, $usr="") {
 
-		global $db;
+		global $db, $boardPref;
+
+		#see how we're checking this.
+		if ($usr == "") {
+			$sUsr = $this->user;
+		} else {
+			$sUsr = $usr;
+		}
 
 		if ($folder == "Inbox") {
 			
-			$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$this->user."' AND Folder='Inbox'";
+			$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$sUsr."' AND Folder='Inbox'";
 			$check_inbox = $db->affectedRows();
 
 			//check to see if the from user's inbox is full.
@@ -243,12 +276,14 @@ class PM {
 			}
 		} else if ($folder == "Archive") {
 			
-			$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$this->user." AND Folder='Archive'";
+			$db->SQL = "SELECT id FROM ebb_pm WHERE Reciever='".$sUsr." AND Folder='Archive'";
 			$check_archive = $db->affectedRows();
 
 			#see if user has enough space to save message.
 			if ($check_archive == $boardPref->getPreferenceValue("archive_quota")){
 				return false;
+			} else {
+				return true;
 			}
 		}
 	}

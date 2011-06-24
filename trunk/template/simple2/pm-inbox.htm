@@ -1,6 +1,5 @@
-<tr>
-<td align="center" class="ui-widget-content"><img src="{READICON}" width="25" height="25" alt="" /></td>
-<td class="ui-widget-content"><a href="PM.php?action=read&amp;id={PMID}">{SUBJECT}</a></td>
-<td class="ui-widget-content"><a href="Profile.php?user={SENDER}">{SENDER}</a></td>
-<td class="ui-widget-content">{POSTDATE}</td>
-</tr>
+<div class="PM-MsgList">
+	<input type="checkbox" name="delete" value="1" title="{PMID}" style="float:left;" />&nbsp;<span class="ui-icon ui-icon-closethick" style="float: left;" id="lnkDelete" title="{PMID}" style="cursor:pointer;"></span>
+	<!--<img src="{READICON}" width="25" height="25" alt="" />&nbsp;-->
+	<a href="#" id="{PMID}"> {SUBJECT}</a><br /><br /><a href="Profile.php#/{SENDER}">{SENDER}</a> - {POSTDATE}
+</div>

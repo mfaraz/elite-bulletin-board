@@ -159,6 +159,49 @@ margin-left: -100%;
 
 /*
 ==============================
+PM CSS
+==============================
+*/
+
+#pmList{
+	overflow: auto;
+	height: 250px;
+}
+
+#PM-messages{
+	overflow: auto;
+	height: 250px;
+}
+
+.PM-MsgList{
+	margin:0px;
+	padding:1px;
+}
+.PM-MsgList {	/* General layout article in list */
+	border:1px solid #1A3077;
+	background-color:#C3C9D5;
+	margin:1px;
+	padding:2px;
+	color:#333;
+	font-size:1.5em;
+}
+.PM-MsgList:hover {
+	border:1px solid #1A3077;
+	background-color:#8494B4;
+	margin:1px;
+	padding:2px;
+	color:#333;
+	font-size:1.5em;
+}
+.PM-MsgList a {	/* list links */
+	color:#3C4049;
+}
+.PM-MsgList a:hover {	/* list hover links */
+	color:#fff;
+}
+
+/*
+==============================
 LOADER CSS
 ==============================
 */
@@ -298,8 +341,7 @@ BODY {
 	background-color: #3C4049;
 	color : #fff;
 	font-family : Verdana, Arial, Helvetica, sans-serif;
-	/*font-size : 12px;*/
-	font-size: .7em;
+	font-size:.8em;
 }
 
 div.container {
