@@ -1,6 +1,6 @@
 /**
 Filename: common.js
-Last Modified: 6/11/2011
+Last Modified: 6/25/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,13 @@ function displayMsg(msg, ele, icon){
 	if (obj){
 		//see what type of icon to use, if any.
 		if(icon == "err"){
-			obj.innerHTML = "<div id=\"error\"><img src=\"images/error.gif\" alt=\"Error\" />" + msg + "</div>";
+			obj.innerHTML = "<div id=\"error\"><img src=\"images/error.gif\" alt=\"\" />" + msg + "</div>";
 		}else if(icon == "info"){
-			obj.innerHTML = "<div id=\"info\"><img src=\"images/info.gif\" alt=\"Information\" />" + msg + "</div>";
+			obj.innerHTML = "<div id=\"info\"><img src=\"images/info.gif\" alt=\"\" />" + msg + "</div>";
 		}else if(icon == "ok"){
-			obj.innerHTML = "<div id=\"ok\"><img src=\"images/ok.gif\" alt=\"Ok\" />" + msg + "</div>";
+			obj.innerHTML = "<div id=\"ok\"><img src=\"images/ok.gif\" alt=\"\" />" + msg + "</div>";
         }else if(icon == "loading"){
-			obj.innerHTML = "<div id=\"loading\"><img src=\"images/loading.gif\" alt=\"Loading...\" />" + msg + "</div>";
+			obj.innerHTML = "<div id=\"loading\"><img src=\"images/loading.gif\" alt=\"\" />" + msg + "</div>";
 		}else if(icon == "none"){
 			obj.innerHTML = "<div>" + msg + "</div>";
 		}

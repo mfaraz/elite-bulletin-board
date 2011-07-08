@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: admin_function.php
-Last Modified: 2/18/2011
+Last Modified: 6/25/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -12,6 +12,28 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 */
+
+
+/**
+	 * List the current announcements in the db..
+	 * @version 6/25/2011
+ */
+function ListAnnouncements(){
+	global $style, $lang, $db;
+
+	$db->SQL = "SELECT id, information FROM ebb_information_ticker";
+	$announceQ = $db->query();
+
+	while ($announceLst = mysql_fetch_assoc($announceQ)){
+		#smile listing data.
+		$tpl = new templateEngine($style, "cp-announcements");
+		$tpl->parseTags(array(
+		"ID" => "$announceLst[id]",
+		"LANG-DELETE" => "$lang[del]",
+		"ANNOUNCEMENT" => "$announceLst[information]"));
+		echo $tpl->outputHtml();
+	}
+}
 
 
 /**

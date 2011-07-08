@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: register.php
-Last Modified: 3/15/2011
+Last Modified: 7/7/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -99,9 +99,6 @@ switch ($action){
 		$iagree = $db->filterMySQL($_POST['iagree']);
 		$coppavalid = $db->filterMySQL($_POST['coppavalid']);
 		$captcha = $db->filterMySQL($_POST['captcha']);
-		//@TODO remove RSS from core.
-		$rss1 = "http://rss.msnbc.msn.com/id/3032091/device/rss/rss.xml";
-		$rss2 = "http://news.google.com/nwshp?hl=en&tab=wn&output=rss";
 		$IP = detectProxy();
 		
 		#call validation class.
@@ -286,7 +283,7 @@ switch ($action){
 			#see if admin has set a group rule to new users.
 			if($boardPref->getPreferenceValue("userstat") == 0){
 				//add user to db.
-				$db->SQL = "INSERT INTO ebb_users (Email, Username, Password, salt, Date_Joined, IP, Time_format, Time_Zone, PM_Notify, Hide_Email, Style, Language, active, act_key, rssfeed1, rssfeed2, banfeeds) VALUES('$email', '$username', '$pass', '$pwdSalt', $time, '$IP', '$time_format', '$time_zone', '$pm_notice', '$show_email', '$ustyle', '$default_lang', '$active_stat', '$act_key', '$rss1', '$rss2', '0')";
+				$db->SQL = "INSERT INTO ebb_users (Email, Username, Password, salt, Date_Joined, IP, Time_format, Time_Zone, PM_Notify, Hide_Email, Style, Language, active, act_key) VALUES('$email', '$username', '$pass', '$pwdSalt', $time, '$IP', '$time_format', '$time_zone', '$pm_notice', '$show_email', '$ustyle', '$default_lang', '$active_stat', '$act_key')";
 				$db->query();
 
 				//add user to Regular Member group.
@@ -294,7 +291,7 @@ switch ($action){
 				$db->query();
 			}else{
 				//add user to db.
-				$db->SQL = "INSERT INTO ebb_users (Email, Username, Password, salt, Date_Joined, IP, Time_format, Time_Zone, PM_Notify, Hide_Email, Style, Language, active, act_key, rssfeed1, rssfeed2, banfeeds) VALUES('$email', '$username', '$pass', '$pwdSalt', $time, '$IP', '$time_format', '$time_zone', '$pm_notice', '$show_email', '$style', '$default_lang', '$active_stat', '$act_key', '$rss1', '$rss2', '0')";
+				$db->SQL = "INSERT INTO ebb_users (Email, Username, Password, salt, Date_Joined, IP, Time_format, Time_Zone, PM_Notify, Hide_Email, Style, Language, active, act_key) VALUES('$email', '$username', '$pass', '$pwdSalt', $time, '$IP', '$time_format', '$time_zone', '$pm_notice', '$show_email', '$style', '$default_lang', '$active_stat', '$act_key')";
 				$db->query();
 				
 				//add user to group admin requested.
@@ -323,7 +320,6 @@ switch ($action){
 				//Create the Mailer using your created Transport
 				$mailer = Swift_Mailer::newInstance($transport);
 			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
 				//Create the Transport
 				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 

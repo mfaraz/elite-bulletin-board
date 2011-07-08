@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: function.php
-Last Modified: 3/4/2011
+Last Modified: 6/24/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -90,24 +90,28 @@ function formatTime($format, $time, $GMT){
 /**
  * Loads a URL using cURL.
  * @param string $url
- * @modified 3/4/11
+ * @version 6/24/11
  * @return string
  */
 function curlLoadFromUrl($url) {
-	global $boardPref;
 
 	try {
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_REFERER, $boardPref->getPreferenceValue("website_url"));
-		$str = curl_exec($curl);
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$result = curl_exec($curl);
+
+		/* Check for 404 (file not found). */
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		if($httpCode == 404) {
+			return null;
+		}
+
 		curl_close($curl);
-		return $str;
+		return $result;
 	} catch(Exception $e) {
-	        $error = new notifySys($e, true, true, __FILE__, __LINE__);
-			$error->genericError();
-    	}
+		$error = new notifySys($e, true, true, __FILE__, __LINE__);
+		$error->genericError();
+    }
   }
 
 /**

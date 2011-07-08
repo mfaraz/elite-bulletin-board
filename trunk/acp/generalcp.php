@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: generalcp.php
-Last Modified: 2/22/2011
+Last Modified: 6/26/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@ require_once "../config.php";
 require_once FULLPATH."/header.php";
 require_once FULLPATH."/acp/acpheader.php";
 require_once FULLPATH."/includes/admin_function.php";
-require_once FULLPATH."/includes/phpmailer/class.phpmailer.php";
+require_once FULLPATH."/includes/swift/swift_required.php";
 require_once FULLPATH."/includes/acp/ebbinstaller.class.php";
 
 if(isset($_GET['action'])){
@@ -185,34 +185,55 @@ case 'mail_send':
 	$db->SQL = "SELECT Email FROM ebb_users";
 	$newsletterQ = $db->query();
 
-	#setup mailer.
-	$mailer = new PHPMailer();
-	$mailer->Subject = $subject;
-	$mailer->Body = $mail_message;
-	$mailer->SetFrom($boardPref->getPreferenceValue("board_email"), $title);
-
-	#see if SMTP is used.
+	#see what kind of transport to use.
 	if($boardPref->getPreferenceValue("mail_type") == 0){
-	    $mailer->IsSMTP();
-	    $mailer->SMTPAuth = true;
-		$mailer->Host = $boardPref->getPreferenceValue("smtp_host");
-		$mailer->Port = $boardPref->getPreferenceValue("smtp_port");
-		$mailer->Username = $boardPref->getPreferenceValue("smtp_user");
-		$mailer->Password = $boardPref->getPreferenceValue("smtp_pwd");
-		}else{
-			$mailer->IsMail();
+
+		#see if we're using some form of encryption.
+		if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+			//Create the Transport
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+		} else{
+			//Create the Transport
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
 		}
-		
-	#add users to mail list.
-	while($mailTo = mysql_fetch_assoc($newsletterQ)){
-		$mailer->AddBCC($mailTo['Email']);
 
-		//send out the email.
-		$mailer->Send();
+		//Create the Mailer using your created Transport
+		$mailer = Swift_Mailer::newInstance($transport);
+	} else if ($boardPref->getPreferenceValue("mail_type") == 2){
+		//Create the Transport
+		$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 
-		//clear the list to prevent any double emails.
-		$mailer->ClearAllRecipients();
+		//Create the Mailer using your created Transport
+		$mailer = Swift_Mailer::newInstance($transport);
+	} else {
+		//Create the Transport
+		$transport = Swift_MailTransport::newInstance();
+
+		//Create the Mailer using your created Transport
+		$mailer = Swift_Mailer::newInstance($transport);
 	}
+
+	#build email.
+	$message = Swift_Message::newInstance($subject)
+		->setFrom(array($boardPref->getPreferenceValue("board_email") => $title)) //Set the From address
+		->setBody($mail_message); //set email body
+
+	//setup anti-flood plugin.
+	$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
+
+	#add user's email to mail list.
+	while($r = mysql_fetch_assoc($newsletterQ)){
+		//Set the To addresses
+		$message->addTo($r['Email']);
+	}
+
+	#send message out.
+	//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+	$mailer->batchSend($message);
 
 	#log this into our audit system.
 	$acpAudit = new auditSystem();

@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: versionChecker.class.php
-Last Modified: 3/4/2011
+Last Modified: 6/24/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -34,24 +34,35 @@ class versionChecker{
 
 		//see if user wishes to see beta releases.
 		if ($this->showBeta == true){
-			$UpdateUrl = $this->updateAddr;
-		} else {
 			$UpdateUrl = $this->updareAddrBeta;
+		} else {
+			$UpdateUrl = $this->updateAddr;
 		}
 
 		// use curl if it exists
 		if (function_exists('curl_init')) {
-			$xml = simplexml_load_string(curlLoadFromUrl($UpdateUrl));
+			
+			//ensures we get a valid response from server, if not, lets fail this.
+			if(curlLoadFromUrl($UpdateUrl) == null){
+				$this->major = 0;
+			}else {
+				$xml = new SimpleXMLElement(curlLoadFromUrl($UpdateUrl));
+
+				//get our current version data.
+				$this->major = $xml->main;
+				$this->minor = $xml->secondary;
+				$this->patch = $xml->patch;
+				$this->build = $xml->build;
+			}
 		}else{
 			$xml = simplexml_load_file($UpdateUrl);
+
+			//get our current version data.
+			$this->major = $xml->main;
+			$this->minor = $xml->secondary;
+			$this->patch = $xml->patch;
+			$this->build = $xml->build;
 		}
-
-		//get our current version data.
-		$this->major = $xml->main;
-		$this->minor = $xml->secondary;
-		$this->patch = $xml->patch;
-		$this->build = $xml->build;
-
 	}
 
    /**
@@ -70,36 +81,42 @@ class versionChecker{
  /**
 	*verifyVersion
 	*Verify user has latest version installed.
-	*@modified 3/4/11
+	*@modified 6/24/11
 	*@return bool $versionStatus - true=current;false=outdated.
 	*@access public
 	*/
 	public function verifyVersion(){
 	    global $boardPref;
 
-	    #check major release number.
+		//major equals 0 means something failed somewhere, auto kill.
+		if($this->major == 0){
+			return null;
+		}
+
+		#check major release number.
 		if($this->major < $boardPref->getPreferenceValue("version_main")){
 			$versionStatus = false;
 		}else{
-		    #check minor release number.
+			#check minor release number.
 			if($this->minor < $boardPref->getPreferenceValue("version_minor")){
 				$versionStatus = false;
 			}else{
-			    #check patch release.
-                if($this->patch < $boardPref->getPreferenceValue("version_patch")){
+				#check patch release.
+				if($this->patch < $boardPref->getPreferenceValue("version_patch")){
 					$versionStatus = false;
-                }else{
-                    #check build.
+				}else{
+					#check build.
 					if($this->build != $boardPref->getPreferenceValue("version_build")){
 						$versionStatus = false;
 					}else{
 						$versionStatus = true;
 					}#END BUILD CHECK.
-                }#END PATCH CHECK.
+				}#END PATCH CHECK.
 			}#END MINOR CHECK.
 		}#END MAJOR CHECK.
 		
 		return ($versionStatus);
 	}
+
 }//END CLASS
 ?>
