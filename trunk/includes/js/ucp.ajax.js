@@ -4,7 +4,7 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 6/23/2011
+ * @version 7/7/2011
 */
 
 $(document).ready(function() {
@@ -114,7 +114,7 @@ $(document).ready(function() {
 
 		/**
 		 * Saves User's signature.
-		 * @version 6/4/2011
+		 * @version 7/6/2011
 		*/
 		this.post('#/ucp/saveSignature', function(context) {
 
@@ -132,6 +132,7 @@ $(document).ready(function() {
 				//perform only if its successful.
 				if(type == "success") {
 					ucp.clearTemplateCache(); //clear the cache
+					setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
 				}
 			}).error(function(xhr, tStat, err) {
 				var msg = lang.jsError + ": ";
@@ -141,7 +142,7 @@ $(document).ready(function() {
 
 		/**
 		 * Join user to defined group.
-		 * @version 6/4/2011
+		 * @version 7/6/2011
 		*/
 		$('#JoinGroup').live('click', function() {
 			//call .ajax to call server.
@@ -159,6 +160,7 @@ $(document).ready(function() {
 
 					//perform only if its successful.
 					if(type == "success") {
+						setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
 						ucp.clearTemplateCache(); //clear the cache
 					}
 				},
@@ -171,7 +173,7 @@ $(document).ready(function() {
 		
 		/**
 		 * Un-Join user to defined group.
-		 * @version 6/4/2011
+		 * @version 7/6/2011
 		*/
 		$('#UnjoinGroup').live('click', function() {
 			//call .ajax to call server.
@@ -190,6 +192,7 @@ $(document).ready(function() {
 					//perform only if its successful.
 					if(type == "success") {
 						ucp.clearTemplateCache(); //clear the cache
+						setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
 					}
 				},
 				error: function(xhr, tStat, err){
@@ -201,9 +204,12 @@ $(document).ready(function() {
 
 		/**
 		 * Clears user's avatar.
-		 * @version 6/4/2011
+		 * @version 7/6/2011
 		*/
-		$('#clearAvatar').live('click', function() {
+		$('#clearAvatar').live('click', function(e) {
+
+			e.preventDefault(); //we don't want to leave this page.
+
 			//call .ajax to call server.
 			$.ajax({
 				method: "get", url: "quicktools/ucp.php?mode=clearavatar",
@@ -220,7 +226,7 @@ $(document).ready(function() {
 					//perform only if its successful.
 					if(type == "success") {
 						ucp.clearTemplateCache(); //clear the cache
-						ucp.partial('quicktools/ucp.php?mode=avatar');
+						setTimeout("window.location.reload()", 2000); //reload after 2 seconds.
 					}
 				},
 				error: function(xhr, tStat, err){
@@ -232,7 +238,7 @@ $(document).ready(function() {
 
 		/**
 		 * Saves user's avatar choice.
-		 * @version 6/4/2011
+		 * @version 7/7/2011
 		*/
 		this.post('#/ucp/saveAvatar', function(context) {
 
@@ -249,6 +255,7 @@ $(document).ready(function() {
 
 				//perform only if its successful.
 				if(type == "success") {
+					setTimeout("gotoUrl('Profile.php#/ucp/avatar')", 2000); //reload after 2 seconds.
 					ucp.clearTemplateCache(); //clear the cache
 				}
 			}).error(function(xhr, tStat, err) {
@@ -398,7 +405,7 @@ $(document).ready(function() {
 
 		/**
 		 * Saves user's new password.
-		 * @version 6/5/2011
+		 * @version 6/29/2011
 		*/
 		this.post('#/ucp/updatePassword', function(context) {
 
@@ -422,7 +429,7 @@ $(document).ready(function() {
 					var btnConf = {};
 					 btnConf[lang.Ok] = function() {
 						//log user out.
-						gotoUrl('logout.php');
+						gotoUrl('login.php?mode=logout');
 					};
 
 					//add buttons to dialog.

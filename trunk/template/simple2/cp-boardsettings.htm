@@ -35,36 +35,11 @@
 <td class="ui-widget-content">{LANG-BOARDEMAIL}</td>
 <td class="ui-widget-content"><input type="text" name="board_email" size="30" value="{BOARDEMAIL}" class="text" id="boardemail" onblur="validateEmail('boardemail', 'boardemailerr');"><div id="boardemailerr"></div></td>
 </tr><tr>
-<td class="ui-widget-content">{LANG-ANNOUNCEMENTSTATUS}</td>
-<td class="ui-widget-content">
-<!-- START announcementOn -->
-<input type="radio" name="announce_stat" value="1" checked=checked />{LANG-ON} <input type="radio" name="announce_stat" value="0" />{LANG-OFF}
-<!-- END announcementOn -->
-
-<!-- START announcementOff -->
-<input type="radio" name="announce_stat" value="1" />{LANG-ON} <input type="radio" name="announce_stat" value="0" checked=checked />{LANG-OFF}
-<!-- END announcementOff -->
-</td>
-</tr><tr>
-<td class="ui-widget-content">{LANG-ANNOUNCEMENT}<a href="#" class="hint">[?]<span>{LANG-ANNOUNCERULE}</span></a></td>
-<td class="ui-widget-content"><textarea name="announce_msg" rows="3" cols="50" wrap="soft" class="text">{ANNOUNCEMENT}</textarea></td>
-</tr><tr>
 <td class="ui-widget-content">{LANG-DEFAULTSTYLE}</td>
 <td class="ui-widget-content">{DEFAULTSTYLE}</td>
 </tr><tr>
 <td class="ui-widget-content">{LANG-DEFAULTLANGUAGE}</td>
 <td class="ui-widget-content">{DEFAULTLANGUAGE}</td>
-</tr><tr>
-<td class="ui-widget-content">{LANG-SPELLCHECKER}<a href="#" class="hint">[?]<span>{LANG-PSPELL}</span></a></td>
-<td class="ui-widget-content">
-<!-- START spellOn -->
-<input type="radio" name="spell_stat" value="1" checked=checked />{LANG-ON} <input type="radio" name="spell_stat" value="0" />{LANG-OFF}
-<!-- END spellOn -->
-
-<!-- START spellOff -->
-<input type="radio" name="spell_stat" value="1" />{LANG-ON} <input type="radio" name="spell_stat" value="0" checked=checked />{LANG-OFF}
-<!-- END spellOff -->
-</td>
 </tr><tr>
 <td class="ui-widget-content">{LANG-TIMEZONE}</td>
 <td class="ui-widget-content">{TIMEZONE}</td>

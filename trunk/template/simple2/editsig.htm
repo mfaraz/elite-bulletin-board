@@ -1,7 +1,14 @@
 <script type="text/javascript" src="includes/js/validation.js"></script>
-<script type="text/javascript" src="includes/js/bbcode.js"></script>
-<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="Profile.php">{LANG-TITLE}</a> &#187; {LANG-EDITSIG}</div><br />
-<p class="ui-widget-content">{LANG-TEXT}</p>
+<script type="text/javascript" src="includes/js/jquery.spellchecker.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="includes/js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="includes/js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="includes/js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="includes/js/pmEditor.js"></script>
+
 
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
@@ -10,16 +17,27 @@
 <td class="ui-widget-content">{CURRENTSIG}</td>
 </tr>
 </table><br />
-<form method="post" action="#/ucp/saveSignature" id="UpdateSignature">
-<table width="100%" border="0" class="table" cellspacing="1" cellpadding="1">
-<tr>
-<td colspan="2" align="center" class="ui-widget-header">{BBCODE}</td>
-</tr><tr>
-<td class="ui-widget-content" align="center" width="20%">{SMILES}<br />
-<a href="#" OnClick="open_win('smiles.php', 455, 200);">{LANG-SMILES}</a></td>
-<td align="center" class="ui-widget-header" width="80%"><textarea name="signature" rows="5" cols="50" wrap="soft" class="text" id="sig" onblur="validateLength('sig', 'sigerr', 255);">{SIGNATURE}</textarea><div id="sigerr"></div></td>
-<tr>
-<td colspan="2" align="center" class="ui-widget-header"><input type="submit" value="{LANG-SAVESIG}" class="submit" /></td>
-</tr>
-</table>
-</form>
+
+<!-- warning container -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+<div align="center">
+	<form method="post" action="#/ucp/saveSignature" id="UpdateSignature">
+
+	<div id="emoticons" style="width:500px;" align="center">
+		{SMILES}
+	</div>
+	<div class="ui-widget-header" style="width:400px;text-align:left;">
+		<div align="center"><a href="#editor" class="toggle"><span>{LANG-DISABLERTF}</span></a> -  <a href="#smiles" id="showAllSmiles">{LANG-SMILES}</a></div>
+	</div>
+	<textarea name="signature" rows="5" cols="90" wrap="soft" class="text" id="pmMsg" onblur="validateNotNull('pmMsg', 'bodyerr');">{SIGNATURE}</textarea><div id="bodyerr"></div>
+	<br /><input type="submit" value="{LANG-SAVESIG}" class="submit" />
+	</form><br />
+</div>

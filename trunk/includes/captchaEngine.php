@@ -2,7 +2,7 @@
 session_start();
 /**
 Filename: captchaEngine.php
-Last Modified: 7/11/2010
+Last Modified: 7/7/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,12 @@ If you find many false positives, try to make the questions easier.
 #array list of Q&A.
 $q = array("2+2=?", "Type in the word 'PHP'", "1+1=?", "Type the word 'Apple'",
 "Number of U.S. States","How many days in a year?", "How many days in a week?",
-"How many weeks in a year?", "Type in 'Bob'", "3+3=?", "10-2=?", "What are these?; Red, Green, Blue, Yellow",
-"What are these?; 2,4,6,8,...", "What are these? Windows, Mac, Linux", "2x2=?",
-"6 divided by 2=?", "Type in the word 'pizza'", "July 4th is what U.S. Holiday?", "First U.S President", "7x10=?");
+"How many weeks in a year?", "Type in 'Bob'", "3+3=?", "10-2=?", "5x5=?",
+"What comes next?; 2,4,6,8,...", "Type the word 'baby'", "2x2=?",
+"6 divided by 2=?", "Type in the word 'pizza'", "5+5", "Number of Continents", "7x10=?");
 
 $a = array("4", "PHP", "2", "Apple", "50", "365", "7", "52", "Bob", "6", "8",
-"colors", "even numbers", "operating systems", "4", "3", "pizza", "Independence Day", "George Washington", "70");
+"25", "10", "baby", "4", "3", "pizza", "10", "7", "70");
 
 /**
 DO NOT ALTER ANYTHING PAST THIS POINT!!

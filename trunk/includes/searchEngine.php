@@ -4,7 +4,7 @@ if (!defined('IN_EBB')) {
 }
 /**
 Filename: searchEngine.php
-Last Modified: 11/10/2010
+Last Modified: 7/7/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -76,13 +76,13 @@ class searchEngine{
 	*
 	*Get results for replies.
 	*
-	*@modified 4/19/10
+	*@modified 7/7/10
 	*
 	*@access public
 	*/
 	public function postResults(){
 
-		global $title, $style, $pagenation, $search_result, $db, $num, $lang;
+		global $title, $style, $pagenation, $search_result, $db, $num, $lang, $groupPolicy;
 
 		#search results header.
         $tpl = new templateEngine($style, "searchresults_head");

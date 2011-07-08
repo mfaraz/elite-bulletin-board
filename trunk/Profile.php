@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Profile.php
-Last Modified: 6/8/2011
+Last Modified: 6/24/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -14,82 +14,18 @@ require_once "config.php";
 require_once FULLPATH."/header.php";
 include_once FULLPATH."/includes/attachmentMgr.php";
 
-#get mode.
-if (isset($_GET['mode'])){
-	$mode = var_cleanup($_GET['mode']);
-}else{
-	$mode = ''; 
-}
 #move guest to main page.
 if($logged_user == "guest"){
 	header("Location: index.php");
 }
-#list action on title bar.
-switch($mode){
-	case 'edit_profile':
-	case 'profile_process':
-		$pagetitle = $lang['profile']. " - " . $lang['editprofile'];
-		$helpTitle = $help['editprofiletitle'];
-		$helpBody = $help['editprofilebody'];
-	break;
-	case 'edit_sig':
-	case 'sig_process':
-		$pagetitle = $lang['profile']. " - " . $lang['editsig'];
-		$helpTitle = $help['sigtitle'];
-		$helpBody = $help['sigbody'];
-	break;
-	case 'avatar':
-	case 'avatar_process':
-	case 'clearavatar':
-		$pagetitle = $lang['profile']. " - " . $lang['avatarsetting'];
-		$helpTitle = $help['avatartitle'];
-		$helpBody = $help['avatarbody'];
-	break;
-	case 'gallery':
-		$pagetitle = $lang['profile']. " - " . $lang['avatargallery'];
-		$helpTitle = $help['gallerytitle'];
-		$helpBody = $help['gallerybody'];
-	break;
-	case 'new_email':
-	case 'new_email_process':
-		$pagetitle = $lang['profile']. " - " . $lang['updateemail'];
-		$helpTitle = $help['nohelptitle'];
-		$helpBody = $help['nohelpbody'];
-	break;
-	case 'new_password':
-	case 'new_password_process':
-		$pagetitle = $lang['profile']. " - " . $lang['changepassword'];
-		$helpTitle = $help['nohelptitle'];
-		$helpBody = $help['nohelpbody'];
-	break;
-	case 'groupmanager':
-	case 'join_group':
-	case 'unjoin_group':
-		$pagetitle = $lang['profile']. " - " . $lang['managegroups'];
-		$helpTitle = $help['groupmanagertitle'];
-		$helpBody = $help['groupmanagerbody'];
-	break;
-	case 'attachments':
-	case 'deleteattachment':
-		$pagetitle = $lang['profile']. " - " . $lang['manageattach'];
-		$helpTitle = $help['attachmentmanagertitle'];
-		$helpBody = $help['attachmentmanagerbody'];
-	break;
-	case 'digest':
-	case 'digest_process':
-		$pagetitle = $lang['profile']. " - " . $lang['subscriptionsetting'];
-		$helpTitle = $help['digesttitle'];
-		$helpBody = $help['digestbody'];
-	break;
-	default:
- 		if($groupPolicy->validateAccess(1, 31) == false){
- 			$displayMsg = new notifySys($lang['accessdenied'], false);
-			$displayMsg->genericError();
- 		} 		
-		$pagetitle = $lang['profile']. " - " . $lang['viewprofile'];
-		$helpTitle = $help['nohelptitle'];
-		$helpBody = $help['nohelpbody'];
+
+if($groupPolicy->validateAccess(1, 31) == false){
+	$displayMsg = new notifySys($lang['accessdenied'], false);
+	$displayMsg->genericError();
 }
+$pagetitle = $lang['profile']. " - " . $lang['viewprofile'];
+$helpTitle = $help['nohelptitle'];
+$helpBody = $help['nohelpbody'];
 
 $tpl = new templateEngine($style, "header");
 $tpl->parseTags(array(

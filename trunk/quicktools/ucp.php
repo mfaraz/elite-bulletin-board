@@ -6,7 +6,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 6/2/2011
+ * @version 7/7/2011
 */
 
 #make sure the call is from an AJAX request.
@@ -17,6 +17,7 @@ if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUE
 require_once "../config.php";
 require_once FULLPATH."/header.php";
 include_once FULLPATH."/includes/attachmentMgr.php";
+require_once FULLPATH."/includes/validation.class.php";
 
 if(isset($_GET['mode'])){
 	$mode = var_cleanup($_GET['mode']);
@@ -239,16 +240,14 @@ switch($mode) {
 		#format signature.
 		$displaysig = nl2br(smiles(BBCode(language_filter($sig, 1), true)));
 
-		//TODO: add new editor to sig manager
 		#call bbcode functions.
-		$smile = form_smiles('sig');
+		$bName['Smiles'] = 1;
+		$smile = form_smiles();
 
         #template output.
         $tpl = new templateEngine($style, "editsig");
 		$tpl->parseTags(array(
-		"TITLE" => "$title",
-		"LANG-TITLE" => "$lang[profile]",
-		"LANG-EDITSIG" => "$lang[editsig]",
+		"LANG-DISABLERTF" => "$lang[disablertf]",
 		"LANG-TEXT" => "$lang[sigtxt]",
 		"LANG-SMILES" => "$lang[moresmiles]",
 		"SMILES" => "$smile",
@@ -347,7 +346,7 @@ switch($mode) {
 		}
 		$id = $db->filterMySQL($_GET['id']);
 		$db->SQL = "select Enrollment from ebb_groups where id='$id'";
-		$statusCheck = $db->result;
+		$statusCheck = $db->fetchResults();
 		$numChk = $db->affectedRows();
 
 		//see if user is already a member of this group.
@@ -473,6 +472,7 @@ switch($mode) {
 				#load template file.
 		       	$tpl = new templateEngine($style, "gallery-body");
 				$tpl->parseTags(array(
+				"BOARD-ADDR" => "$boardAddr",
 				"FILE" => "$file"));
 				echo $tpl->outputHtml();
 				$x++; // increment $x by 1 so we get our 4
@@ -514,11 +514,43 @@ switch($mode) {
 		$avatarImg = $db->filterMySQL(var_cleanup($_POST['avatar']));
 
 		#extract information regarding this avatar and see if it meets the standards.
-		list($width, $height) = getimagesize($avatarImg);
-		$type = getimagesize($avatarImg);
+		// use curl if it exists
+		if (function_exists('curl_init')) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $avatarImg);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			$data = curl_exec($ch);
+
+			//ensure connection was successful.
+			if($data !== false){
+				//get image information.
+				$resource = imagecreatefromstring($data);
+				$width = imagesx($resource);
+				$height = imagesy($resource);
+				$mime = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+			}else {
+				$displayMsg = new notifySys($lang['404'], false);
+				exit($displayMsg->displayAjaxError("error"));
+			}
+		} else {
+			//TODO: repalce this with fsockopen
+			$imgInfo = getimagesize($avatarImg);
+
+			if ($imgInfo){
+				$width = $imgInfo[0];
+				$height = $imgInfo[1];
+				$mime = $imgInfo['mime'];
+			}else {
+				$displayMsg = new notifySys($lang['404'], false);
+				exit($displayMsg->displayAjaxError("error"));
+			}
+		}
+
 		#compile a list of allowed mime types.
 		$allowed = array("image/gif", "image/jpeg", "image/jpg", "image/png");
-		if (!in_array($type['mime'], $allowed)){
+
+		//validate entry.
+		if (!in_array($mime, $allowed)){
 			#display validation message.
 			$displayMsg = new notifySys($lang['wrongtype'], false);
 			exit($displayMsg->displayAjaxError("warning"));
@@ -528,7 +560,7 @@ switch($mode) {
 			$displayMsg = new notifySys($lang['longavatar'], false);
 			exit($displayMsg->displayAjaxError("warning"));
 		}
-		if(($width > 100) or ($height > 100)){
+		if(($width > 150) or ($height > 150)){
 			#display validation message.
 			$displayMsg = new notifySys($lang['lgavatar'], false);
 			exit($displayMsg->displayAjaxError("warning"));
@@ -570,7 +602,7 @@ switch($mode) {
 		}
 		#get filename from db.
 		$db->SQL = "select Filename from ebb_attachments where id='$id'";
-		$attach_r = $db->result();
+		$attach_r = $db->fetchResults();
 
 		#delete file from web space.
 		$delattach = @unlink (FULLPATH.'/uploads/'. $attach_r['Filename']);
@@ -762,7 +794,7 @@ switch($mode) {
 			$displayMsg = new notifySys($lang['nopassmatch'], false);
 			exit($displayMsg->displayAjaxError("warning"));
 		}
-		if ($curpass_chk !== $userData->userSettings("Password")){
+		if ($curpassChk !== $userData->userSettings("Password")){
 			#display validation message.
 			$displayMsg = new notifySys($lang['curpassnomatch'], false);
 			exit($displayMsg->displayAjaxError("warning"));

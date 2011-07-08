@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Search.php
-Last Modified: 2/22/2011
+Last Modified: 7/7/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -361,7 +361,7 @@ default:
 	$tpl->parseTags(array(
 	"TITLE" => "$title",
 	"LANG-TITLE" => "$lang[search]",
-	"LANG-TEXT" => "$lang[searchtxt]",
+	"LANG-TEXT" => "$lang[searchtext]",
 	"LANG-KEYWORD" => "$lang[keyword]",
 	"LANG-USERNAME" => "$lang[author]",
 	"LANG-SELBOARD" => "$lang[selboard]",

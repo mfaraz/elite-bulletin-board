@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: usercp.php
-Last Modified: 2/22/2011
+Last Modified: 6/26/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@ require_once "../config.php";
 require_once FULLPATH."/header.php";
 require_once FULLPATH."/acp/acpheader.php";
 require_once FULLPATH."/includes/admin_function.php";
-require_once FULLPATH."/includes/phpmailer/class.phpmailer.php";
+require_once FULLPATH."/includes/swift/swift_required.php";
 
 if(isset($_GET['action'])){
 	$action = var_cleanup($_GET['action']);
@@ -213,8 +213,6 @@ case 'user_manage':
 		$uWWW = $userMgrData->userSettings("WWW");
 		$uLoc = $userMgrData->userSettings("Location");
 		$uSig = $userMgrData->userSettings("Sig");
-		$uRSS1 = $userMgrData->userSettings("rssfeed1");
-		$uRSS2 = $userMgrData->userSettings("rssfeed2");
 
 		#modify user form.
 		$tpl = new templateEngine($style, "cp-usermanage2");
@@ -255,16 +253,11 @@ case 'user_manage':
 		"WWW" => "$uWWW",
 		"LANG-LOCATION" => "$lang[location]",
 		"LOCATION" => "$uLoc",
-		"LANG-RSSFEED1" => "$lang[rssfeed1]",
-		"RSSFEED1" => "$uRSS1",
-		"LANG-RSSFEED2" => "$lang[rssfeed2]",
-		"RSSFEED2" => "$uRSS2",
 		"LANG-ADMINTOOLS" => "$lang[admintools]",
 		"LANG-ACTIVEUSER" => "$lang[activeuser]",
 		"LANG-BANUSER" => "$lang[banuser]",
 		"LANG-DELUSER" => "$lang[deluser]",
 		"LANG-TICKDELETE" => "$lang[tickdel]",
-		"LANG-RSSBAN" => "$lang[banrss]",
 		"SUBMIT" => "$lang[submit]"));
 
 		#PM Notify Check
@@ -291,12 +284,6 @@ case 'user_manage':
 		}else{
 			$tpl->removeBlock("activeUsr");
 		}
-		#banfeeds
-		if($userMgrData->userSettings('banfeeds') == 1){
-			$tpl->removeBlock("N_RSSBan");
-		}else{
-			$tpl->removeBlock("Y_RSSBan");
-		}
 
 		#output template file.
 		echo $tpl->outputHtml();
@@ -319,10 +306,7 @@ case 'user_process':
 	$location = $db->filterMySQL($_POST['location']);
 	$sig = $db->filterMySQL($_POST['sig']);
 	$site = $db->filterMySQL($_POST['site']);
-	$rssfeed1 = $db->filterMySQL($_POST['rssfeed1']);
-	$rssfeed2 = $db->filterMySQL($_POST['rssfeed2']);
 	$active_user = $db->filterMySQL($_POST['active_user']);
-	$banfeed = $db->filterMySQL($_POST['banfeed']);
 	$banuser = $db->filterMySQL($_POST['banuser']);
 	$deluser = $db->filterMySQL($_POST['deluser']);
 
@@ -397,34 +381,6 @@ case 'user_process':
         #direct user.
 		redirect('acp/usercp.php?action=user_manage', false, 0);
 	}
-	if((!preg_match('/http:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/', $rssfeed1)) or (empty($rssfeed1))){
-		#setup error session.
-		$_SESSION['errors'] = $lang['invalidurl'];
-
-        #direct user.
-		redirect('acp/usercp.php?action=user_manage', false, 0);
-	}
-	if((!preg_match('/http:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/', $rssfeed2)) or (empty($rssfeed2))){
-		#setup error session.
-		$_SESSION['errors'] = $lang['invalidurl'];
-
-        #direct user.
-		redirect('acp/usercp.php?action=user_manage', false, 0);
-	}
-	if(strlen($rssfeed1) > 200){
-		#setup error session.
-		$_SESSION['errors'] = $lang['longrss'];
-
-        #direct user.
-		redirect('acp/usercp.php?action=user_manage', false, 0);
-	}
-	if(strlen($rssfeed2) > 200){
-		#setup error session.
-		$_SESSION['errors'] = $lang['longrss'];
-
-        #direct user.
-		redirect('acp/usercp.php?action=user_manage', false, 0);
-	}
 	if ((!preg_match('/http:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/', $site)) and (!empty($site))) {
 		#setup error session.
 		$_SESSION['errors'] = $lang['invalidurl'];
@@ -472,7 +428,7 @@ case 'user_process':
 		$db->query();
 	}
 	//update user info.
-	$db->SQL = "UPDATE ebb_users SET Email='$email', MSN='$msn_messenger', AOL='$aol_messenger', Yahoo='$yim', ICQ='$icq', Location='$location', Sig='$sig', WWW='$site', Time_format='$time_format', Time_Zone='$time_zone', PM_Notify='$pm_notice', Hide_Email='$show_email', Style='$style', Language='$default_lang', rssfeed1='$rssfeed1', rssfeed2='$rssfeed2', banfeeds='$banfeed', active='$active_user' WHERE Username='$username'";
+	$db->SQL = "UPDATE ebb_users SET Email='$email', MSN='$msn_messenger', AOL='$aol_messenger', Yahoo='$yim', ICQ='$icq', Location='$location', Sig='$sig', WWW='$site', Time_format='$time_format', Time_Zone='$time_zone', PM_Notify='$pm_notice', Hide_Email='$show_email', Style='$style', Language='$default_lang', active='$active_user' WHERE Username='$username'";
 	$db->query();
 
 	#log this into our audit system.
@@ -595,25 +551,62 @@ case 'activate_user';
 			$db->SQL = "UPDATE ebb_users SET active='1' WHERE id='$id'";
 			$db->query();
 
-			#setup mailer.
-			$mailer = new PHPMailer();
-			$mailer->Subject = $lang['acceptsubject'];
-			$mailer->Body = accept_user();
-			$mailer->AddAddress($getEml['Email']);
-			$mailer->SetFrom($boardPref->getPreferenceValue("board_email"), $title);
-			#see if SMTP is used.
+			#see what kind of transport to use.
 			if($boardPref->getPreferenceValue("mail_type") == 0){
-			    $mailer->IsSMTP();
-			    $mailer->SMTPAuth = true;
-				$mailer->Host = $boardPref->getPreferenceValue("smtp_host");
-				$mailer->Port = $boardPref->getPreferenceValue("smtp_port");
-				$mailer->Username = $boardPref->getPreferenceValue("smtp_user");
-				$mailer->Password = $boardPref->getPreferenceValue("smtp_pwd");
-			}else{
-				$mailer->IsMail();
+
+				#see if we're using some form of encryption.
+				if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+					//Create the Transport
+					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+				} else{
+					//Create the Transport
+					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+				}
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
+			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
+				//Create the Transport
+				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
+			} else {
+				//Create the Transport
+				$transport = Swift_MailTransport::newInstance();
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
 			}
-			$mailer->Send();
-			$mailer->ClearAddresses();
+
+			#build email.
+			$message = Swift_Message::newInstance($lang['acceptsubject'])
+				->setFrom(array($boardPref->getPreferenceValue("board_email") => $title)) //Set the From address
+				->setBody(accept_user()); //set email body
+
+			//Set the To addresses
+			$message->addTo($getEml['Email']);
+
+			//setup anti-flood plugin.
+			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
+
+			#create array for replacements.
+			$replacements[$getEml['Email']] = array(
+				'{title}'=>$title,
+				'{boardurl}'=>$boardAddr
+			);
+
+			#setup mailer template.
+			$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
+			$mailer->registerPlugin($decorator);
+
+			#send message out.
+			//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+			$mailer->batchSend($message);
 			
 			#log this into our audit system.
 			$acpAudit = new auditSystem();
@@ -650,25 +643,61 @@ case 'activate_user';
 			$db->SQL = "DELETE FROM ebb_group_users WHERE Username='$getData[Username]'";
 			$db->query();
 
-			#setup mailer.
-			$mailer = new PHPMailer();
-			$mailer->Subject = $lang['denysubject'];
-			$mailer->Body = deny_user();
-			$mailer->AddAddress($getEml['Email']);
-			$mailer->SetFrom($boardPref->getPreferenceValue("board_email"), $title);
-			#see if SMTP is used.
+			#see what kind of transport to use.
 			if($boardPref->getPreferenceValue("mail_type") == 0){
-			    $mailer->IsSMTP();
-			    $mailer->SMTPAuth = true;
-				$mailer->Host = $boardPref->getPreferenceValue("smtp_host");
-				$mailer->Port = $boardPref->getPreferenceValue("smtp_port");
-				$mailer->Username = $boardPref->getPreferenceValue("smtp_user");
-				$mailer->Password = $boardPref->getPreferenceValue("smtp_pwd");
-			}else{
-				$mailer->IsMail();
+
+				#see if we're using some form of encryption.
+				if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+					//Create the Transport
+					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+				} else{
+					//Create the Transport
+					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+				}
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
+			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
+				//Create the Transport
+				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
+			} else {
+				//Create the Transport
+				$transport = Swift_MailTransport::newInstance();
+
+				//Create the Mailer using your created Transport
+				$mailer = Swift_Mailer::newInstance($transport);
 			}
-			$mailer->Send();
-			$mailer->ClearAddresses();
+
+			#build email.
+			$message = Swift_Message::newInstance($lang['denysubject'])
+				->setFrom(array($boardPref->getPreferenceValue("board_email") => $title)) //Set the From address
+				->setBody(deny_user()); //set email body
+
+			//Set the To addresses
+			$message->addTo($getEml['Email']);
+
+			//setup anti-flood plugin.
+			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
+
+			#create array for replacements.
+			$replacements[$getEml['Email']] = array(
+				'{title}'=>$title
+			);
+
+			#setup mailer template.
+			$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
+			$mailer->registerPlugin($decorator);
+
+			#send message out.
+			//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+			$mailer->batchSend($message);
 
 			#log this into our audit system.
 			$acpAudit = new auditSystem();

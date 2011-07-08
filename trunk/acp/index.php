@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: index.php
-Last Modified: 2/22/2011
+Last Modified: 6/25/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -128,6 +128,7 @@ default:
 	"LANG-NEWSLETTER" => "$lang[newsletter]",
 	"LANG-USERSETTINGS" => "$lang[usersettings]",
 	"LANG-BOARDSETTINGS" => "$lang[boardsettings]",
+	"LANG-ANNOUNCEMENTSETTINGS" =>"$lang[announcementsettings]",
 	"LANG-MAILSETTINGS" => "$lang[mailsettings]",
 	"LANG-COOKIESETTINGS" => "$lang[cookiesettings]",
 	"LANG-ATTACHMENTSETTINGS" => "$lang[attachmentsettings]",
@@ -147,7 +148,9 @@ default:
 		$versionDetails = new versionChecker();
 		
 		#see if version is up to date.
-		if($versionDetails->verifyVersion() == true){
+		if ($versionDetails->verifyVersion() == null){
+			$versionChk = $lang['updateerr'];
+		}elseif($versionDetails->verifyVersion()){
 		    $versionChk = $lang['verok'];
 		}else{
 		    $versionChk = $lang['verold'];
@@ -191,9 +194,9 @@ default:
 		#output.
 		$tpl = new templateEngine($style, "cp-lastlogactions");
 		$tpl->parseTags(array(
-		"LANG-ACPLOG" => "$cp[acp_log]",
+		"LANG-ACPLOG" => "$lang[acp_log]",
 		"ACPLOG" => "$acpAuditLog",
-		"LANG-VIEWLOG" => "$cp[acp_full]"));
+		"LANG-VIEWLOG" => "$lang[acp_full]"));
 		echo $tpl->outputHtml();
 	}
 break;

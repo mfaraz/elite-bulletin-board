@@ -9,15 +9,15 @@ if (!defined('IN_EBB')){
 	 * @author Elite Bulletin Board Team <http://elite-board.us>
 	 * @copyright  (c) 2006-2011
 	 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-	 * @version 4/10/2011
+	 * @version 7/7/2011
 */
 
 #Common language tags.
 $lang['login'] = 'Login';
 $lang['register'] = 'Register';
 $lang['logout'] = 'Logout';
-#think about renaming array to loggedinas
-$lang['welcome'] = 'Logged In As';
+$lang['404'] = 'File does not exists.';
+$lang['welcome'] = 'Logged In As'; #think about renaming array to loggedinas
 $lang['welcomeguest'] = 'Welcome Guest';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
@@ -545,12 +545,12 @@ $lang['processingedit'] = 'Processing...';
 START TEMPORARY LANGUAGE TAGS
 */
 $lang['reportbugs'] = 'Report Bugs';
-$lang['helpimprove'] = 'Help improve Elite Bulletin board, report any bugs you encounter.';
+$lang['helpimprove'] = 'Help improve Elite Bulletin Board, report any bugs you encounter.';
 /*
 START TEMPORARY LANGUAGE TAGS
 */
 $lang['admincp'] = 'Administration Panel';
-$lang['sessionlength'] = 'Session Length';
+$lang['sessionlength'] = 'Session Length (In Hours)';
 $lang['nosession'] = 'No session length entered.';
 $lang['invalidsession'] = 'Invalid session length entered.';
 $lang['sessiontoolong'] = 'Session length entered is too long.';
@@ -602,6 +602,7 @@ $lang['groupsetup'] = 'Group Setup';
 $lang['pendinglist'] = 'Pending List';
 $lang['usersettings'] = 'User Settings';
 $lang['boardsettings'] = 'Board Settings';
+$lang['announcementsettings'] = 'Announcement Settings';
 $lang['mailsettings'] = 'Mail Settings';
 $lang['cookiesettings'] = 'Cookie Settings';
 $lang['attachmentsettings'] = 'Attachment Settings';
@@ -795,15 +796,15 @@ $lang['boardlink_txt'] = 'example: http://mysite.com/board';
 $lang['boardemail'] = 'Board Email';
 $lang['announcestat'] = 'Announcement Status';
 $lang['announce'] = 'Announcement Message';
-$lang['onelineannounce'] = 'One announcement per line.';
+$lang['addannouncement'] = 'Create Announcement';
+
+
 $lang['defaultstyle'] = 'Default Style';
 $lang['defaultlang'] = 'Default Language';
 $lang['tosstat'] = 'Term Status';
 $lang['tos'] = 'Terms';
 $lang['securityimage'] = 'CAPTCHA Image';
 $lang['gdreq'] = 'Requires GD Extension';
-$lang['spellchecker'] = 'Spell Checker';
-$lang['pspell'] = 'require PSPELL to be enabled.';
 $lang['pmquota'] = 'PM Quota';
 $lang['activation'] = 'Activation Type';
 $lang['activeusers'] = 'User';
@@ -831,11 +832,21 @@ $lang['mxcheck'] = 'Check e-mail domain for valid MX record';
 $lang['mxcheckhint'] = 'This checks for valid email domains.';
 $lang['mailtype'] = 'Mail Type';
 $lang['mailsmtp'] = 'SMTP';
+$lang['sendmail'] = 'Sendmail';
 $lang['mailreg'] = 'Mail() method';
 $lang['smtphost'] = 'SMTP Host';
 $lang['smtpport'] = 'SMTP Port';
 $lang['smtpuser'] = 'SMTP Username';
 $lang['smtppass'] = 'SMTP Password';
+$lang['sendmailPath'] = 'Sendmail Path';
+
+$lang['mailantiflood'] = 'Mailer Anti-Flood Length (In Seconds)';
+$lang['smtpencrption'] = 'SMTP Encryption';
+$lang['smtpencrption_hint'] = 'For SSL or TLS encryption to work your PHP installation must have appropriate OpenSSL transports wrappers.';
+$lang['smtpencrption_ssl'] = 'SSL';
+$lang['smtpencrption_tls'] = 'TLS';
+$lang['smtpencrption_na'] = 'Plaintext';
+
 $lang['attachmentquota'] = 'Maximum Size user can upload.';
 $lang['attachmentquotahint'] = 'Enter this amount in bytes.';
 $lang['guestdownload'] = 'Can Guest Download the attachments?';
@@ -864,7 +875,6 @@ $lang['nocaptcha'] = 'You did not tell the program if you wish to use CAPTCHA fo
 $lang['nomxcheck'] = 'You did not set anything for the MX Check value.';
 $lang['nowarnthreshold'] = 'You didn\'t set a warning threshold.';
 $lang['invalidwarnthreshold'] = 'The value you entered for the warning threshold value was invalid.';
-$lang['nospellchecker'] = 'You did not tell the program if you wanted to enable spell checking or not.';
 $lang['noactivation'] = 'You did not tell us what kind of activation you want.';
 $lang['noustat'] = 'You did not say what group new users will belong to.';
 $lang['nocoppa'] = 'You did not set a COPPA rule';
@@ -888,8 +898,12 @@ $lang['longoffmsg'] = 'Your Off Message is too long.';
 $lang['longtermmsg'] = 'Your Terms List is too long.';
 $lang['longannouce'] = 'Your announcement is too long.';
 $lang['invalidboardaddr'] = 'The Path to the Board is invalid.';
+$lang['numericVal'] = 'Please enter a numeric value.';
 $lang['invalidsiteaddr'] = 'The Path to your website is invalid.';
 $lang['nomailrule'] = 'You did not select a mail method.';
+$lang['nosendmailpath'] = 'Enter your server\'s sendmail path or select another mail option.';
+$lang['nomailfloodval'] = 'Please Enter a Flood value.';
+$lang['invalidmailfloodval'] = 'Please Enter a numeric Flood value.';
 $lang['nosmtphost'] = 'You did not enter in your smtp host address.';
 $lang['nosmtpport'] = 'You did not enter the port number.';
 $lang['nosmtpuser'] = 'You did not enter your smtp username.';

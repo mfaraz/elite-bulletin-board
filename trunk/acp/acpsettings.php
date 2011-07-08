@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: acpsettings.php
-Last Modified: 2/22/2011
+Last Modified: 6/26/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,14 @@ case 'save_board':
 	$usercptitle = $lang['settings'].' - '.$lang['boardsettings'];
 	$helpTitle = $lang['boardsettings'];
 	$helpBody = $help['boardcpbody'];
+break;
+case 'announcements':
+case 'save_announcements':
+case 'add_announcement':
+case 'remove_announcement':
+	$usercptitle = $lang['settings'].' - '.$lang['announcementsettings'];
+	$helpTitle = $help['nohelptitle'];
+	$helpBody = $help['nohelpbody'];
 break;
 case 'mail':
 case 'save_mail':
@@ -480,7 +488,6 @@ case 'board':
 	$m_websiteUrl = $boardPref->getPreferenceValue("website_url");
 	$m_perPg = $boardPref->getPreferenceValue("per_page");
 	$m_offlineMsg = $boardPref->getPreferenceValue("offline_msg");
-	$m_infoboxMsg = $boardPref->getPreferenceValue("infobox_msg");
 	$m_timeFormat = $boardPref->getPreferenceValue("timeformat");
 
 	#load functions.
@@ -512,16 +519,10 @@ case 'board':
 	"BOARDADDRESS" => "$m_boardUrl",
 	"LANG-BOARDEMAIL" => "$lang[boardemail]",
 	"BOARDEMAIL" => "$m_boardEml",
-	"LANG-ANNOUNCEMENTSTATUS" => "$lang[announcestat]",
-	"LANG-ANNOUNCEMENT" => "$lang[announce]",
-	"ANNOUNCEMENT" => "$m_infoboxMsg",
-	"LANG-ANNOUNCERULE" => "$lang[onelineannounce]",
 	"LANG-DEFAULTSTYLE" => "$lang[defaultstyle]",
 	"DEFAULTSTYLE" => "$m_style",
 	"LANG-DEFAULTLANGUAGE" => "$lang[defaultlang]",
 	"DEFAULTLANGUAGE" => "$m_lang",
-	"LANG-SPELLCHECKER" => "$lang[spellchecker]",
-	"LANG-PSPELL" => "$lang[pspell]",
 	"LANG-TIMEZONE" => "$lang[defaulttimezone]",
 	"TIMEZONE" => "$m_timeZone",
 	"LANG-TIMEFORMAT" => "$lang[defaultimtformat]",
@@ -536,20 +537,6 @@ case 'board':
   		$tpl->removeBlock("boardOn");
 	}
 
-	#announcement status detection.
-	if($boardPref->getPreferenceValue("infobox_status") == 1){
-		$tpl->removeBlock("announcementOff");
-	}else{
-		$tpl->removeBlock("announcementOn");
-	}
-
-	//security image detection
-	if ($boardPref->getPreferenceValue("spellcheck") == 1){
-		$tpl->removeBlock("spellOff");
-	}else{
-		$tpl->removeBlock("spellOn");
-	}
-
 	#output template file.
 	echo $tpl->outputHtml();
 break;
@@ -562,11 +549,8 @@ case 'save_board':
 	$off_msg = $db->filterMySQL($_POST['off_msg']);
 	$board_address = $db->filterMySQL($_POST['board_address']);
 	$board_email = $db->filterMySQL($_POST['board_email']);
-	$announce_stat = $db->filterMySQL($_POST['announce_stat']);
-	$announce_msg = $db->filterMySQL($_POST['announce_msg']);
 	$dstyle = $db->filterMySQL($_POST['style']);
 	$default_lang = $db->filterMySQL($_POST['default_lang']);
-	$spell_stat = $db->filterMySQL($_POST['spell_stat']);
 	$default_zone = $db->filterMySQL($_POST['time_zone']);
 	$default_time = $db->filterMySQL($_POST['default_time']);
 
@@ -651,13 +635,6 @@ case 'save_board':
         #direct user.
 		redirect('acp/acpsettings.php?section=board', false, 0);
 	}
-	if (($announce_stat == 1) AND (empty($announce_msg))){
-		#setup error session.
-		$_SESSION['errors'] = $lang['noannounce'];
-
-        #direct user.
-		redirect('acp/acpsettings.php?section=board', false, 0);
-	}
 	if (empty($dstyle)){
 		#setup error session.
 		$_SESSION['errors'] = $lang['nostyle'];
@@ -668,13 +645,6 @@ case 'save_board':
 	if (empty($default_lang)){
 		#setup error session.
 		$_SESSION['errors'] = $lang['nolang'];
-
-        #direct user.
-		redirect('acp/acpsettings.php?section=board', false, 0);
-	}
-	if ($spell_stat == ""){
-		#setup error session.
-		$_SESSION['errors'] = $lang['nospellchecker'];
 
         #direct user.
 		redirect('acp/acpsettings.php?section=board', false, 0);
@@ -728,13 +698,6 @@ case 'save_board':
         #direct user.
 		redirect('acp/acpsettings.php?section=board', false, 0);
 	}
-	if(strlen($announce_msg) > 255){
-		#setup error session.
-		$_SESSION['errors'] = $lang['longannouce'];
-
-        #direct user.
-		redirect('acp/acpsettings.php?section=board', false, 0);
-	}
 	if(strlen($default_time) > 14){
 		#setup error session.
 		$_SESSION['errors'] = $lang['longtimeformat'];
@@ -750,11 +713,8 @@ case 'save_board':
 	$boardPref->savePreferences("website_url", $site_address);
 	$boardPref->savePreferences("per_page", $perpg);
 	$boardPref->savePreferences("offline_msg", $off_msg);
-	$boardPref->savePreferences("infobox_msg", $announce_msg);
 	$boardPref->savePreferences("timeformat", $default_time);
-	$boardPref->savePreferences("board_status", $board_stat);
-	$boardPref->savePreferences("infobox_status", $announce_stat);
-	$boardPref->savePreferences("spellcheck", $spell_stat);
+	$boardPref->savePreferences("board_status", $board_stat);	
 	$boardPref->savePreferences("timezone", $default_zone);
 	$boardPref->savePreferences("default_style", $dstyle);
 	$boardPref->savePreferences("default_language", $default_lang);
@@ -765,6 +725,131 @@ case 'save_board':
 
 	//bring user back to board section
 	redirect('acp/acpsettings.php?section=board', false, 0);
+break;
+case 'announcements':
+#see if any errors were reported by auth.php.
+	if(isset($_SESSION['errors'])){
+	    #format error(s) for the user.
+		$errors = var_cleanup($_SESSION['errors']);
+
+		#display validation message.
+	    $displayMsg = new notifySys($errors, false);
+		$displayMsg->displayValidate();
+
+		#destroy errors session data, its no longer needed.
+       	unset($_SESSION['errors']);
+	}
+
+	#announcement settings form.
+	$tpl = new templateEngine($style, "cp-announcementsettings");
+	$tpl->parseTags(array(
+	"TITLE" => "$title",
+	"LANG-TITLE" => "$lang[admincp]",
+	"LANG-ON" => "$lang[on]",
+	"LANG-OFF" => "$lang[off]",
+	"LANG-ANNOUNCEMENTSETTINGS" => "$lang[announcementsettings]",
+	"LANG-ANNOUNCEMENTSTATUS" => "$lang[announcestat]",
+	"LANG-ANNOUNCEMENT" => "$lang[announce]",
+	"LANG-ADDANNOUNCEMENT" => "$lang[addannouncement]",
+	"LANG-SAVESETTINGS" => "$lang[savesettings]"));
+
+	#announcement status detection.
+	if($boardPref->getPreferenceValue("infobox_status") == 1){
+		$tpl->removeBlock("announcementOff");
+	}else{
+		$tpl->removeBlock("announcementOn");
+	}
+
+	#output template file.
+	echo $tpl->outputHtml();
+
+	//Grab our list of announcments.
+	ListAnnouncements();
+break;
+case 'save_announcements':
+	#form value
+	$announce_stat = $db->filterMySQL($_POST['announce_stat']);
+
+	#error check.
+	if($announce_stat == ""){
+		#setup error session.
+		$_SESSION['errors'] = $lang['noannounce'];
+
+        #direct user.
+		redirect('acp/acpsettings.php?section=announcements', false, 0);
+	}
+
+	$boardPref->savePreferences("infobox_status", $announce_stat);
+
+	#log this into our audit system.
+	$acpAudit = new auditSystem();
+	$acpAudit->logAction("Modified Announcement Settings", $acpUsr, time(), detectProxy());
+
+	//bring user back to board section
+	redirect('acp/acpsettings.php?section=announcements', false, 0);
+
+break;
+case 'add_announcement':
+	#get form values.
+	$announcement = $db->filterMySQL($_POST['announcement']);
+
+	#error check.
+	if($announcement == ""){
+		#setup error session.
+		$_SESSION['errors'] = $lang['noannounce'];
+
+        #direct user.
+		redirect('acp/acpsettings.php?section=announcements', false, 0);
+	}
+	if (strlen($announcement) > 50){
+		#setup error session.
+		$_SESSION['errors'] = $lang['longannouce'];
+
+        #direct user.
+		redirect('acp/acpsettings.php?section=announcements', false, 0);
+	}
+
+	#add new announcement.
+	$db->SQL = "INSERT INTO ebb_information_ticker (information) VALUES('".$announcement."')";
+	$db->query();
+
+	#log this into our audit system.
+	$acpAudit = new auditSystem();
+	$acpAudit->logAction("Added New Announcement", $acpUsr, time(), detectProxy());
+
+	//bring user back to board section
+	redirect('acp/acpsettings.php?section=announcements', false, 0);
+break;
+case 'remove_announcement':
+	#get form values.
+	$id = $db->filterMySQL($_GET['id']);
+
+	#error check.
+	if($id == ""){
+		#setup error session.
+		$_SESSION['errors'] = $lang['noannounce'];
+
+        #direct user.
+		redirect('acp/acpsettings.php?section=announcements', false, 0);
+	}
+	if (!is_numeric($id)){
+		#setup error session.
+		$_SESSION['errors'] = $lang['numericVal'];
+
+        #direct user.
+		redirect('acp/acpsettings.php?section=announcements', false, 0);
+	}
+
+	#delete defined announcement.
+	$db->SQL = "DELETE FROM ebb_information_ticker WHERE id='".$id."'";
+	$db->query();
+
+	#log this into our audit system.
+	$acpAudit = new auditSystem();
+	$acpAudit->logAction("Deleted an  Announcement", $acpUsr, time(), detectProxy());
+
+	//bring user back to board section
+	redirect('acp/acpsettings.php?section=announcements', false, 0);
 break;
 case 'mail':
 	#see if any errors were reported by auth.php.
@@ -785,6 +870,8 @@ case 'mail':
 	$smtpPort = $boardPref->getPreferenceValue("smtp_port");
 	$smtpUser = $boardPref->getPreferenceValue("smtp_user");
 	$smtpPass = $boardPref->getPreferenceValue("smtp_pwd");
+	$sendmailPath = $boardPref->getPreferenceValue("sendmail_path");
+	$mailAntiFlood = $boardPref->getPreferenceValue("mail_antiflood");
 
 	#modify user form.
 	$tpl = new templateEngine($style, "cp-mailsettings");
@@ -795,6 +882,11 @@ case 'mail':
 	"LANG-MAILTYPE" => "$lang[mailtype]",
 	"LANG-MAIL" => "$lang[mailreg]",
 	"LANG-SMTP" => "$lang[mailsmtp]",
+	"LANG-SENDMAIL" => "$lang[sendmail]",
+	"LANG-MAILANTIFLOOD" => "$lang[mailantiflood]",
+	"LANG-SENDMAILPATH" => "$lang[sendmailPath]",
+	"SENDMAILPATH" => "$sendmailPath",
+	"FLOODCOUNT" => "$mailAntiFlood",
 	"LANG-HOST" => "$lang[smtphost]",
 	"HOST" => "$smtpServer",
 	"LANG-PORT" => "$lang[smtpport]",
@@ -803,13 +895,36 @@ case 'mail':
 	"USERNAME" => "$smtpUser",
 	"LANG-PASSWORD" => "$lang[smtppass]",
 	"PASSWORD" => "$smtpPass",
+	"LANG-SMTPENCRYPTION" => "$lang[smtpencrption]",
+	"SMTPENCRYPTION" => "$lang[smtpencrption]",
+	"LANG-ENCRPTION-HINT" => "$lang[smtpencrption_hint]",
+	"LANG-SMTP-SSL" => "$lang[smtpencrption_ssl]",
+	"LANG-SMTP-TLS" => "$lang[smtpencrption_tls]",
+	"LANG-SMTP-NONE" => "$lang[smtpencrption_na]",
 	"LANG-SAVESETTINGS" => "$lang[savesettings]"));
 
 	#mail type detection
 	if ($boardPref->getPreferenceValue("mail_type") == 1){
 		$tpl->removeBlock("smtp");
+		$tpl->removeBlock("sendmail");
+	}elseif($boardPref->getPreferenceValue("mail_type") == 2){
+		$tpl->removeBlock("smtp");
+		$tpl->removeBlock("mail");
 	}else{
   		$tpl->removeBlock("mail");
+		$tpl->removeBlock("sendmail");
+	}
+
+	#detect SMTP Encryption Type
+	if ($boardPref->getPreferenceValue("smtp_encryption") == "ssl") {
+  		$tpl->removeBlock("smtp_encrypt_tls");
+		$tpl->removeBlock("smtp_encrypt_none");
+	}elseif($boardPref->getPreferenceValue("smtp_encryption") == "tls") {
+  		$tpl->removeBlock("smtp_encrypt_ssl");
+		$tpl->removeBlock("smtp_encrypt_none");
+	}else {
+  		$tpl->removeBlock("smtp_encrypt_ssl");
+		$tpl->removeBlock("smtp_encrypt_tls");
 	}
 
 	#output template file.
@@ -818,6 +933,9 @@ break;
 case 'save_mail':
 	#get form values.
 	$mail_type = $db->filterMySQL($_POST['mail_type']);
+	$encrption_type = $db->filterMySQL($_POST['encrption_type']);
+	$sendmail_path = $db->filterMySQL($_POST['sendmail_path']);
+	$mail_antiflood = $db->filterMySQL($_POST['mail_antiflood']);
 	$smtp_host = $db->filterMySQL($_POST['smtp_host']);
 	$smtp_port = $db->filterMySQL($_POST['smtp_port']);
 	$smtp_user = $db->filterMySQL($_POST['smtp_user']);
@@ -831,6 +949,21 @@ case 'save_mail':
         #direct user.
 		redirect('acp/acpsettings.php?section=mail', false, 0);
 	}
+	if (empty($mail_antiflood)){
+		#setup error session.
+		$_SESSION['errors'] = $lang['nomailfloodval'];
+
+		#direct user.
+		redirect('acp/acpsettings.php?section=mail', false, 0);
+	}
+	if (!is_numeric($mail_antiflood)){
+		#setup error session.
+		$_SESSION['errors'] = $lang['invalidmailfloodval'];
+
+		#direct user.
+		redirect('acp/acpsettings.php?section=mail', false, 0);
+	}
+
 	if($mail_type == 0){
 		if(empty($smtp_host)){
 			#setup error session.
@@ -888,14 +1021,25 @@ case 'save_mail':
 	        #direct user.
 			redirect('acp/acpsettings.php?section=mail', false, 0);
 		}
+	}elseif ($mail_type == 2){
+		if(empty($sendmail_path)){
+			#setup error session.
+			$_SESSION['errors'] = $lang['nosendmailpath'];
+
+	        #direct user.
+			redirect('acp/acpsettings.php?section=mail', false, 0);
+		}
 	}
 
 	#save settings
     $boardPref->savePreferences("mail_type", $mail_type);
+	$boardPref->savePreferences("sendmail_path", $sendmail_path);
 	$boardPref->savePreferences("smtp_server", $smtp_host);
 	$boardPref->savePreferences("smtp_port", $smtp_port);
 	$boardPref->savePreferences("smtp_user", $smtp_user);
 	$boardPref->savePreferences("smtp_pwd", $smtp_pass);
+	$boardPref->savePreferences("mail_antiflood", $mail_antiflood);
+	$boardPref->savePreferences("smtp_encryption", $encrption_type);
 
 	#log this into our audit system.
 	$acpAudit = new auditSystem();
