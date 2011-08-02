@@ -303,16 +303,18 @@ switch($mode) {
 
 		while ($group = mysql_fetch_assoc ($joinedQ)) {
 			//see if user already joined this.
-			$db->SQL = "SELECT Status, gid FROM ebb_group_users where gid='$group[id]' and Username='$logged_user'";
-			$groupResult = $db->fetchResults();
+			$db->SQL = "SELECT gid FROM ebb_group_users where gid='$group[id]' and Username='$logged_user'";
 			$enrollmentStatus = $db->affectedRows();
 
 			#see if a user joined a group and see if their pending still.
+			$db->SQL = "SELECT Status, gid FROM ebb_group_member_request where gid='$group[id]' and username='$logged_user'";
+            $pendingStatus = $db->affectedRows();
+			
 			if($enrollmentStatus == 1){
-				if ($groupResult['Status'] == "Pending"){
+				if ($pendingStatus == 1){
 					$groupStatus = $lang['pending'];
 				}else{
-					$groupStatus = '<a href="#" id="UnjoinGroup" title="'.$groupResult['gid'].'">'.$lang['unjoingroup'].'</a>';
+					$groupStatus = '<a href="#" id="UnjoinGroup" title="'.$group['id'].'">'.$lang['unjoingroup'].'</a>';
 				}
 			}else{
 			 	#See if a group is opened or locked or hidden.
@@ -366,7 +368,7 @@ switch($mode) {
 				$displayMsg = new notifySys($lang['locked'], false);
 				exit($displayMsg->displayAjaxError("warning"));
 			}else{
-				$db->SQL = "INSERT INTO ebb_group_users (Username, gid, Status) VALUES('$logged_user', '$id', 'Pending')";
+				$db->SQL = "INSERT INTO ebb_group_member_request (username, gid) VALUES('$logged_user', '$id')";
 				$db->query();
 
 				#display validation message.
@@ -385,15 +387,13 @@ switch($mode) {
 			$displayMsg = new notifySys($lang['accessdenied'], false);
 			exit($displayMsg->displayAjaxError("error"));
 		}
-		$id = $db->filterMySQL($_GET['id']);
+
+        #@TODO ucp-side of the new group system didn't get implemented completely. do better clean-up in RC2.
+        #This field is not used at the moment and may not be needed. keep for now.
+        $id = $db->filterMySQL($_GET['id']);
 
 		//change gid to regular member.
-		$db->SQL = "UPDATE ebb_group_users SET gid='3' WHERE Username='$logged_user'";
-		$db->query();
-
-
-		$db->SQL = "update ebb_users SET Status='Member' where Username='$logged_user'";
-		$db->query();
+		$groupPolicy->changeGroupID(3);
 
 		#display validation message.
 		$displayMsg = new notifySys($lang['unjoinedgroupsuccess'], false);
