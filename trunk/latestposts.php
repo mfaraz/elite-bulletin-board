@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: latestposts.php
-Last Modified: 11/6/2010
+Last Modified: 7/30/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
 echo '<channel>
 <title>'.$title.'</title>
 <description>'.$lang['latestposts'].'</description>
-<link>'.$address.'</link>';
+<link>'.$boardAddr.'</link>';
 
 #get latest topics.	
 while($topic = mysql_fetch_array($topic_query)) {
@@ -54,7 +54,7 @@ while($topic = mysql_fetch_array($topic_query)) {
 		
 		#output data.
 		echo '<item>
-  		<link>'.$address.'/viewtopic.php?bid='.$topic['bid'].'&amp;tid='.$topic['tid'].'</link>
+  		<link>'.$boardAddr.'/viewtopic.php?bid='.$topic['bid'].'&amp;tid='.$topic['tid'].'</link>
 		<title>'.$topic['Topic'].'</title>
 		<description>'.$rss_desc.'</description>
 		<pubDate>'. $topicDate .'</pubDate>
@@ -87,7 +87,7 @@ while($post = mysql_fetch_array($post_query)) {
 
 		#output data.
 		echo '<item>
-		<link>'.$address.'/viewtopic.php?bid='.$post['bid'].'&amp;tid='.$post['tid'].'&amp;pid='.$post['pid'].'#'.$post['pid'].'</link>
+		<link>'.$boardAddr.'/viewtopic.php?bid='.$post['bid'].'&amp;tid='.$post['tid'].'&amp;pid='.$post['pid'].'#'.$post['pid'].'</link>
   		<title>'.$topic_r['Topic'].'</title>
 		<description>'.$rss_desc.'</description>
 		<pubDate>'. $postDate .'</pubDate>

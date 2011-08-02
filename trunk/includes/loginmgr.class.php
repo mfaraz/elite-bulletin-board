@@ -4,7 +4,7 @@ if (!defined('IN_EBB')) {
 }
 /**
 Filename: loginmgr.class.php
-Last Modified: 12/28/2010
+Last Modified: 7/29/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -110,6 +110,27 @@ class login{
 		    return(true);
 		}
 	}
+
+	/**
+			 * Validates current login password.
+			 * @access Private
+			 * @version 7/24/2011
+			*/
+	private function validatePwdEncrypted() {
+
+	    global $db;
+
+	    #check against the database to see if the username and password match.
+        $db->SQL = "SELECT id FROM ebb_users WHERE Password='".$this->pass."' LIMIT 1";
+		$validatePwd = $db->affectedRows();
+
+		#setup boolean return.
+		if($validatePwd == 0){
+		    return(false);
+		}else{
+		    return(true);
+		}
+	}
 	
     /**
 	*getPwdSalt
@@ -138,7 +159,7 @@ class login{
 	*
 	*Performs a check through the database to ensure the requested information is valid.
 	*
-	*@modified 5/18/10
+	*@modified 7/24/11
 	*
 	*@return bool
 	*
@@ -151,20 +172,40 @@ class login{
 		    return(false);
 		}else{
 			#see if user entered the correct information.
-			if(($this->validateUser() == false) AND ($this->validatePwd() == false)){
-			    return(false);
-			}else{
+			if(($this->validateUser()) AND ($this->validatePwd())){
 			    return(true);
+			}else{
+			    return(false);
 			}
 		}
 	}
 	
+	/**
+			 * Validates current login session.
+			 * @access Public
+			 * @version 7/24/2011
+			*/
+	public function validateLoginSession(){
+
+		#See if this is a guest account.
+		if(($this->user == "guest") OR ($this->pass == "guest")){
+		    return(false);
+		}else{
+			#see if user entered the correct information.
+			if(($this->validateUser()) AND ($this->validatePwdEncrypted())){
+			    return(true);
+			}else{
+			    return(false);
+			}
+		}
+	}
+
     /**
 	*validateAdministrator
 	*
 	*Performs a check through the database to ensure the user can access the adminstration panel.
 	*
-	*@modified 5/20/10
+	*@modified 7/24/11
 	*
 	*@return bool
 	*
@@ -177,9 +218,7 @@ class login{
 		    return(false);
 		}else{
 			#see if user entered the correct information.
-			if(($this->validateUser() == false) AND ($this->validatePwd() == false)){
-			    return(false);
-			}else{
+			if(($this->validateUser()) AND ($this->validatePwd())){
 				#see if user is an administrator.
                 $validateGroupPolicy = new groupPolicy($this->user);
 				if($validateGroupPolicy->groupAccessLevel() == 1){
@@ -187,8 +226,37 @@ class login{
 				}else{
 			    	return(false);
 			    }//END group validation.
+			}else{
+				return(false);
 			}//END user validation.
 		}//END guest filtering.
+	}
+
+	/**
+			 * Validates current adminCP session.
+			 * @access Public
+			 * @version 7/25/2011
+			*/
+	public function validateAdministratorSession() {
+
+		#See if this is a guest account.
+		if(($this->user == "guest") OR ($this->pass == "guest")){
+		    return(false);
+		}else{
+			#see if user entered the correct information.
+			if(($this->validateUser()) AND ($this->validatePwdEncrypted())){
+				#see if user is an administrator.
+                $validateGroupPolicy = new groupPolicy($this->user);
+				if($validateGroupPolicy->groupAccessLevel() == 1){
+			    	return(true);
+				}else{
+			    	return(false);
+			    }//END group validation.
+			}else{
+				return(false);
+			}//END user validation.
+		}//END guest filtering.
+
 	}
 	
     /**
@@ -211,10 +279,11 @@ class login{
 	    $encryptPwd = sha1($this->pass.$this->getPwdSalt());
 	    
 	    #create session marker for time limit.
-	    #@TO-DO: Add this value into a session table in the database, plan for RC 1.
+	    //@TO-DO: Add this value into a session table in the database, plan for RC 2.
 	    $_SESSION['ebbacptimer'] = $sessionLength;
 	
 		#user is an admin, let them log in. set to last as long as user selected.
+		//@todo: make this session value, NOT a cookie.
 		$expire = time()+3600*$sessionLength;
 		setcookie("ebbacpu", $this->user, $expire, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
 		setcookie("ebbacpp", $encryptPwd, $expire, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
@@ -309,7 +378,7 @@ class login{
 	*
 	*Performs logout process, removing any sessions or cookies created from the system.
 	*
-	*@modified 2/24/10
+	*@modified 7/29/11
 	*
 	*
 	*@access public
@@ -318,20 +387,18 @@ class login{
 
 		global $boardPref, $db;
 
-        #encrypt password.
-	    $encryptPwd = sha1($this->pass.$this->getPwdSalt());
-
 		#set session to a secure status.
 		//ini_get('session.cookie_secure',true);
 
+		#setup session length.
+		$expireTime = time() - (2592000);
+
 		#see if user wants to remain logged on.
-		if(isset($_COOKIE['ebbuser'])){
-			#setup session length.
-			$expireTime = time() - (2592000);
+		if(isset($_COOKIE['ebbuser'])){			
 
 			#destroy cookies.
 			setcookie("ebbuser", $this->user, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
-			setcookie("ebbpass", $encryptPwd, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
+			setcookie("ebbpass", $this->pass, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
 
 			#remove user from who's online list.
 			$db->SQL = "DELETE FROM ebb_online WHERE Username='".$this->user."'";
@@ -341,7 +408,7 @@ class login{
 			if (isset($_COOKIE['ebbacpu']) and (isset($_COOKIE['ebbacpp']))){
 				$expire = time()-3600;
 				setcookie("ebbacpu", $this->user, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
-				setcookie("ebbacpp", $encryptPwd, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
+				setcookie("ebbacpp", $this->pass, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
 			}
 			
 			#clear session data.
@@ -355,7 +422,7 @@ class login{
 			if (isset($_COOKIE['ebbacpu']) and (isset($_COOKIE['ebbacpp']))){
 				$expire = time()-3600;
 				setcookie("ebbacpu", $this->user, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
-				setcookie("ebbacpp", $encryptPwd, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
+				setcookie("ebbacpp", $this->pass, $expireTime, $boardPref->getPreferenceValue("cookie_path"), $boardPref->getPreferenceValue("cookie_domain"), $boardPref->getPreferenceValue("cookie_secure"), true);
 			}
 
 			#clear session data.
@@ -498,7 +565,7 @@ class login{
 	*
 	*increment fail count for defined user.
 	*
-	*@modified 8/10/09
+	*@modified 7/24/11
 	*
 	*
 	*@access public
@@ -508,10 +575,11 @@ class login{
 	    global $db;
 
 	    #get new count.
-		$newCount = $this->getFailedLoginCt() + 1;
+		$newCount = $this->getFailedLoginCt();
+		$incrementFailedCt = $newCount['failed_attempts'] + 1;
 
 	    #get the count from the user table.
-        $db->SQL = "UPDATE ebb_users SET failed_attempts='$newCount' WHERE Username='".$this->user."' LIMIT 1";
+        $db->SQL = "UPDATE ebb_users SET failed_attempts='$incrementFailedCt' WHERE Username='".$this->user."' LIMIT 1";
 		$db->query();
 	}
 

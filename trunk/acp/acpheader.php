@@ -4,7 +4,7 @@ if (!defined('IN_EBB')) {
 }
 /**
 Filename: acpheader.php
-Last Modified: 11/11/2010
+Last Modified: 7/25/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ if (isset($_COOKIE['ebbacpu']) and (isset($_COOKIE['ebbacpp']))){
 		$acpPwd = $db->filterMySQL($_COOKIE['ebbacpp']);
 		
 		#see if the ACP cookies matches the root-level cookies.
-		if($acpUsr !== $logged_user){
+		if($acpUsr != $logged_user){
 			#log this into our audit system.
 			$acpAudit = new auditSystem();
 			$acpAudit->logAction("User Authorization Mismatch Detected!", $acpUsr, time(), detectProxy());
@@ -43,7 +43,7 @@ if (isset($_COOKIE['ebbacpu']) and (isset($_COOKIE['ebbacpp']))){
 	    $acpUsrAuth = new login($acpUsr, $acpPwd);
 
         #validate administation account.
-		if($acpUsrAuth->validateAdministrator() == false){
+		if($acpUsrAuth->validateAdministratorSession() == false){
 			#log this into our audit system.
 			$acpAudit = new auditSystem();
 			$acpAudit->logAction("Invalid Administrator Detected!", $acpUsr, time(), detectProxy());

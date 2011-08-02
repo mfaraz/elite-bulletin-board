@@ -1,0 +1,86 @@
+<ul id="mainNav" class="fiveStep">
+	<li class="done"><a title=""><em>Step 1: Configuration</em><span>Create Configuration File</span></a></li>
+	<li class="done"><a title=""><em>Step 2: SQL Dump</em><span>Create Tables &amp; Default data</span></a></li>
+	<li class="done"><a title=""><em>Step 3: Setup Board</em><span>Configure Board</span></a></li>
+
+	<li class="lastDone"><a title=""><em>Step 4: Account</em><span>Create Administrator</span></a></li>
+	<li class="mainNavNoBg current"><a title=""><em>Step 5: Board Setup</em> <span>Create Category/Board</span></a></li>
+</ul>
+
+<div class="clearfloat">&nbsp;</div>
+
+
+<form method="post" action="#/install/makeBoard" id="frmBoard">
+<div class="ui-widget-header">Add New Message Board</div>
+<div class="ui-widget-content">Board Name<br />
+<input type="text" name="board_name" size="30" class="text" />
+<hr />
+Description<br />
+<textarea name="description" rows="3" cols="50" class="text"></textarea>
+<br /><br />
+<div class="ui-widget-header" align="center"><b>Board Permissions</b></div>
+<br />
+Who can Read this Board?<br />
+<select name="readaccess" class="text">
+<option value="5">Private Access</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3">Registered Users</option>
+<option value="0" selected=selected>Everyone</option>
+</select>
+<hr />
+Who can Post in this Board?<br />
+<select name="writeaccess" class="text">
+<option value="5">Private Access</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3" selected=selected>Registered Users</option>
+<option value="4">No Access</option>
+</select>
+<hr />
+Who can Reply to topics?<br />
+<select name="replyaccess" class="text">
+<option value="5">Private Access</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3" selected=selected>Registered Users</option>
+<option value="4">No Access</option>
+</select>
+<hr />
+Who can vote on the polls?<br />
+<select name="voteaccess" class="text">
+<option value="5">Private Access</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3" selected=selected>Registered Users</option>
+<option value="4">No Access</option>
+</select>
+<hr />
+Who can create new polls?<br />
+<select name="pollaccess" class="text">
+<option value="5">Private Access</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3" selected=selected>Registered Users</option>
+<option value="4">No Access</option>
+</select>
+<hr />
+<div class="ui-widget-header" align="center"><b>Board Settings</b></div>
+<hr />
+Category<br />{CATLIST}
+<hr />
+Allow post in board count towards user's post count<br />
+<input type="radio" name="increment" value="1"  />Yes <input type="radio" name="increment" value="0" />No
+<hr />
+BBCode<br />
+<input type="radio" name="bbcode" value="1" />On <input type="radio" name="bbcode" value="0" />Off
+<hr />
+Smiles<br />
+<input type="radio" name="smiles" value="1" />On <input type="radio" name="smiles" value="0" />Off
+<hr />
+[img] Tag<br />
+<input type="radio" name="img" value="1" />On <input type="radio" name="img" value="0" />Off
+<hr />
+<div align="center"><input type="submit" value="Create Board" class="submit" /></div>
+</div>
+</form><br />

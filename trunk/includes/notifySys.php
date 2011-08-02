@@ -8,7 +8,7 @@ if (!defined('IN_EBB') ) {
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 5/31/2011
+ * @version 7/21/2011
 */
 
 class notifySys{
@@ -68,7 +68,7 @@ class notifySys{
 	*
 	*Displays error message that will match the current style being used by the user.
 	*
-	*@modified 5/18/11
+	*@modified 7/21/11
 	*
 	*@access public
 	*/
@@ -76,7 +76,13 @@ class notifySys{
 
 		global $title, $lang, $style;
 
-		$tpl = new templateEngine($style, "error");
+		//see if we're in install-mode
+		if (!defined('EBBINSTALLED')) {
+			$tpl = new templateEngine(0, "error", "installer");
+		} else {
+			$tpl = new templateEngine($style, "error");
+		}
+
 		$tpl->parseTags(array(
 		"TITLE" => "$title",
 		"LANG-TITLE" => "$lang[error]",
@@ -106,7 +112,7 @@ class notifySys{
 			*
 			*Displays general message that will match the current style being used by the user.
 			*
-			*@modified 5/18/11
+			*@modified 7/21/11
 			*
 			*@access public
 			*/
@@ -114,7 +120,13 @@ class notifySys{
 	
 		global $title, $lang, $style;
 
-		$tpl = new templateEngine($style, "error-message");
+		//see if we're in install-mode
+		if (!defined('EBBINSTALLED')) {
+			$tpl = new templateEngine(0, "error-message", "installer");
+		} else {
+			$tpl = new templateEngine($style, "error-message");
+		}
+		
 		$tpl->parseTags(array(
 		"TITLE" => "$title",
 		"LANG-TITLE" => "$lang[info]",
@@ -141,7 +153,7 @@ class notifySys{
 			*
 			*Displays validate error message that will match the current style being used by the user.
 			*
-			*@modified 5/18/11
+			*@modified 7/21/11
 			*
 			*@access public
 			*/
@@ -149,7 +161,13 @@ class notifySys{
 	
 		global $title, $lang, $style;
 
-		$tpl = new templateEngine($style, "error-validate");
+		//see if we're in install-mode
+		if (!defined('EBBINSTALLED')) {
+			$tpl = new templateEngine(0, "error-validate", "installer");
+		} else {
+			$tpl = new templateEngine($style, "error-validate");
+		}
+		
 		$tpl->parseTags(array(
 		"TITLE" => "$title",
 		"LANG-TITLE" => "$lang[error]",
@@ -168,12 +186,18 @@ class notifySys{
 							 * Setup Error for Ajax Requests.
 							 * @param str $type - what type  of message are we displaying.
 							 * @access Public
-							 * @version 5/31/2011
+							 * @version 7/21/2011
 						 */
 		public function displayAjaxError($type){
 		global $style;
 
-		$tpl = new templateEngine($style, "error-ajax");
+		//see if we're in install-mode
+		if (!defined('EBBINSTALLED')) {
+			$tpl = new templateEngine(0, "error-ajax", "installer");
+		} else {
+			$tpl = new templateEngine($style, "error-ajax");
+		}
+		
 		$tpl->parseTags(array(
 		"ERRORMSG" => "$this->msg"));
 

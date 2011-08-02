@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: boardcp.php
-Last Modified: 2/22/2011
+Last Modified: 7/25/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -316,7 +316,7 @@ case 'board_add_process':
 
 	#process based on board type.
 	if ($type == 1){
-		$board_name = $db->filterMySQL($_POST['board_name']);
+		$board_name = $db->filterMySQL(var_cleanup($_POST['board_name']));
 		$description = 'null';
 		$readaccess = $db->filterMySQL($_POST['readaccess']);
 		$writeaccess = 4;
@@ -358,18 +358,18 @@ case 'board_add_process':
 
 		$board_order = $ct + 1;
 	}else{
-		$board_name = $db->filterMySQL($_POST['board_name']);
-		$description = $db->filterMySQL($_POST['description']);
-		$readaccess = $db->filterMySQL($_POST['readaccess']);
-		$writeaccess = $db->filterMySQL($_POST['writeaccess']);
-		$replyaccess = $db->filterMySQL($_POST['replyaccess']);
-		$voteaccess = $db->filterMySQL($_POST['voteaccess']);
-		$pollaccess = $db->filterMySQL($_POST['pollaccess']);
-		$catsel = $db->filterMySQL($_POST['catsel']);
-		$increment = $db->filterMySQL($_POST['increment']);
-		$bbcode = $db->filterMySQL($_POST['bbcode']);
-		$smiles = $db->filterMySQL($_POST['smiles']);
-		$img = $db->filterMySQL($_POST['img']);
+		$board_name = $db->filterMySQL(var_cleanup($_POST['board_name']));
+		$description = $db->filterMySQL(var_cleanup($_POST['description']));
+		$readaccess = $db->filterMySQL(var_cleanup($_POST['readaccess']));
+		$writeaccess = $db->filterMySQL(var_cleanup($_POST['writeaccess']));
+		$replyaccess = $db->filterMySQL(var_cleanup($_POST['replyaccess']));
+		$voteaccess = $db->filterMySQL(var_cleanup($_POST['voteaccess']));
+		$pollaccess = $db->filterMySQL(var_cleanup($_POST['pollaccess']));
+		$catsel = $db->filterMySQL(var_cleanup($_POST['catsel']));
+		$increment = $db->filterMySQL(var_cleanup($_POST['increment']));
+		$bbcode = $db->filterMySQL(var_cleanup($_POST['bbcode']));
+		$smiles = $db->filterMySQL(var_cleanup($_POST['smiles']));
+		$img = $db->filterMySQL(var_cleanup($_POST['img']));
 
 		//do some error checking.
 		if (empty($board_name)){

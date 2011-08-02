@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: templateEngine.php
-Last Modified: 7/11/2010
+Last Modified: 7/15/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -21,52 +21,72 @@ class templateEngine{
     private $tags = array();
         
 	/**
-	*__construct
-	*
 	*Opens defined template file from defined template style.
-	*
-	*@modified 3/9/10
-	*
-	*@param styleID[int] - Style ID to look for.
-	*@param $file[str] - template file to open.
-	*
+	* @version 7/15/11
+	* @param styleID[int] - Style ID to look for.
+	* @param $file[str] - template file to open.
+	 * @param $mode - Are we in an installer or regular mode?
 	*@access public
 	*/
-	public function __construct($styleID, $file){
+	public function __construct($styleID, $file, $mode ="installed"){
 	
 		global $db, $boardDir;
-		
-		#do a check to see if the styleID used is valid.
-		if($this->StyleCheck($styleID) == 0){
-			$error = new notifySys("Invalid Style Selected.", false, true, __FILE__, __LINE__);
-			$error->genericError();
-		}else{
-			#get the style template path from the db.
-			$db->SQL = "SELECT Temp_Path FROM ebb_style WHERE id='$styleID'";
-			$theme = $db->fetchResults();
-		}
 
-		#set styleDir to the path of the requested styleID.
-		$this->styleDir = trailingSlashRemover($_SERVER['DOCUMENT_ROOT']).'/'.$boardDir.'/template/'.$theme['Temp_Path'].'/';
-		
-		#see if template file exists.
-		if (!file_exists($this->styleDir.$file.'.htm')){
-			#throw new Exception('Template file ('.$this->styleDir.'/'.$file.'.htm) was not found.');
-            $error = new notifySys('Template file ('.$this->styleDir.$file.'.htm) was not found.', false, true, __FILE__, __LINE__);
-			$error->genericError();
-		}else{
-			#get the contents of the template file
-			$contents = file_get_contents($this->styleDir.$file.'.htm');
-			
-			#see if template file is empty.
-			if(empty($contents)){
-				$error = new notifySys('Template file is empty.', false, true, __FILE__, __LINE__);
+		#see if we're in an installer.
+		if ($mode == "installer"){
+			#set styleDir to the path of the requested styleID.
+			//todo: try to get this to use the same directory detection as the installed method.
+			$this->styleDir = '../template/simple2/';
+
+			#see if template file exists.
+			if (!file_exists($this->styleDir.$file.'.htm')){
+				$error = new notifySys('Template file ('.$this->styleDir.$file.'.htm) was not found.', false, true, __FILE__, __LINE__);
 				$error->genericError();
 			}else{
-				#Add template contents into output variable.
-				$this->output = $contents;				
-			}			 
-		}		
+				#get the contents of the template file
+				$contents = file_get_contents($this->styleDir.$file.'.htm');
+
+				#see if template file is empty.
+				if(empty($contents)){
+					$error = new notifySys('Template file is empty.', false, true, __FILE__, __LINE__);
+					$error->genericError();
+				}else{
+					#Add template contents into output variable.
+					$this->output = $contents;
+				}
+			}
+		} else {
+			#do a check to see if the styleID used is valid.
+			if($this->StyleCheck($styleID) == 0){
+				$error = new notifySys("Invalid Style Selected.", false, true, __FILE__, __LINE__);
+				$error->genericError();
+			}else{
+				#get the style template path from the db.
+				$db->SQL = "SELECT Temp_Path FROM ebb_style WHERE id='$styleID'";
+				$theme = $db->fetchResults();
+			}
+
+			#set styleDir to the path of the requested styleID.
+			$this->styleDir = trailingSlashRemover($_SERVER['DOCUMENT_ROOT']).'/'.$boardDir.'/template/'.$theme['Temp_Path'].'/';
+
+			#see if template file exists.
+			if (!file_exists($this->styleDir.$file.'.htm')){
+				$error = new notifySys('Template file ('.$this->styleDir.$file.'.htm) was not found.', false, true, __FILE__, __LINE__);
+				$error->genericError();
+			}else{
+				#get the contents of the template file
+				$contents = file_get_contents($this->styleDir.$file.'.htm');
+
+				#see if template file is empty.
+				if(empty($contents)){
+					$error = new notifySys('Template file is empty.', false, true, __FILE__, __LINE__);
+					$error->genericError();
+				}else{
+					#Add template contents into output variable.
+					$this->output = $contents;
+				}
+			}
+		}
 	}
 
  	/**

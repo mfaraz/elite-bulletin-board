@@ -6,7 +6,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 6/22/2011
+ * @version 7/29/2011
 */
 
 #make sure the call is from an AJAX request.
@@ -245,7 +245,7 @@ switch ($action){
 				//Create the Mailer using your created Transport
 				$mailer = Swift_Mailer::newInstance($transport);
 			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
+
 				//Create the Transport
 				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 
@@ -408,7 +408,7 @@ switch ($action){
 				//Create the Mailer using your created Transport
 				$mailer = Swift_Mailer::newInstance($transport);
 			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
+
 				//Create the Transport
 				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: register.php
-Last Modified: 7/7/2011
+Last Modified: 7/29/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -95,11 +95,31 @@ switch ($action){
 		$pm_notice = $db->filterMySQL($_POST['pm_notice']);
 		$show_email = $db->filterMySQL($_POST['show_email']);
 		$ustyle = $db->filterMySQL($_POST['style']);
-		$default_lang = $db->filterMySQL($_POST['default_lang']);
-		$iagree = $db->filterMySQL($_POST['iagree']);
-		$coppavalid = $db->filterMySQL($_POST['coppavalid']);
-		$captcha = $db->filterMySQL($_POST['captcha']);
+		$default_lang = $db->filterMySQL($_POST['default_lang']);		
 		$IP = detectProxy();
+
+
+		#see if COPPA is enabled. if so, get the value.
+		if ($boardPref->getPreferenceValue("coppa") != 0) {
+			$coppavalid = $db->filterMySQL($_POST['coppavalid']);
+		} else {
+			$coppavalid = '';
+		}
+		
+		#see if CAPTCHA is enabled. if so, get the value.
+		if ($boardPref->getPreferenceValue("captcha") == 1) {
+			$captcha = $db->filterMySQL($_POST['captcha']);
+		} else {
+			$captcha = '';
+		}
+
+		#get form value only if board rules are enabled.
+		if ($boardPref->getPreferenceValue("rules_status") == 1) {
+			$iagree = $db->filterMySQL($_POST['iagree']);
+		} else {
+			$iagree = '';
+		}
+
 		
 		#call validation class.
 		$validate = new validation();
@@ -168,7 +188,7 @@ switch ($action){
 			redirect('register.php', false, 0);
 		}elseif ($validate->validateAlphaNumeric($username) == false){
 			#setup error session.
-			$_SESSION['errors'] = $lang['nouser'];
+			$_SESSION['errors'] = $lang['invaliduser'];
 
             #direct user.
 			redirect('register.php', false, 0);

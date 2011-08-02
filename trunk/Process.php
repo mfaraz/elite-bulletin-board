@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Process.php
-Last Modified: 3/15/2011
+Last Modified: 7/29/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -401,9 +401,10 @@ switch ($mode){
 		}
 
 		//get form values.
+		$no_smile = (isset($_POST['no_smile'])) ? $db->filterMySQLvar_cleanup(($_POST['no_smile'])) : 0;
+		$no_bbcode = (isset($_POST['no_bbcode'])) ? $db->filterMySQL(var_cleanup($_POST['no_bbcode'])) : 0;
+		$subscribe = (isset($_POST['subscribe'])) ? var_cleanup($_POST['subscribe']) : 0;
 		$reply_post = $db->filterMySQL(var_cleanup($_POST['reply_post']));
-		$no_smile = $db->filterMySQL(var_cleanup($_POST['no_smile']));
-		$no_bbcode = $db->filterMySQL(var_cleanup($_POST['no_bbcode']));
 
 		//spam check.
 		$post_chk = language_filter($reply_post, 2);
@@ -480,7 +481,7 @@ switch ($mode){
 		}
 		
 		//check to see if the author wishes to recieve a email when a reply is added.
-		if (var_cleanup($_POST['subscribe']) == "yes"){
+		if ($subscribe == "yes"){
 			$db->SQL = "INSERT INTO ebb_topic_watch (username, tid, status) VALUES('$logged_user', '$tid', 'Unread')";
 			$db->query();
 		}
@@ -493,92 +494,98 @@ switch ($mode){
 		$db->SQL = "SELECT username, tid, status FROM ebb_topic_watch WHERE tid='$tid'";
 		$notify = $db->query();
 		$digest = $db->fetchResults();
+		$scriberCount = $db->affectedRows();
 
-		//grab topic info.
-		$db->SQL = "SELECT re_author, bid, tid, pid FROM ebb_posts WHERE pid='$pid'";
-		$topic = $db->fetchResults();
+		//see if anyone has scribed to this topic, besides the author.
+		if ($scriberCount > 0){
+			//grab topic info.
+			$db->SQL = "SELECT re_author, bid, tid, pid FROM ebb_posts WHERE pid='$pid'";
+			$topic = $db->fetchResults();
 
-		//get topic name
-		$db->SQL = "SELECT Topic FROM ebb_topics WHERE tid='$topic[tid]'";
-		$name = $db->fetchResults();
+			//get topic name
+			$db->SQL = "SELECT Topic FROM ebb_topics WHERE tid='$topic[tid]'";
+			$name = $db->fetchResults();
 
-		//set values for email.
-		$digest_subject = "RE:".$name['Topic'];
+			//set values for email.
+			$digest_subject = "RE:".$name['Topic'];
 
-		if (($topic['re_author'] != $logged_user) or ($digest['status'] == "Unread")){
+			if (($topic['re_author'] != $logged_user) or ($digest['status'] == "Unread")){
 
-			//get message part of email.
-			require_once FULLPATH."/lang/".$lng.".email.php";
+				//get message part of email.
+				require_once FULLPATH."/lang/".$lng.".email.php";
 
-			#see what kind of transport to use.
-			if($boardPref->getPreferenceValue("mail_type") == 0){
-				#see if we're using some form of encryption.
-				if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+				#see what kind of transport to use.
+				if($boardPref->getPreferenceValue("mail_type") == 0){
+					#see if we're using some form of encryption.
+					if ($boardPref->getPreferenceValue("smtp_encryption") == ""){
+						//Create the Transport
+						$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+						  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+						  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+					} else {
+						//Create the Transport
+						$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+						  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
+						  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+					}
+
+					//Create the Mailer using your created Transport
+					$mailer = Swift_Mailer::newInstance($transport);
+				} else if ($boardPref->getPreferenceValue("mail_type") == 2){
+
 					//Create the Transport
-					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
-					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
-					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
-				} else{
+					$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
+
+					//Create the Mailer using your created Transport
+					$mailer = Swift_Mailer::newInstance($transport);
+				} else {
 					//Create the Transport
-					$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
-					  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
-					  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
+					$transport = Swift_MailTransport::newInstance();
+
+					//Create the Mailer using your created Transport
+					$mailer = Swift_Mailer::newInstance($transport);
 				}
 
-				//Create the Mailer using your created Transport
-				$mailer = Swift_Mailer::newInstance($transport);
-			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
-				//Create the Transport
-				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
+				#build email.
+				$message = Swift_Message::newInstance($digest_subject)
+					->setFrom(array($boardPref->getPreferenceValue("board_email") => $title)) //Set the From address
+					->setBody(digest()); //set email body
 
-				//Create the Mailer using your created Transport
-				$mailer = Swift_Mailer::newInstance($transport);
-			} else {
-				//Create the Transport
-				$transport = Swift_MailTransport::newInstance();
+				//setup anti-flood plugin.
+				$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
 
-				//Create the Mailer using your created Transport
-				$mailer = Swift_Mailer::newInstance($transport);
+				while ($enotify = mysql_fetch_array($notify)) {
+
+					//get email addresses
+					$db->SQL = "SELECT Email FROM ebb_users WHERE Username='$enotify[username]'";
+					$emailResult = $db->fetchResults();
+
+					#create array for replacements.
+					$replacements[$enotify['Email']] = array(
+						'{title}'=>$title,
+						'{username}'=>$enotify['username'],
+						'{author}'=>$topic['re_author'],
+						'{boardAddr}'=>$boardAddr,
+						'{pid}'=>$topic['pid'],
+						'{tid}'=>$topic['tid']
+					);
+
+					//Set the To addresses
+					$message->addTo($enotify['Email']);
+				}
+
+				#setup mailer template.
+				$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
+				$mailer->registerPlugin($decorator);
+
+				#send message out.
+				//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+				$mailer->batchSend($message);
+
 			}
-
-			#build email.
-			$message = Swift_Message::newInstance($digest_subject)
-				->setFrom(array($boardPref->getPreferenceValue("board_email") => $title)) //Set the From address		
-				->setBody(digest()); //set email body
-
-			//setup anti-flood plugin.
-			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
-
-			while ($enotify = mysql_fetch_array($notify)) {
-
-				//get email addresses
-				$db->SQL = "SELECT Email FROM ebb_users WHERE Username='$enotify[username]'";
-				$emailResult = $db->fetchResults();
-
-				#create array for replacements.
-				$replacements[$enotify['Email']] = array(
-					'{title}'=>$title,
-					'{username}'=>$enotify['username'],
-					'{author}'=>$topic['re_author'],
-					'{boardAddr}'=>$boardAddr,
-					'{pid}'=>$topic['pid'],
-					'{tid}'=>$topic['tid']
-				);
-
-				//Set the To addresses
-				$message->addTo($enotify['Email']);
-			}
-
-			#setup mailer template.
-			$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
-			$mailer->registerPlugin($decorator);
-
-			#send message out.
-			//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
-			$mailer->batchSend($message);
-
 		}
+
+		//finalize attachments.
 		if($groupPolicy->validateAccess(1, 26) == true){
 		 	#see if user uploaded a file, if so lets assign the file to the topic.
 			$db->SQL = "SELECT id from ebb_attachments WHERE Username='$logged_user' AND pid='0' AND tid='0'";
