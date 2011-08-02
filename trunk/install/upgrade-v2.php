@@ -8,7 +8,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/29/2011
+ * @version 7/30/2011
 */
 
 if(isset($_GET['do'])){
@@ -375,7 +375,7 @@ case 'sqldump':
 	('archive_quota', '".$oldSettings['Archive_Quota']."', 2),
 	('activation', '".$oldSettings['activation']."', 1),
 	('allow_newusers', '".$oldSettings['register_stat']."', 3),
-	('userstat', '".$oldSettings['userstat']."', 2),
+	('userstat', '3', 2),
 	('coppa', '".$oldSettings['coppa']."', 2),
 	('timezone', '".$oldSettings['Default_Zone']."', 2),
 	('timeformat', '".$oldSettings['Default_Time']."', 1),
