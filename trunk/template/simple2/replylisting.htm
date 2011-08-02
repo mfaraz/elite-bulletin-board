@@ -27,19 +27,10 @@
 <td width="15%" class="ui-widget-header" valign="top"><b>{AUTHOR}</b><br />{CUSTOMTITLE}<i>{RANKNAME}</i><br />{RANKICON}<br /><br /><img src="{AVATAR}" alt="" /><br /><br />{LANG-POSTCOUNT}: {POSTCOUNT}<br />{WARNINGBAR}</td>
 <td width="85%" valign="top" class="ui-widget-content">
 <!-- START qedit -->
-<div align="right"><a href="#" onclick="editor.enterEditMode('click')"><img src="template/simple2/images/quick_edit.gif" border="0" alt="" /></a></div>
+	<!-- Quick Edit coming for v3.0.0 RC2 -->
 <!-- END qedit -->
 <br /><div id="edit{POSTID}">{POSTBODY}</div><br />{ATTACHMENT}<br />{SIGNATURE}</td>
 </tr><tr>
 <td colspan="2" align="right" class="ui-widget-header"><a href="Profile.php?user={AUTHOR}"><img src="template/simple2/images/profile.gif" border="0" alt="" /></a>&nbsp;<a href="PM.php?action=write&amp;user={AUTHOR}"><img src="template/simple2/images/pm.gif" border="0" alt="" /></a>&nbsp;<a href="report.php?mode=post&amp;pid={POSTID}"><img src="template/simple2/images/report.gif" border="0" alt="" /></a></td>
 </tr>
 </table><br />
-<!--
-OLD, NEW CODE COMING SOON!
-<script language='JavaScript' type="text/javascript">
-var editor{POSTID} = new Ajax.InPlaceEditor($('edit{POSTID}'), 'quickedit.php?mode=edit&type=post&tid={TID}&bid={BID}&pid={POSTID}', {
-    externalControl: 'quickEdit', okText:'{LANG-QUICKEDIT}', cancelText: '{LANG-CANCELEDIT}', savingText: '{LANG-PROCESSINGEDIT}', clickToEditText: '', rows:5, cols:90, highlightcolor: 'ui-widget-header', highlightendcolor: 'ui-widget-content', loadTextURL: 'quickedit.php?type=post&tid={TID}&bid={BID}&pid={POSTID}'
-    });
-    editor{POSTID}.dispose();
-</script>
--->

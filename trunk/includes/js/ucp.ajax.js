@@ -4,7 +4,7 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/7/2011
+ * @version 7/26/2011
 */
 
 $(document).ready(function() {
@@ -405,7 +405,7 @@ $(document).ready(function() {
 
 		/**
 		 * Saves user's new password.
-		 * @version 6/29/2011
+		 * @version 7/26/2011
 		*/
 		this.post('#/ucp/updatePassword', function(context) {
 
@@ -429,7 +429,7 @@ $(document).ready(function() {
 					var btnConf = {};
 					 btnConf[lang.Ok] = function() {
 						//log user out.
-						gotoUrl('login.php?mode=logout');
+						gotoUrl('quicktools/logout.ajax.php');
 					};
 
 					//add buttons to dialog.

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: report.php
-Last Modified: 3/15/2011
+Last Modified: 7/29/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -183,14 +183,14 @@ case 'report_topic':
 	if($boardPref->getPreferenceValue("mail_type") == 0){
 
 		#see if we're using some form of encryption.
-		if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+		if ($boardPref->getPreferenceValue("smtp_encryption") == ""){
 			//Create the Transport
-			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
 			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
 			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
 		} else{
 			//Create the Transport
-			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
 			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
 			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
 		}
@@ -198,7 +198,6 @@ case 'report_topic':
 		//Create the Mailer using your created Transport
 		$mailer = Swift_Mailer::newInstance($transport);
 	} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-		//TODO add sendmail option to administation panel
 		//Create the Transport
 		$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 
@@ -349,14 +348,14 @@ case 'report_post':
 	#see what kind of transport to use.
 	if($boardPref->getPreferenceValue("mail_type") == 0){
 		#see if we're using some form of encryption.
-		if (!empty($boardPref->getPreferenceValue("smtp_encryption"))){
+		if ($boardPref->getPreferenceValue("smtp_encryption") == ""){
 			//Create the Transport
-			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
 			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
 			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
 		} else{
 			//Create the Transport
-			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"))
+			$transport = Swift_SmtpTransport::newInstance($boardPref->getPreferenceValue("smtp_host"), $boardPref->getPreferenceValue("smtp_port"), $boardPref->getPreferenceValue("smtp_encryption"))
 			  ->setUsername($boardPref->getPreferenceValue("smtp_user"))
 			  ->setPassword($boardPref->getPreferenceValue("smtp_pwd"));
 		}
@@ -364,7 +363,7 @@ case 'report_post':
 		//Create the Mailer using your created Transport
 		$mailer = Swift_Mailer::newInstance($transport);
 	} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-		//TODO add sendmail option to administation panel
+
 		//Create the Transport
 		$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 

@@ -6,7 +6,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/7/2011
+ * @version 7/29/2011
 */
 
 #make sure the call is from an AJAX request.
@@ -229,16 +229,17 @@ switch($mode) {
 			$displayMsg->displayError();
 		}
 
-		#get user's signature.
-		$sig = $userData->userSettings("Sig");
-
 		#settings.
 		$allowsmile = 1;
 		$allowbbcode = 1;
 		$allowimg = 1;
 
 		#format signature.
-		$displaysig = nl2br(smiles(BBCode(language_filter($sig, 1), true)));
+		if ($userData->userSettings("Sig") == "") {
+			$displaysig = '';
+		} else {
+			$displaysig = nl2br(smiles(BBCode(language_filter($userData->userSettings("Sig"), 1), true)));
+		}
 
 		#call bbcode functions.
 		$bName['Smiles'] = 1;
@@ -297,7 +298,7 @@ switch($mode) {
 
 		echo $tpl->outputHtml();
 
-		$db->SQL = "SELECT id, Name, Description, Enrollment FROM ebb_groups WHERE Enrollment!='2'";
+		$db->SQL = "SELECT id, Name, Description, Enrollment FROM ebb_groups WHERE Level!=0";
 		$joinedQ = $db->query();
 
 		while ($group = mysql_fetch_assoc ($joinedQ)) {
@@ -385,10 +386,12 @@ switch($mode) {
 			exit($displayMsg->displayAjaxError("error"));
 		}
 		$id = $db->filterMySQL($_GET['id']);
-		$db->SQL = "delete from ebb_group_users where Username='$logged_user' and gid='$id'";
+
+		//change gid to regular member.
+		$db->SQL = "UPDATE ebb_group_users SET gid='3' WHERE Username='$logged_user'";
 		$db->query();
 
-		#place user as a member.
+
 		$db->SQL = "update ebb_users SET Status='Member' where Username='$logged_user'";
 		$db->query();
 
@@ -401,19 +404,6 @@ switch($mode) {
 		if($groupPolicy->validateAccess(1, 32) == false){
 	        $displayMsg = new notifySys($lang['accessdenied'], true);
 			$displayMsg->displayError();
-		}
-
-		#see if any errors were reported.
-		if(isset($_SESSION['errors'])){
-		    #format error(s) for the user.
-			$errors = var_cleanup($_SESSION['errors']);
-
-			#display validation message.
-			$displayMsg = new notifySys($errors, false);
-			$displayMsg->displayValidate();
-
-			#destroy errors session data, its no longer needed.
-			unset($_SESSION['errors']);
 		}
 
 		$allowed = $lang['allowed'].':&nbsp;<b>.gif .jpeg .jpg .png</b>';
@@ -533,7 +523,7 @@ switch($mode) {
 				exit($displayMsg->displayAjaxError("error"));
 			}
 		} else {
-			//TODO: repalce this with fsockopen
+			//TODO: replace this with fsockopen
 			$imgInfo = getimagesize($avatarImg);
 
 			if ($imgInfo){

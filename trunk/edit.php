@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: edit.php
-Last Modified: 2/22/2011
+Last Modified: 8/1/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -156,6 +156,13 @@ case 'edit_topic':
 		$noSmile = $db->filterMySQL(var_cleanup($_POST['no_smile']));
 		$noBbcode = $db->filterMySQL(var_cleanup($_POST['no_bbcode']));
 
+		#see if user can mark topics as important.
+		if($groupPolicy->validateAccess(1, 39)){
+			$post_type = $db->filterMySQL(var_cleanup($_POST['post_type']));
+		} else {
+			$post_type = 0;
+		}
+
 		//spam check.
 		$topic_chk = language_filter($topicSubject, 2);
 		$post_chk = language_filter($postBody, 2);
@@ -202,7 +209,7 @@ case 'edit_topic':
 			$db->query();
 		}
 		//update the topic.
-		$db->SQL = "UPDATE ebb_topics SET Topic='$topicSubject', Body='$postBody', disable_smiles='$noSmile', disable_bbcode='$noBbcode' WHERE tid='$tid'";
+		$db->SQL = "UPDATE ebb_topics SET Topic='$topicSubject', Body='$postBody', important='$post_type', disable_smiles='$noSmile', disable_bbcode='$noBbcode' WHERE tid='$tid'";
 		$db->query();
 
 		if($permissionChkAttach == 1){
@@ -535,7 +542,7 @@ case 'edittopic';
 		"LANG-USERNAME" => "$lang[username]",
 		"USERNAME" => "$logged_user",
 		"LANG-TOPIC" => "$lang[topic]",
-  		"TOPIC" => "$topic[Topic]",
+  		"TOPIC" => "$topicData[Topic]",
 		"BODY" => "$topicData[Body]",
 		"LANG-UPLOAD" => "$lang[uploadfile]",
 		"LANG-CLEAR" => "$lang[clearfile]",
@@ -556,7 +563,7 @@ case 'edittopic';
 			$tpl->removeBlock("upload");
 		}
 
-		#see if user can mark topics sa important.
+		#see if user can mark topics as important.
 		if($groupPolicy->validateAccess(1, 39) == true){
 			//check for topic type.
 			if ($topicData['important'] == 1){

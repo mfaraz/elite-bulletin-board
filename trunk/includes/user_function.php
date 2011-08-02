@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: user_function.php
-Last Modified: 11/12/2010
+Last Modified: 7/24/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -51,11 +51,12 @@ function whosonline(){
 *
 *Used to create a completely random password.
 *
-*@modified 4/19/10
+*@modified 7/24/11
 *
 */
 function makeRandomPassword() {
 	$salt = "abchefghjkmnpqrstuvwxyz0123456789";
+	$pass = "";
 	srand((double)microtime()*1000000);
   	$i = 0;
   	while ($i <= 7) {

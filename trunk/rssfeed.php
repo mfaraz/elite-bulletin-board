@@ -1,8 +1,8 @@
 <?php
 define('IN_EBB', true);
 /**
-Filename: rssdeed.php
-Last Modified: 11/10/2010
+Filename: rssfeed.php
+Last Modified: 7/30/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ if(($checkboard == 1) and ($board_r['type'] != 1)){
   	echo '<channel>
 	<title>'.$title.'</title>
 	<description>'.$board_r['Board'].'</description>
-	<link>'.$address.'/'.$boardDir.'</link>';
+	<link>'.$boardAddr.'</link>';
 
 	#get latest topics.	
 	while($topic = mysql_fetch_array($topic_query)) {
@@ -69,7 +69,7 @@ if(($checkboard == 1) and ($board_r['type'] != 1)){
 			
 			#output data.
 			echo '<item>
-			<link>'.$board_address.'/viewtopic.php?bid='.$topic['bid'].'&amp;tid='.$topic['tid'].'</link>
+			<link>'.$boardAddr.'/viewtopic.php?bid='.$topic['bid'].'&amp;tid='.$topic['tid'].'</link>
 			<title>'.$topic['Topic'].'</title>
 			<description>'.$rss_desc.'</description>
 			<pubDate>'. $topicDate .'</pubDate>
@@ -101,7 +101,7 @@ if(($checkboard == 1) and ($board_r['type'] != 1)){
 
 		    #output data.
 			echo '<item>';
-			echo '<link>'.$board_address.'/viewtopic.php?bid='.$post['bid'].'&amp;tid='.$post['tid'].'&amp;pid='.$post['pid'].'#'.$post['pid'].'</link>';
+			echo '<link>'.$boardAddr.'/viewtopic.php?bid='.$post['bid'].'&amp;tid='.$post['tid'].'&amp;pid='.$post['pid'].'#'.$post['pid'].'</link>';
 			echo '<title>'.$topic_r['Topic'].'</title>';
 			echo '<description>'.$rss_desc.'</description>';
 			echo '<pubDate>'. $postDate .'</pubDate>';

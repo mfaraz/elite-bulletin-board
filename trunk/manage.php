@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: manage.php
-Last Modified: 3/15/2011
+Last Modified: 7/29/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -448,7 +448,7 @@ case 'warn_process':
 				//Create the Mailer using your created Transport
 				$mailer = Swift_Mailer::newInstance($transport);
 			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
+
 				//Create the Transport
 				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 
@@ -518,7 +518,7 @@ case 'warn_process':
 				//Create the Mailer using your created Transport
 				$mailer = Swift_Mailer::newInstance($transport);
 			} else if ($boardPref->getPreferenceValue("mail_type") == 2){
-				//TODO add sendmail option to administation panel
+
 				//Create the Transport
 				$transport = Swift_SendmailTransport::newInstance($boardPref->getPreferenceValue("sendmail_path").' -bs');
 
