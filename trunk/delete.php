@@ -286,6 +286,13 @@ case 'deletePost':
 			$db->SQL = "UPDATE ebb_topics SET last_update='$post_r[Original_Date]', Posted_User='$post_r[author]', Post_Link='$originalupdate' WHERE tid='$tid'";
 			$db->query();
 
+			$db->SQL = "SELECT last_update, Posted_User, Post_Link FROM ebb_topics WHERE bid='$bid' ORDER BY last_update DESC LIMIT 1";
+			$board_r = $db->fetchResults();
+
+			//update the last_update colume for ebb_boards.
+			$db->SQL = "UPDATE ebb_boards SET last_update='$board_r[last_update]', Posted_User='$board_r[Posted_User]', Post_Link='$board_r[Post_Link]'  WHERE id='$bid'";
+			$db->query();
+
 			//bring user back
 			header("Location: viewtopic.php?$originalupdate");
 		}else{
@@ -296,6 +303,13 @@ case 'deletePost':
 			$newlink = "bid=". $bid . "&tid=". $tid . "&pid=". $topic_r['pid'] . "#". $topic_r['pid'];
 			//update the last_update colume for ebb_boards.
 			$db->SQL = "UPDATE ebb_topics SET last_update='$topic_r[Original_Date]', Posted_User='$topic_r[re_author]', Post_Link='$newlink'  WHERE tid='$tid'";
+			$db->query();
+
+			$db->SQL = "SELECT last_update, Posted_User, Post_Link FROM ebb_topics WHERE bid='$bid' ORDER BY last_update DESC LIMIT 1";
+			$board_r = $db->fetchResults();
+
+			//update the last_update colume for ebb_boards.
+			$db->SQL = "UPDATE ebb_boards SET last_update='$board_r[last_update]', Posted_User='$board_r[Posted_User]', Post_Link='$board_r[Post_Link]'  WHERE id='$bid'";
 			$db->query();
 
 			#alert users that message was deleted.
