@@ -261,10 +261,6 @@ switch ($mode){
 		}
 	}
 
-	//spam check.
-	$topic_chk = language_filter($topic, 2);
-	$post_chk = language_filter($post, 2);
-
 	//set the disable variables to 0 if not selected.
 	if(empty($no_smile)){
 		$no_smile = 0;
@@ -299,6 +295,10 @@ switch ($mode){
 		#direct user.
 		redirect('Post.php?mode=topic&bid='.$bid.'&polltopic='.$pollTopic, false, 0);
 	}
+
+	//spam check.
+	$topic_chk = language_filter($topic, 2);
+	$post_chk = language_filter($post, 2);
 
 	//flood check.
 	if (flood_check($logged_user, "posting") == 1){
@@ -406,9 +406,6 @@ switch ($mode){
 		$subscribe = (isset($_POST['subscribe'])) ? var_cleanup($_POST['subscribe']) : 0;
 		$reply_post = $db->filterMySQL(var_cleanup($_POST['reply_post']));
 
-		//spam check.
-		$post_chk = language_filter($reply_post, 2);
-
 		//set the disable variables to 0 if not selected.
 		if(empty($no_smile)){
 			$no_smile = 0;
@@ -429,6 +426,10 @@ switch ($mode){
 			#direct user.
 			redirect('Post.php?mode=reply&tid='.$tid.'&bid='.$bid.'&pg='.$pg, false, 0);
 		}
+
+		//spam check.
+		$post_chk = language_filter($reply_post, 2);
+
 		//flood check.
 		if (flood_check($logged_user, "posting") == 1){
 			#setup error session.
