@@ -1,0 +1,81 @@
+<!-- Our Step Progress -->
+<ul id="mainNav" class="fiveStep">
+	<li class="current"><a title=""><em>Step 1: Configuration</em><span>Create Configuration File</span></a></li>
+	<li><a title=""><em>Step 2: SQL Dump</em><span>Create Tables &amp; Default data</span></a></li>
+	<li><a title=""><em>Step 3: Setup Board</em><span>Configure Board</span></a></li>
+	<li><a title=""><em>Step 4: Account</em><span>Create Administrator</span></a></li>
+	<li class="mainNavNoBg"><a title=""><em>Step 5: Board Setup</em> <span>Create Category/Board</span></a></li>
+</ul>
+<div class="clearfloat">&nbsp;</div>
+<!-- /Our Step Progress -->
+
+<h3>This will install Elite Bulletin Board version 3.0.0 Release Candidate 1. Once this is complete, you will be able to enjoy this application on your website.</h3>
+
+<h4 class="ui-state-highlight">If you already installed a previous version of version 3, click on <u>upgrade from v3</u>. If you have version 2.0 or 2.1 installed, click on <u>upgrade from v2</u>, both links found above.</h4>
+
+<hr>
+<p class="ui-state-highlight"><strong>This version comes with LIMITED SUPPORT.
+<br />This is still under development. Ideal user will be one who will report bugs and suggest improvements.
+<br /> If you are unsure about using this version, please download the stable release.</strong></p>
+
+<p class="ui-widget-content"><b>Permission Stats</b></p>
+<!-- START cantwrite -->
+<p class="raisewarn">The install folder is not chmoded. this will force you to delete the install file yourself and the other install files you'll use to install other items to the board.</p>
+<!-- END cantwrite -->
+
+<!-- START canwrite -->
+<p class="lowerwarn">install folder is detected as writable.</p>
+<!-- END canwrite -->
+
+<!-- START cantwriteconfig -->
+<p class="raisewarn">The config file is not chmoded. You <u>MUST</u> chmod the file 777 or 755(ask your host for which one to use) in order to continue.</p>
+<!-- END cantwriteconfig -->
+
+<!-- START canwriteconfig -->
+<p class="lowerwarn">The config file is detected as writable.</p>
+<!-- END canwriteconfig -->
+
+<hr>
+<p class="ui-widget-content"><b>PHP Version Checker</b></p>
+
+<!-- START oldphp -->
+<p class="raisewarn">You do not have a current enough version of PHP to run Elite Bulletin Board, please ask your host to upgrade their version of PHP to at least 5.2.0</p>
+<!-- END oldphp -->
+
+<!-- START okphp -->
+<p class="lowerwarn">Your version of PHP is current enough to run Elite Bulletin Board.</p>
+<!-- END okphp -->
+
+<hr>
+<p class="ui-widget-content"><b>Misc. Checks</b></p>
+
+<!-- START hascurl -->
+<p class="lowerwarn">cURL is supported by your web host, Elite Bulletin Board will be using cURL as the default method to fetching remote data.</p>
+<!-- END hascurl -->
+
+<!-- START haspspell -->
+<p class="lowerwarn">PSPELL is supported by your web host, you will be able to use the built-in spell checker.</p>
+<!-- END haspspell -->
+
+<!-- START caninstall -->
+<hr />
+<p class="ui-widget-header"><b>Create Configuration File</b></p>
+<form method="post" action="#/install/createConfig" id="frmconfig">
+<div class="ui-widget-content">MySQL Host<br />
+<input type="text" name="host" value="localhost" class="text" size="25" />
+<hr />
+MySQL Database<br />
+<input type="text" name="database" class="text" size="25" />
+<hr />
+MySQL Username<br />
+<input type="text" name="user" class="text" size="25" />
+<hr />
+MySQL Password<br />
+<input type="password" name="password" class="text" size="25" />
+<hr />
+Board Directory<a href="#" class="hint">[?]<span>example: board</span></a><br />
+<input type="text" name="board_dir" size="30" class="text">
+<hr />
+<div align="center"><input type="submit" value="Create Configuration File" class="submit" /></div>
+</div></form><br />
+<!-- END caninstall -->
