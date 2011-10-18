@@ -1,0 +1,70 @@
+<script type="text/javascript" src="includes/js/jPanels.js"></script>
+<script type="text/javascript" src="includes/js/jquery.jUploader.js"></script>
+<script type="text/javascript" src="includes/js/jquery.spellchecker.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="includes/js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="includes/js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="includes/js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="includes/js/pEditor.js"></script>
+<!-- call our collapsible panel -->
+<script type="text/javascript">
+$(function(){
+	$("#replybox").jPanels();
+});
+</script>
+
+<!-- warning container -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+<div id="moreSmiles"></div>
+<div id="DLG_upload">
+	<!--START upload -->
+	<form action="upload.php" method="post" enctype="multipart/form-data">
+		<input id="attach" name="attachment" type="file" /><br />
+		<input type="submit" value="{LANG-UPLOAD}" id="fileUpload" />
+		<input type="reset" value="{LANG-CLEAR}" id="ClearList" />
+		<input type="button" value="{LANG-VIEWFILES}" id="AttachList" />
+	</form>
+	<div id="filelist"></div>
+
+	<script type="text/javascript">
+		
+		$(function(){
+			$('#attach').jUploader({LoadingGfx: "template/simple2/images/loading.gif",
+				LoadingMsg: lang.attachLoading, PendingMsg: lang.attachPending,
+				SuccessMsg: lang.attachSuccess, FailureMsg: lang.attachFailed,
+				uploadLimitMsg: lang.attachLimit, uploadLimit: "{ATTACHMENTLIMIT}"});
+		});
+	</script>
+	<!--END upload -->
+</div>
+
+<form method="post" action="Process.php?mode=reply&amp;bid={BID}&amp;tid={TID}&amp;pg={PAGE}">
+<div align="center">
+<div id="emoticons" style="width:500px;" align="center">
+{SMILES}
+</div>
+<textarea id="replyBody" name="reply_post" cols="80" rows="20"></textarea>
+<br /><input type="submit" value="{LANG-REPLY}" class="submit" />
+
+<div id="replybox" title="{LANG-OPTIONS}" style="width:400px;text-align:left;">
+<div class="pContent">
+<a href="#editor" class="toggle"><span>{LANG-DISABLERTF}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{LANG-SMILES}</a><br />
+<input type="checkbox" name="subscribe" value="1" />{LANG-NOTIFY}<br />
+<input type="checkbox" name="no_smile" value="1" />{LANG-DISABLESMILES}<br />
+<input type="checkbox" name="no_bbcode" value="1" />{LANG-DISABLEBBCODE}<br />
+<input type="hidden" name="page" value="{PAGE}" />
+</div>
+</div>
+</form><br />
+</div>

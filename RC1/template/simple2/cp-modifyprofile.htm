@@ -1,0 +1,13 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-MODIFYPROFILE}</div><br />
+
+<form method="post" action="groupcp.php?action=profile_modify_process&amp;type={TYPE}">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-MODIFYPROFILE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-PROFILENAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="profilename" id="profilename" size="30" class="text" maxlength="30" value="{PROFILENAME}" id="profilename" onblur="validateNotNull('profilename', 'profilenameerr');" /><div id="profilenameerr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-ACTIONLIST}</td>
+</tr>

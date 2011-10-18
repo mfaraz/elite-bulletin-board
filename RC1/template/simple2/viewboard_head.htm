@@ -1,0 +1,30 @@
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; {LANG-TITLE}</div><br />
+
+<div class="ui-widget-content">{PAGENATION}</div><br />
+
+<!-- START allowpost -->
+<a href="Post.php?mode=topic&amp;bid={BID}"><img src="template/simple2/images/newtopic.gif" border="0" alt="{LANG-ADDNEWTOPIC}" title="{LANG-ADDNEWTOPIC}" /></a>&nbsp;
+<!-- END allowpost -->
+
+<!-- START allowpoll -->
+<a href="Post.php?mode=topic&amp;bid={BID}&amp;polltopic=true"><img src="template/simple2/images/newpoll.gif" border="0" alt="{LANG-ADDNEWPOLL}" title="{LANG-ADDNEWPOLL}" /></a>
+<!-- END allowpoll -->
+
+<!-- START locked -->
+<img src="template/simple2/images/locked.gif" alt="" />
+<!-- END locked -->
+<br /><br />
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<th class="ui-widget-header" width="5%">&nbsp;</th>
+<th class="ui-widget-header" width="40%">{LANG-TOPIC}</th>
+<th class="ui-widget-header" width="15%">{LANG-POSTEDBY}</th>
+<th class="ui-widget-header" width="10%">{LANG-REPLIES}</th>
+<th class="ui-widget-header" width="10%">{LANG-POSTVIEWS}</th>
+<th class="ui-widget-header" width="20%">{LANG-LASTPOSTEDBY}</th>
+</tr>
+<!-- START errors -->
+<tr>
+<td colspan="6" align="center" class="ui-widget-content">{BOARDMSG}</td>
+</tr>
+<!-- END errors -->

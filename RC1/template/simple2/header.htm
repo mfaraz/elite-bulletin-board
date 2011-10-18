@@ -1,0 +1,70 @@
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>{TITLE}  - {PAGETITLE}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="./template/simple2/style.css" />
+<link rel="stylesheet" type="text/css" href="./template/simple2/jui.css" />
+<!--  markItUp! toolbar skin -->
+<link rel="stylesheet" type="text/css" href="./template/simple2/bbcode.css" />
+<link rel="stylesheet" type="text/css" href="./template/simple2/skin.css" />
+<!--RSS & ICO -->
+<link rel="alternate" type="application/rss+xml" href="latestposts.php" title="Latest Posts" />
+<link rel="shortcut icon" href="./template/simple2/images/favicon.ico" />
+<!-- JAVASCRIPT FILES -->
+
+<!-- Language JS File. -->
+<script type="text/javascript" src="lang/{LANG}.lang.js"></script>
+
+<!-- REQUIRED, CORE -->
+<script type="text/javascript" src="includes/js/jquery-1.6.2.min.js"></script>
+<script src="includes/js/jquery-ui-1.8.14.min.js" type="text/javascript"></script>
+
+<!-- PLUGINS USED ALL AROUND EBB -->
+<script type="text/javascript" src="includes/js/dialog.js"></script>
+<script type="text/javascript" src="includes/js/common.js"></script>
+
+<!-- notification plug-in. -->
+<script type="text/javascript" src="includes/js/jquery.jnotify.min.js"></script>
+<script type="text/javascript" src="includes/js/notify.js"></script>
+
+<!-- /JAVASCRIPT FILES -->
+</head>
+<body>
+<!-- No javascript? let user know its required. -->
+<noscript>
+<div class="ui-widget-content">
+<p style="font-weight:bold">{LANG-INFO}</p>
+<p>{LANG-JSDISABLED}</p>
+</div>
+</noscript>
+
+<!-- Used for our notification system -->
+<div id="notifyContainer" style="display:none;"></div>
+
+<!-- Used to confirm actions (will replace older method) -->
+<div id="confirmDlg">
+	<div id="confirmMsg"></div>
+</div>
+
+
+<!-- Used to warn about Firebug use -->
+<div class="ui-widget" id="fbWarn" style="display:none;">
+	<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+		<span id="fbWarnInfo"></span>
+		<span style="float: right;"><strong><a href="#close" onclick="$('#fbWarn').hide('blind', {}, 500);">X</a></strong></span></p>
+	</div>
+</div>
+		
+<!-- Code for help panel -->
+<div id="help" style="display:none">
+<!-- help content -->
+<p style="font-weight: bold;">{LANG-HELP-TITLE}</p>
+<p>{LANG-HELP-BODY}</p>
+<!-- End content -->
+</div>
+<!-- End code for help panel -->
+<div class="container">

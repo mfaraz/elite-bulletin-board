@@ -1,0 +1,30 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; {LANG-TITLE}</div><br />
+
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<form method="post" action="report.php?mode=report_post">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" align="center" class="ui-widget-header" width="50%">{LANG-TITLE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-REPORTEDBY}</td>
+<td class="ui-widget-content" width="50%">{USERNAME}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-REASON}</td>
+<td class="ui-widget-content" width="50%"><select name="reason" class="text">
+<option value="spampost">{LANG-SPAMPOST}</option>
+<option value="fightpost">{LANG-FIGHTPOST}</option>
+<option value="advert">{LANG-ADVERT}</option>
+<option value="userproblems">{LANG-USERPROBLEMS}</option>
+<option value="other">{LANG-OTHER}</option>
+</select></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-MESSAGE}</td>
+<td class="ui-widget-content" width="50%"><textarea name="msg" rows="5" cols="80" class="text" id="msg" onblur="validateNotNull('msg', 'msgerr');"></textarea><div id="msgerr"></div></td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header"><input type="submit" name="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+<input type="hidden" name="pid" value="{PID}" />
+</form>

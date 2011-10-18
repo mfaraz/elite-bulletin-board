@@ -1,0 +1,53 @@
+<script type="text/javascript">
+$(function(){
+	//user profile tabbing.
+	$("#tabs").tabs();
+});
+</script>
+
+<div id="tabs">
+	<ul>
+		<li><a href="#bio">About Me</a></li>
+		<li><a href="#comments">Comments/Status</a></li>
+		<li><a href="#notes">Notes/Blog</a></li>
+		<li><a href="#topics">{LANG-LATEST-TOPICS}</a></li>
+		<li><a href="#posts">{LANG-LATEST-POSTS}</a></li>
+		<li><a href="#friends">Friends</a></li>
+	</ul>
+	<div id="bio">
+		<!-- START UsrMenu -->
+		<strong>{USERNAME}'s {LANG-TITLE}</strong>
+		<hr />
+		<a href="Search.php?action=user_result&amp;search_type=topic&amp;poster={USERNAME}">{LANG-FINDTOPICS}</a> -
+		<a href="Search.php?action=user_result&amp;search_type=post&amp;poster={USERNAME}">{LANG-FINDPOSTS}</a> -
+		<a href="Profile.php#/PM/write/{USERNAME}">PM {USERNAME}</a>
+		<hr />
+		<!-- END UsrMenu -->
+		<img src="{AVATAR}" alt="{USERNAME}'s Avatar" title="{USERNAME}'s Avatar" class="avatar" />
+		<p>{LANG-RANK}:&nbsp;{RANK}</p>
+		<p>{LANG-POSTCOUNT}: {POSTCOUNT}</p>
+		<p>{LANG-EMAIL}: {EMAIL}</p>
+		<p>{LANG-JOINED}: {JOINED}</p>
+		<p>{LANG-MSN}: {MSN}</p>
+		<p>{LANG-AOL}: {AOL}</p>
+		<p>{LANG-ICQ}: {ICQ}</p>
+		<p>{LANG-YAHOO}: {YAHOO}</p>
+		<p>{LANG-WWW}: <a href="{WWW}" target="_blank">{WWW}</a></p>
+		<p>{LANG-LOCATION}: {LOCATION}</p>
+	</div>
+	<div id="comments">
+		<p>Comment box system coming v3.0.0 RC2.</p>
+	</div>
+	<div id="notes">
+		<p>note/blog system coming v3.0.0 RC2.</p>
+	</div>
+	<div id="topics">
+		<p>{LATEST-TOPICS}</p>
+	</div>
+	<div id="posts">
+		<p>{LATEST-POSTS}</p>
+	</div>
+	<div id="friends">
+		<p>Friends List coming v3.0.0 RC2.</p>
+	</div>
+</div><!-- END Tab UI -->

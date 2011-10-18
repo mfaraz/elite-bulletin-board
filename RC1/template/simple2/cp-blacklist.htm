@@ -1,0 +1,34 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-BLACKLISTEDUSERS}</div><br />
+
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<!--USER BLACKLIST FORM -->
+<form method="post" action="usercp.php?action=blacklist_add">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BLACKEDUSERNAME}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-USERNAMETOBAN}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="blacklistuser" size="30" class="text" id="userban" onblur="validateAlphaNumeric('userban', 'userbanerr');" /><div id="userbanerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BLACKLISTTYPE}</td>
+<td class="ui-widget-content" width="50%"><input type="radio" name="match_type" value="Exact" />{LANG-EXACTMATCH}&nbsp;<input type="radio" name="match_type" value="Wildcard" />{LANG-WILDCARDMATCH}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
+<!--REMOVE USER FROM BLACKLIST FORM -->
+<form method="post" action="usercp.php?action=blacklist_remove">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-UNBLACKLISTUSER}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-UNBLACKLISTUSERTXT}</td>
+<td class="ui-widget-contact" width="50%">{BLACKLIST}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />

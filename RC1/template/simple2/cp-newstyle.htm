@@ -1,0 +1,20 @@
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-ADDSTYLE}</div><br />
+
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<form method="post" action="stylecp.php?action=style_add_process" onsubmit="return acp_validate(ftype);">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-ADDSTYLE}</td>
+</tr>
+<tr>
+<td class="v" width="50%">{LANG-STYLENAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="style_name" maxlength="50" size="30"  class="text" id="stylename" /><div id="stylenameerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-TEMPLATEPATH}<a href="#" class="hintanchor" onMouseover="showhint('{LANG-TEMPLATERULE}', this, event, '150px')">[?]</a></td>
+<td class="ui-widget-content" width="50%"><input type="text" name="template_path" maxlength="80" size="30"  class="text" id="temppath" /><div id="temppatherr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-ADDSTYLE}" class="submit" /></td>
+</tr>
+</table>
+</form><br />

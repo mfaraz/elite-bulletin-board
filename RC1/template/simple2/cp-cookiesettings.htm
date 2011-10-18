@@ -1,0 +1,29 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-COOKIESETTINGS}</div><br />
+
+<form method="post" action="acpsettings.php?section=save_cookies">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-COOKIESETTINGS}</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-COOKIEDOMAIN}<a href="#" class="hint">[?]<span>{LANG-COOKIEDOMAINTXT}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="cookie_domain" size="30"value="{COOKIEDOMAIN}" class="text" id="cookiedomain" onblur="validateNotNull('cookiedomain', 'cookiedomainerr');" /><div id="cookiedomainerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-COOKIEPATH}<a href="#" class="hint">[?]<span>{LANG-COOKIEPATHTXT}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="cookie_path" size="30" value="{COOKIEPATH}" class="text" id="cookiepath" onblur="validateNotNull('cookiepath', 'cookiepatherr');" /><div id="cookiepatherr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-COOKIESECURE}<a href="#" class="hint">[?]<span>{LANG-SSL}</span></a></td>
+<td class="ui-widget-content">
+<!-- START sslEnabled -->
+<input type="radio" name="secure_stat" value="1" class="text" checked=checked />{LANG-ENABLE} <input type="radio" name="secure_stat" value="0" class="text" />{LANG-DISABLE}
+<!-- END sslEnabled -->
+
+<!-- START sslDisabled -->
+<input type="radio" name="secure_stat" value="1" class="text" />{LANG-ENABLE} <input type="radio" name="secure_stat" value="0" class="text" checked=checked />{LANG-DISABLE}
+<!-- END sslDisabled -->
+</td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header"><input type="submit" Value="{LANG-SAVESETTINGS}" class="submit"></td>
+</tr>
+</table>
+</form><br />

@@ -1,0 +1,106 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-MODIFYBOARD}</div><br />
+
+<!-- START parentBoard -->
+<form method="post" action="boardcp.php?action=board_modify_process&amp;id={ID}&amp;type=1">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-MODIFYBOARD}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BOARDNAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="board_name" value="{BOARDNAME}" size="30" class="text" id="boardname" onblur="validateNotNull('boardname', 'boarderr');" /><div id="boarderr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDPERMISSION}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-READACCESS}</td>
+<td class="ui-widget-content" width="50%">{READACCESS}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-MODIFYBOARD}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
+<!-- END parentBoard -->
+
+<!-- START childBoard -->
+<form method="post" action="boardcp.php?action=board_modify_process&amp;id={ID}&amp;type={TYPE}">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-MODIFYBOARD}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BOARDNAME}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="board_name" size="30" value="{BOARDNAME}" class="text" id="boardname" onblur="validateNotNull('boardname', 'boarderr');" /><div id="boarderr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-DESCRIPTION}</td>
+<td class="ui-widget-content" width="50%"><textarea name="description" rows="3" cols="50" wrap="soft" class="text" id="desc" onblur="validateNotNull('desc', 'descerr');">{DESCRIPTION}</textarea><div id="descerr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDPERMISSION}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-READACCESS}</td>
+<td class="ui-widget-content" width="50%">{READACCESS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-WRITEACCESS}</td>
+<td class="ui-widget-content" width="50%">{WRITEACCESS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-REPLYACCESS}</td>
+<td class="ui-widget-content" width="50%">{REPLYACCESS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-VOTEACCESS}</td>
+<td class="ui-widget-content" width="50%">{VOTEACCESS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-POLLACCESS}</td>
+<td class="ui-widget-content" width="50%">{POLLACCESS}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDSETTINGS}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-PARENT}</td>
+<td class="ui-widget-content" width="50%">{PARENT}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-POSTINCREMENT}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START yesIncrement -->
+<input type="radio" name="increment" value="1" checked=checked />{LANG-YES} <input type="radio" name="increment" value="0" />{LANG-NO}
+<!-- END yesIncrement -->
+
+<!-- START noIncrement -->
+<input type="radio" name="increment" value="1" />{LANG-YES} <input type="radio" name="increment" value="0" checked=checked />{LANG-NO}
+<!-- END noIncrement -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-BBCODE}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START bbcodeOn -->
+<input type="radio" name="bbcode" value="1" checked=checked />{LANG-ON} <input type="radio" name="bbcode" value="0" />{LANG-OFF}
+<!-- END bbcodeOn -->
+
+<!-- START bbcodeOff -->
+<input type="radio" name="bbcode" value="1" />{LANG-ON} <input type="radio" name="bbcode" value="0" checked=checked />{LANG-OFF}
+<!-- END bbcodeOff -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-SMILE}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START smilesOn -->
+<input type="radio" name="smiles" value="1" checked=checked />{LANG-ON} <input type="radio" name="smiles" value="0" />{LANG-OFF}
+<!-- END smilesOn -->
+
+<!-- START smilesOff -->
+<input type="radio" name="smiles" value="1" />{LANG-ON} <input type="radio" name="smiles" value="0" checked=checked />{LANG-OFF}
+<!-- END smilesOff -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-IMG}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START imgOn -->
+<input type="radio" name="img" value="1" checked=checked />{LANG-ON} <input type="radio" name="img" value="0" />{LANG-OFF}
+<!-- END imgOn -->
+
+<!-- START imgOff -->
+<input type="radio" name="img" value="1" />{LANG-ON} <input type="radio" name="img" value="0" checked=checked />{LANG-OFF}
+<!-- END imgOff -->
+</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{LANG-MODIFYBOARD}" class="submit" /></td>
+</tr>
+</table>
+</form><br />
+<!-- END childBoard -->

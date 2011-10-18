@@ -1,0 +1,80 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="Profile.php">{LANG-TITLE}</a> &#187; {LANG-EDITPROFILE}</div><br />
+
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<form method="post" action="#/ucp/saveProfile" id="UpdateProfile">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-EDITPROFILE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CURRPASS}<a href="#" class="hint">[?]<span>{LANG-ENTERPASS}</span></a></td>
+<td class="ui-widget-content" width="50%"><input type="password" name="conpass" class="text" size="30" id="pwd" onblur="validateNotNull('pwd', 'pwderr');" /><div id="pwderr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-PMNOTIFY}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START ypmnotice -->
+<input type="radio" name="pm_notice" value="1" class="text" checked=checked />{LANG-YES}&nbsp;<input type="radio" name="pm_notice" value="0" class="text" />{LANG-NO}
+<!-- END ypmnotice -->
+
+<!-- START npmnotice -->
+<input type="radio" name="pm_notice" value="1" class="text" />{LANG-YES}&nbsp;<input type="radio" name="pm_notice" value="0" class="text" checked=checked />{LANG-NO}
+<!-- END npmnotice -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-SHOWEMAIL}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START yhideemail -->
+<input type="radio" name="show_email" value="0" class="text" checked=checked />{LANG-YES}&nbsp;<input type="radio" name="show_email" value="1" class="text" />{LANG-NO}
+<!-- END yhideemail -->
+
+<!-- START nhideemail -->
+<input type="radio" name="show_email" value="0" class="text" />{LANG-YES}&nbsp;<input type="radio" name="show_email" value="1" class="text" checked=checked />{LANG-NO}
+<!-- END nhideemail -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CUSTOMTITLE}</td>
+<td class="ui-widget-content" width="50%">
+<!-- START customtitle -->
+<input type="text" name="ctitle" value="{CUSTOMTITLE}" class="text" size="30" id="ctitle" onblur="validateAlphaNumeric('ctitle', 'ctitleerr');" /><div id="ctitleerr"></div>
+<!-- END customtitle -->
+
+<!-- START dcustomtitle -->
+<input type="text" name="ctitle" value="{CUSTOMTITLE}" class="text" size="30" readonly=readonly />
+<!-- END dcustomtitle -->
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-MSN}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="msn" value="{MSN}" class="text" size="30" id="msn" onblur="validateLength('msn', 'msnerr', 255);" /><div id="msnerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-AOL}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="aol" value="{AOL}" class="text" size="30" id="aim" onblur="validateLength('aim', 'aimerr', 255);" /><div id="aimerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-ICQ}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="icq" value="{ICQ}" class="text" size="30" id="icq" onblur="validateLength('icq', 'icqerr', 15);" /><div id="icqerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-YAHOO}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="yim" value="{YAHOO}" class="text" size="30" id="yim" onblur="validateLength('yim', 'yimerr', 255);" /><div id="yimerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-WWW}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="www" value="{WWW}" class="text" size="30" id="www" onblur="validateUrl('www', 'wwwerr');" /><div id="wwwerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-TIME}</td>
+<td class="ui-widget-content" width="50%">{TIME}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-TIMEFORMAT}<a href="#" class="hint" onclick="open_win('http://php.net/date', 700, 300);">[?]<span>{LANG-TIMEINFO}</span></a></td>
+<td class="ui-widget-content" width="50%"><input type="text" name="time_format" value="{TIMEFORMAT}" class="text" maxlength="14" size="30" id="timeform" onblur="validateLength('timeform', 'timeformerr', 14);" /><div id="timeformerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-STYLE}</td>
+<td class="ui-widget-content" width="50%">{STYLE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-LANGUAGE}</td>
+<td class="ui-widget-content" width="50%">{LANGUAGE}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-LOCATION}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="location"  value="{LOCATION}" class="text" size="30" id="loc" onblur="validateLength('loc', 'locerr', 70);" /><div id="locerr"></div></td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" VALUE="{SUBMIT}" class="submit" /></td>
+</tr>
+</table>
+</form><br />

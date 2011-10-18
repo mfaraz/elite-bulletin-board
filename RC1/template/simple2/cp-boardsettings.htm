@@ -1,0 +1,53 @@
+<script type="text/javascript" src="../includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="../index.php">{TITLE}</a> &#187; <a href="index.php">{LANG-TITLE}</a> &#187; {LANG-BOARDSETTINGS}</div><br />
+
+<form method="post" action="acpsettings.php?section=save_board">
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">{LANG-BOARDSETTINGS}</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-BOARDNAME}</td>
+<td class="ui-widget-content"><input type="text" name="board_name" size="30" value="{BOARDNAME}" class="text" id="boardname" onblur="validateNotNull('boardname', 'boardnameerr');" /><div id="boardnameerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-BOARDADDRESS}<a href="#" class="hint">[?]<span>{LANG-BOARDADDRESSTXT}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="board_address" size="30" value="{BOARDADDRESS}" class="text" id="boardaddr" onblur="validateUrl('boardaddr', 'boardaddrerr');" /><div id="boardaddrerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-SITEADDRESS}<a href="#" class="hint">[?]<span>{LANG-SITEADDESSTXT}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="site_address" size="30" value="{SITEADDRESS}" class="text" id="siteaddr" onblur="validateUrl('siteaddr', 'siteaddrerr');" /><div id="siteaddrerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-PERPAGE}<a href="#" class="hint">[?]<span>{LANG-PERPAGEHINT}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="perpg" size="3" maxlength="3" value="{PERPAGE}" class="text" id="perpg" onblur="validateNumeric('perpg', 'perpgerr');" /><div id="perpgerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-BOARDSTATUS}</td>
+<td class="ui-widget-content">
+<!-- START boardOn -->
+<input type="radio" name="board_stat" value="1" checked=checked />{LANG-ON} <input type="radio" name="board_stat" value="0" />{LANG-OFF}
+<!-- END boardOn -->
+
+<!-- START boardOff -->
+<input type="radio" name="board_stat" value="1" />{LANG-ON} <input type="radio" name="board_stat" value="0" checked=checked />{LANG-OFF}
+<!-- END boardOff -->
+</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-OFFMSG}</td>
+<td class="ui-widget-content"><textarea name="off_msg" rows="3" cols="50" wrap="soft" class="text">{OFFMSG}</textarea></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-BOARDEMAIL}</td>
+<td class="ui-widget-content"><input type="text" name="board_email" size="30" value="{BOARDEMAIL}" class="text" id="boardemail" onblur="validateEmail('boardemail', 'boardemailerr');"><div id="boardemailerr"></div></td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-DEFAULTSTYLE}</td>
+<td class="ui-widget-content">{DEFAULTSTYLE}</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-DEFAULTLANGUAGE}</td>
+<td class="ui-widget-content">{DEFAULTLANGUAGE}</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-TIMEZONE}</td>
+<td class="ui-widget-content">{TIMEZONE}</td>
+</tr><tr>
+<td class="ui-widget-content">{LANG-TIMEFORMAT}<a href="#" class="hint">[?]<span>{LANG-TIMERULE}</span></a></td>
+<td class="ui-widget-content"><input type="text" name="default_time" size="30" value="{TIMEFORMAT}" class="text" id="timeform" onblur="validateNotNull('timeform', 'timeformaterr');" /><div id="timeformaterr"></div></td>
+</tr><tr>
+<td colspan="2" align="center" class="ui-widget-header"><input type="submit" Value="{LANG-SAVESETTINGS}" class="submit"></td>
+</tr>
+</table>
+</form><br />

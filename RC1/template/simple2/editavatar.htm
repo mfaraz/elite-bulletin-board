@@ -1,0 +1,20 @@
+<script type="text/javascript" src="includes/js/validation.js"></script>
+<br /><div class="ui-widget-content"><a href="index.php">{TITLE}</a> &#187; <a href="Profile.php">{LANG-TITLE}</a> &#187; {LANG-EDITAVATAR}</div><br />
+<p class="ui-widget-content">{LANG-TEXT}</p>
+
+<form method="post" action="#/ucp/saveAvatar" id="updateAvatar">
+<table width="100%" border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td class="ui-widget-header" colspan="2" align="center">{LANG-EDITAVATAR}</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{LANG-CURRENTAVATAR}</td>
+<td class="ui-widget-content" width="50%"><img src="{CURRENTAVATAR}" alt="{LANG-CURRENTAVATAR}"><br />
+[<a href="#" id="clearAvatar">{LANG-CLEARAVATAR}</a>]</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{ALLOWEDTYPES}</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="avatar" size="30" class="text" id="avatar" onblur="validateUrl('avatar', 'avatarerr');" /><div id="avatarerr"></div></td>
+</tr><tr>
+<td class="ui-widget-header" colspan="2" align="center"><input type="submit" value="{LANG-SAVEAVATAR}" class="submit" />&nbsp;<input type="button" value="{LANG-GALLERY}" onclick="gotoUrl('Profile.php#/ucp/gallery');return false;" class="submit" /></td>
+</tr>
+</table>
+</form><br />
