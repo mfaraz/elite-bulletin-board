@@ -1,0 +1,76 @@
+{% extends "/simple2/master.twig" %}
+
+{% block title %}{{pageTitle}} - Index{% endblock %}
+
+{% block bodyRender %}
+
+{% if showInfoBox == 1 %}
+
+<br />
+<!-- JS for Information Ticker -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.newsticker.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#news").newsticker(5000); //newsticker plugin.
+}); //END function.
+</script>
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+	<tr>
+		<th class="ui-widget-header">::{{LANG_TICKER}}::</th>
+	</tr><tr>
+		<td class="ui-widget-content" align="center">
+		{{ANNOUNCEMENT|raw}}
+		</td>
+	</tr>
+</table><br />
+
+{% endif %}
+
+{% for c in Category %}
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+	<td colspan="7" class="ui-widget-header" align="center"><b>::{{c.Board}}::</b></td>
+</tr><tr class="ui-widget-content">
+	<th width="4%">&nbsp;</th><th width="56%">{{LANG_BOARD}}</th><th width="10%">{{LANG_TOPIC}}</th><th width="10%">{{LANG_POST}}</th><th width="20%">{{LANG_LASTPOSTDATE}}</th>
+</tr>
+	{% for b in Boards %}
+    	{# make sure we get the correct data in the right spots. #}
+        {% if c.id == b.Category %}
+			<tr>
+			<td class="ui-widget-content" align="center">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("application/views/simple2/images/new.gif")|raw : IMG("application/views/simple2/images/old.gif")|raw }}</td>
+			<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/simple2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
+			<td class="ui-widget-header" align="center">{{b.id|counter("TopicCount")}}</td>
+			<td class="ui-widget-header" align="center">{{b.id|counter("PostCount")}}</td>
+			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.Post_Link, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
+			</tr>
+		{%- endif -%}
+
+	{% endfor %}
+</table><br />
+{% endfor %}
+
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr class="ui-widget-header">
+<th width="50%">::{{LANG_BOARDSTAT}}::</th><th width="50%">::{{LANG_ICONGUIDE}}::</th>
+</tr><tr>
+<td class="ui-widget-content">
+{{LANG_NEWESTMEMBER}}: {{boardInfo("newuser")}}<br />
+<b>{{ boardInfo("topic") }}</b> {{LANG_TOTALTOPIC}} / <b>{{ boardInfo("post") }}</b> {{LANG_TOTALPOST}} / <b>{{ boardInfo("member") }}</b> {{LANG_TOTALUSER}}</td>
+<td class="ui-widget-content">{{IMG("application/views/simple2/images/new.gif")|raw}}{{LANG_NEWPOST}}<br />{{IMG("application/views/simple2/images/old.gif")|raw}}{{LANG_OLDPOST}}</td>
+</tr>
+</table><br />
+
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<th colspan="2" class="ui-widget-header">::{{LANG_WHOSONLINE}}::</th>
+</tr>
+<tr>
+<td width="12%" rowspan="3" class="ui-widget-content">{{LANG_ONLINEKEY|raw}}</td>
+</tr><tr>
+<td width="88%" class="ui-widget-content" valign="top"><b>{{ boardInfo("memberonline") }}</b> {{LANG_LOGGED_ONLINE}} &amp; <b>{{ boardInfo("guestonline") }}</b> {{LANG_GUEST_ONLINE}}</td>
+</tr><tr>
+<td class="ui-widget-content">{{WHOSONLINE|raw}}</td>
+</tr>
+</table><br />
+
+{% endblock %}
