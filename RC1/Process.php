@@ -482,7 +482,7 @@ switch ($mode){
 		}
 		
 		//check to see if the author wishes to recieve a email when a reply is added.
-		if ($subscribe == "yes"){
+		if ($subscribe == 1){
 			$db->SQL = "INSERT INTO ebb_topic_watch (username, tid, status) VALUES('$logged_user', '$tid', 'Unread')";
 			$db->query();
 		}
