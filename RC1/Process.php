@@ -401,7 +401,7 @@ switch ($mode){
 		}
 
 		//get form values.
-		$no_smile = (isset($_POST['no_smile'])) ? $db->filterMySQLvar_cleanup(($_POST['no_smile'])) : 0;
+		$no_smile = (isset($_POST['no_smile'])) ? $db->filterMySQL(var_cleanup($_POST['no_smile'])) : 0;
 		$no_bbcode = (isset($_POST['no_bbcode'])) ? $db->filterMySQL(var_cleanup($_POST['no_bbcode'])) : 0;
 		$subscribe = (isset($_POST['subscribe'])) ? var_cleanup($_POST['subscribe']) : 0;
 		$reply_post = $db->filterMySQL(var_cleanup($_POST['reply_post']));
