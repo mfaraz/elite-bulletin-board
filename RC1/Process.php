@@ -562,7 +562,7 @@ switch ($mode){
 					$emailResult = $db->fetchResults();
 
 					#create array for replacements.
-					$replacements[$enotify['Email']] = array(
+					$replacements[$emailResult['Email']] = array(
 						'{title}'=>$title,
 						'{username}'=>$enotify['username'],
 						'{author}'=>$topic['re_author'],

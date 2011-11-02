@@ -191,9 +191,23 @@ $boardList->getReplies();
 }
 
 #see if user can reply to this topic.
-if($groupAccess == 0){
-#hide.
-}elseif(($groupPolicy->validateAccess(1, 38) == true) OR ($tName['Locked'] == 0) OR ($groupPolicy->validateAccess(0, $boardRule['B_Reply']) == true)){
+if($groupAccess == 0) {
+	$showReplyBox = FALSE;
+} elseif ($groupPolicy->validateAccess(0, $boardRule['B_Reply']) == false) {
+	$showReplyBox = FALSE;
+} elseif ($groupPolicy->validateAccess(1, 38) == false) {
+	$showReplyBox = FALSE;
+} else {
+	//see if a topic is locked before granting reply rights.
+	if ($tName['Locked'] == 0) {
+		$showReplyBox = TRUE;
+	} else {
+		$showReplyBox = FALSE;
+	}
+}
+
+//see if user can post a reply.
+if($showReplyBox){
 	//bbcode buttons
 	$smile = form_smiles();
 
