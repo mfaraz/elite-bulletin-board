@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: generalcp.php
-Last Modified: 7/29/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -228,12 +228,12 @@ case 'mail_send':
 	#add user's email to mail list.
 	while($r = mysql_fetch_assoc($newsletterQ)){
 		//Set the To addresses
-		$message->addTo($r['Email']);
+		$message->setTo($r['Email']);
+		
+		#send message out.
+		//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+		$mailer->send($message);
 	}
-
-	#send message out.
-	//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
-	$mailer->batchSend($message);
 
 	#log this into our audit system.
 	$acpAudit = new auditSystem();

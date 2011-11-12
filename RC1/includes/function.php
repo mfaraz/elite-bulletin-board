@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: function.php
-Last Modified: 6/24/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -137,7 +137,7 @@ function redirectToHttps(){
 *@param bool delay - should the user wait to be redirected?
 *@param int sec = seconds that user should wait before being redirected.
 *
-*@modified 1/17/10
+*@modified 11/11/11
 *
 *@note url parameter will only direct users to pages within the board, it
 *won't redirect users to external links.
@@ -159,6 +159,7 @@ function redirect($url, $delay, $sec){
 
 		#direct user using HTTP/1.1 headers.
 		header("Location: /".$boardDir."/".$url);
+		exit();
 	}
 }
 

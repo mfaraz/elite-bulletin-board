@@ -4,7 +4,7 @@ if (!defined('IN_EBB') ) {
 }
 /**
 Filename: boardlisting.php
-Last Modified: 2/28/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -883,7 +883,7 @@ class boardList{
 	*
 	*Will generate results of a poll.
 	*
-	*@modified 10/4/09
+	*@modified 11/11/11
 	*
 	*@access private
 	*/
@@ -908,7 +908,7 @@ class boardList{
 
 		#setup tag code.
 		$tpl->parseTags(array(
-		"QUESTION" => "$lang[Question]"));
+		"QUESTION" => "$questionResult[Question]"));
 
 		echo $tpl->outputHtml();
 

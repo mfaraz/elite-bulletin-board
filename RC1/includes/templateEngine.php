@@ -231,6 +231,8 @@ class templateEngine{
 	*/
 	public function replaceBlockTags($blockName, $q) {
 
+		$blockPage = '';
+
 		while ($tags = mysql_fetch_assoc($q)) {
 			$block = $this->getBlock($blockName);
 			foreach ($tags as $tag => $data) {

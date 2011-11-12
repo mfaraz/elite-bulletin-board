@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: report.php
-Last Modified: 7/29/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -234,16 +234,18 @@ case 'report_topic':
 		);
 
 		//Set the To addresses
-		$message->addTo($usr['Email']);
+		$message->setTo(array($usr['Email'] => $r['Username']));
+		
+		#setup mailer template.
+		$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
+		$mailer->registerPlugin($decorator);
+
+		#send message out.
+		//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+		$mailer->send($message);
 	}
-
-	#setup mailer template.
-	$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
-	$mailer->registerPlugin($decorator);
-
-	#send message out.
-	//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
-	$mailer->batchSend($message);
+	
+	
 	
 	#display thank you message.
 	$displayMsg = new notifySys($lang['reportsent'], true);
@@ -401,7 +403,15 @@ case 'report_post':
 		);
 
 		//Set the To addresses
-		$message->addTo($usr['Email']);
+		$message->setTo(array($usr['Email'] => $r['Username']));
+		
+		#setup mailer template.
+		$decorator = new Swift_Plugins_DecoratorPlugin($replacements);
+		$mailer->registerPlugin($decorator);
+
+		#send message out.
+		//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
+		$mailer->send($message);
 	}
 
 	#setup mailer template.
