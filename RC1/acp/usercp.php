@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: usercp.php
-Last Modified: 7/29/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -589,7 +589,7 @@ case 'activate_user';
 				->setBody(accept_user()); //set email body
 
 			//Set the To addresses
-			$message->addTo($getEml['Email']);
+			$message->setTo($getEml['Email']);
 
 			//setup anti-flood plugin.
 			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
@@ -606,7 +606,7 @@ case 'activate_user';
 
 			#send message out.
 			//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
-			$mailer->batchSend($message);
+			$mailer->send($message);
 			
 			#log this into our audit system.
 			$acpAudit = new auditSystem();
@@ -681,13 +681,13 @@ case 'activate_user';
 				->setBody(deny_user()); //set email body
 
 			//Set the To addresses
-			$message->addTo($getEml['Email']);
+			$message->setTo($getData['Email']);
 
 			//setup anti-flood plugin.
 			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, $boardPref->getPreferenceValue("mail_antiflood")));
 
 			#create array for replacements.
-			$replacements[$getEml['Email']] = array(
+			$replacements[$getData['Email']] = array(
 				'{title}'=>$title
 			);
 
@@ -697,7 +697,7 @@ case 'activate_user';
 
 			#send message out.
 			//TODO: Add a failure list to this method to help administrators weed out "dead" accounts.
-			$mailer->batchSend($message);
+			$mailer->send($message);
 
 			#log this into our audit system.
 			$acpAudit = new auditSystem();

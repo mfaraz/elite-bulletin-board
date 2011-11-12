@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: login.php
-Last Modified: 7/29/2011
+Last Modified: 11/11/2011
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -315,7 +315,7 @@ case 'lostpassword':
 		->setBody(pwd_reset()); //set email body
 
 	#create array for replacements.
-	$replacements[$email] = array(
+	$replacements[$lost_email] = array(
 		'{title}'=>$title,
 		'{boardAddr}'=>$boardAddr,
 		'{username}'=>$lost_user,
