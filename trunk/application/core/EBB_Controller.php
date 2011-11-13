@@ -96,7 +96,7 @@ class EBB_Controller extends CI_Controller {
 		$sessionTimeout = time() - 300;
 
 		//delete any old entries
-		$this->db->query("DELETE FROM ebb_online WHERE time<?", $sessionTimeout);
+		$this->db->delete('ebb_online', array('time <' => $sessionTimeout));
 
 		#login setup
 		if (($this->input->cookie('ebbuser', TRUE) <> null && ($this->input->cookie('ebbpass', TRUE) <> null)) OR ($this->session->userdata('ebbuser') <> FALSE) && ($this->session->userdata('ebbpass') <> FALSE)) {
@@ -156,10 +156,10 @@ class EBB_Controller extends CI_Controller {
 			$this->logged_user = "guest";
 			$this->groupAccess = 0;
 			$this->groupProfile = 0;
-			$this->style = $this->preference->getPreferenceValue("default_style")->pref_value;
-			$this->timeFormat = $this->preference->getPreferenceValue("timeformat")->pref_value;
-			$this->timeZone = $this->preference->getPreferenceValue("timezone")->pref_value;
-			$this->lng = $this->preference->getPreferenceValue("default_language")->pref_value;
+			$this->style = $this->preference->getPreferenceValue("default_style");
+			$this->timeFormat = $this->preference->getPreferenceValue("timeformat");
+			$this->timeZone = $this->preference->getPreferenceValue("timezone");
+			$this->lng = $this->preference->getPreferenceValue("default_language");
 			
 			$this->load->helper('user');
 			
@@ -172,8 +172,8 @@ class EBB_Controller extends CI_Controller {
 		$this->lang->load('ebb', $this->lng);
 
 		//load up global settings.
-		$this->title = $this->preference->getPreferenceValue("board_name")->pref_value;
-		$this->boardUrl = $this->preference->getPreferenceValue("board_url")->pref_value;
+		$this->title = $this->preference->getPreferenceValue("board_name");
+		$this->boardUrl = $this->preference->getPreferenceValue("board_url");
 
 	} //END cookie/session check
 

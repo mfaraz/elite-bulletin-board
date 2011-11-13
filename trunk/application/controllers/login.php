@@ -1,12 +1,12 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
-	* login.php
-	* @package Elite Bulletin Board v3
-	* @author Elite Bulletin Board Team <http://elite-board.us>
-	* @copyright  (c) 2006-2011
-	* @license http://opensource.org/licenses/gpl-license.php GNU Public License
-	* @version 10/7/2011
+ *  login.php
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2011
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 10/12/2011
 */
 
 
@@ -16,23 +16,193 @@ class Login extends EBB_Controller {
  		parent::__construct();
 		$this->load->helper(array('common', 'posting'));
 	}
-
-
+	
 	/**
-		 * Index Page for this controller.
-		 *
-		 * Maps to the following URL
-		 * 		http://example.com/index.php/login
-		 *	- or -
-		 * 		http://example.com/index.php/login/index
-		 * @see http://codeigniter.com/user_guide/general/urls.html
+	 * Output Login Form.
+	 * @version 10/11/11
 	 */
-	public function index() {
-
+	private function LoginForm() {
+		
+		//load breadcrumb library
+		$this->load->library('breadcrumb');
+		
+		// add breadcrumbs
+		$this->breadcrumb->append_crumb($this->title, '/boards/');
+		$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+		
+		//render to HTML.
+		echo $this->twig->render($this->style, 'login', array (
+		  'boardName' => $this->title,
+		  'BOARD_URL' => $this->boardUrl,
+		  'APP_URL' => $this->boardUrl.APPPATH,
+		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'LANG' => $this->lng,
+		  'TimeFormat' => $this->timeFormat,
+		  'TimeZone' => $this->timeZone,
+		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+		  'LOGGEDUSER' => $this->logged_user,
+		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+		  'LANG_INFO' => $this->lang->line('info'),
+		  'LANG_LOGIN' => $this->lang->line('login'),
+		  'LANG_LOGOUT' => $this->lang->line('logout'),
+		  'LOGINFORM' => form_open('login/LogIn'),
+		  'VALIDATION_USERNAME' => form_error('username'),
+		  'VALIDATION_PASSWORD' => form_error('password'),
+		  'LANG_USERNAME' => $this->lang->line('username'),
+		  'LANG_REGISTER' => $this->lang->line('register'),
+		  'LANG_PASSWORD' => $this->lang->line('pass'),
+		  'LANG_FORGOT' => $this->lang->line('forgot'),
+		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+		  'LANG_SEARCH' => $this->lang->line('search'),
+		  'LANG_CP' => $this->lang->line('admincp'),
+		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+		  'LANG_HOME' => $this->lang->line('home'),
+		  'LANG_HELP' => $this->lang->line('help'),
+		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
+		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_POWERED' => $this->lang->line('poweredby'),
+		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'BREADCRUMB' =>$this->breadcrumb->output()
+		));
 	}
 	
 	/**
-	 * Processes login form and logs user in.
+	 * Outputs Password Recovery Form
+	 * @version 10/12/11
+	 */
+	private function PwdRecoverForm() {
+		
+		//load breadcrumb library
+		$this->load->library('breadcrumb');
+		
+		// add breadcrumbs
+		$this->breadcrumb->append_crumb($this->title, '/boards/');
+		$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+		$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
+		
+		//render to HTML.
+		echo $this->twig->render($this->style, 'lostpassword', array (
+		  'boardName' => $this->title,
+		  'BOARD_URL' => $this->boardUrl,
+		  'APP_URL' => $this->boardUrl.APPPATH,
+		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'LANG' => $this->lng,
+		  'TimeFormat' => $this->timeFormat,
+		  'TimeZone' => $this->timeZone,
+		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+		  'LOGGEDUSER' => $this->logged_user,
+		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+		  'LANG_INFO' => $this->lang->line('info'),
+		  'LANG_LOGIN' => $this->lang->line('login'),
+		  'LANG_LOGOUT' => $this->lang->line('logout'),
+		  'LOGINFORM' => form_open('login/PasswordRecoverySubmit'),
+		  'VALIDATION_USERNAME' => form_error('lost_user'),
+		  'VALIDATION_EMAIL' => form_error('lost_email'),
+		  'LANG_USERNAME' => $this->lang->line('username'),
+		  'LANG_REGISTER' => $this->lang->line('register'),
+		  'LANG_PASSWORD' => $this->lang->line('pass'),
+		  'LANG_FORGOT' => $this->lang->line('forgot'),
+		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+		  'LANG_SEARCH' => $this->lang->line('search'),
+		  'LANG_CP' => $this->lang->line('admincp'),
+		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+		  'LANG_HOME' => $this->lang->line('home'),
+		  'LANG_HELP' => $this->lang->line('help'),
+		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
+		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_POWERED' => $this->lang->line('poweredby'),
+		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'BREADCRUMB' =>$this->breadcrumb->output(),
+		  'LANG_EMAIL' => $this->lang->line('email'),
+		  'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
+		  'LANG_GETPASS' => $this->lang->line('getpassword')
+		));
+	}
+	
+	/**
+	 * Registration Form.
+	 * @version 10/12/11
+	 */
+	private function registerForm() {
+		
+		//load breadcrumb library
+		$this->load->library('breadcrumb');
+		
+		// add breadcrumbs
+		$this->breadcrumb->append_crumb($this->title, '/boards/');
+		$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');		
+		
+		//render to HTML.
+		echo $this->twig->render($this->style, 'register', array (
+		  'boardName' => $this->title,
+		  'BOARD_URL' => $this->boardUrl,
+		  'APP_URL' => $this->boardUrl.APPPATH,
+		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'LANG' => $this->lng,
+		  'TimeFormat' => $this->timeFormat,
+		  'TimeZone' => $this->timeZone,
+		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+		  'LOGGEDUSER' => $this->logged_user,
+		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+		  'LANG_INFO' => $this->lang->line('info'),
+		  'LANG_LOGIN' => $this->lang->line('login'),
+		  'LANG_LOGOUT' => $this->lang->line('logout'),
+		  'REGISTERFORM' => form_open('login/CreateUser'),
+		  'VALIDATION_USERNAME' => form_error('lost_user'),
+		  'VALIDATION_EMAIL' => form_error('lost_email'),
+		  'LANG_USERNAME' => $this->lang->line('username'),
+		  'LANG_REGISTER' => $this->lang->line('register'),
+		  'LANG_PASSWORD' => $this->lang->line('pass'),
+		  'LANG_FORGOT' => $this->lang->line('forgot'),
+		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+		  'LANG_SEARCH' => $this->lang->line('search'),
+		  'LANG_CP' => $this->lang->line('admincp'),
+		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+		  'LANG_HOME' => $this->lang->line('home'),
+		  'LANG_HELP' => $this->lang->line('help'),
+		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
+		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_POWERED' => $this->lang->line('poweredby'),
+		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'BREADCRUMB' =>$this->breadcrumb->output(),
+		  'LANG_EMAIL' => $this->lang->line('email'),
+		  'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
+		  'LANG_GETPASS' => $this->lang->line('getpassword')
+		));
+	}
+
+
+	/**
+	  * Index Page for this controller.
+	  * @version 10/11/11
+	  * Maps to the following URL
+	  * http://example.com/index.php/login
+	  *	- or -
+	  * http://example.com/index.php/login/index
+	  * @see http://codeigniter.com/user_guide/general/urls.html
+	 */
+	public function index() {
+
+		// LOAD LIBRARIES
+        $this->load->helper('form');		
+		
+		//show login form.
+		$this->LoginForm();
+		
+	}
+	
+	/**
+	  * Processes login form and logs user in.
+	 *  @version 10/11/11
 	 */
 	public function LogIn() {
 
@@ -40,20 +210,16 @@ class Login extends EBB_Controller {
         $this->load->library(array('encrypt', 'form_validation'));
         $this->load->helper('form');
 
-        $this->form_validation->set_rules('username', $this->lang->line('blank'), 'required');
-        $this->form_validation->set_rules('password', $this->lang->line('blank'), 'required');
+        $this->form_validation->set_rules('username', $this->lang->line('nouser'), 'required');
+        $this->form_validation->set_rules('password', $this->lang->line('nopass'), 'required');
         $this->form_validation->set_error_delimiters('<div class="ui-state-error">', '</div>');
 
 		//see if any validation rules failed.
 		if ($this->form_validation->run() == FALSE) {
-		//re-show form with error(s).
-		echo $this->twig->render('/page/form.htm', array (
-			'VALIDATION' => form_error('test'),
-			'FORMTAG' => form_open('page/forumSubmit'),
-			'pageTitle'=> 'Form posting Test',
-			'curVersion'=> '2.1.12',
-			'curYear' => date("Y")
-			));
+			
+			//show login form.
+			$this->LoginForm();
+			
 		} else {
 		
 			$params = array('usr' => $this->input->post('username', TRUE), 'pwd' => $this->input->post('password', TRUE));
@@ -143,28 +309,32 @@ class Login extends EBB_Controller {
 	}
 	
 	/**
-		* Validates inactive account.
+	 * Validates inactive account.
+	 * @version 10/11/11
 	*/
 	public function validateAccount($key, $u) {
 	
 	}
 	
 	/**
-		 * Password recovery View.
-		 *
-		 * Maps to the following URL
-		 * 		http://example.com/index.php/login/PasswordRecovery
-		 *	- or -
-		 * 		http://example.com/index.php/login/index
-		 * @see http://codeigniter.com/user_guide/general/urls.html
+	 * Password recovery View.
+	 * @version 10/12/11
+	 * Maps to the following URL
+	 * http://example.com/index.php/login/PasswordRecovery
+	 * @see http://codeigniter.com/user_guide/general/urls.html
 	*/
 	public function PasswordRecovery() {
 
+		// LOAD LIBRARIES
+        $this->load->helper('form');
+		
+		$this->PwdRecoverForm();
 
 	}
 	
 	/**
-		* Validate & process lost password request.
+	 * Validate & process lost password request.
+	 * @version 10/11/11
 	*/
 	public function PasswordRecoverySubmit() {
 
@@ -172,11 +342,34 @@ class Login extends EBB_Controller {
 	}
 
     /**
-		* Logs user out and clears all active login sessions.
+	 * Logs user out and clears all active login sessions.
+	 * @version 10/11/11
 	*/
 	public function LogOut() {
 
 
+	}
+	
+	/**
+	 * Create New User View.
+	 * @version 10/11/11
+	 * Maps to the following URL
+	 * http://example.com/index.php/login/register	 
+	 * @see http://codeigniter.com/user_guide/general/urls.html
+	*/
+	public function register() {
+		// LOAD LIBRARIES
+        $this->load->helper('form');
+		
+		$this->registerForm();
+	}
+	
+	/**
+	 * Create New User form submit action.
+	 * @version 10/11/11
+	*/
+	public function CreateUser() {
+		
 	}
 }
 ?>

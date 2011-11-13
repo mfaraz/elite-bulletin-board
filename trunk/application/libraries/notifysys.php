@@ -1,12 +1,12 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
- * notifySys.php
- * @package Elite Bulletin Board v3
- * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/10/2011
+  * notifySys.php
+  * @package Elite Bulletin Board v3
+  * @author Elite Bulletin Board Team <http://elite-board.us>
+  * @copyright  (c) 2006-2011
+  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+  * @version 10/7/2011
 */
 
 class notifysys{
@@ -16,42 +16,37 @@ class notifysys{
 	/**
 	 * Error message to present to user.
 	 * @var string
-	*/
+	 */
 	private $msg;
 	
 	/**
 	 * Header of Error Message
 	 * @var string
-	*/
+	 */
 	private $errorHeader;
 	
 	
 	/**
 	 * Display debug information.
 	 * @var boolean
-	*/
+	 */
 	private $debugStat;
 	
 	/**
 	 * File Error Occurred.
 	 * @var string
-	*/
+	 */
 	private $errFile;
 	
 	/**
 	 * Line Number Error Occurred.
 	 * @var integer
-	*/
+	 */
 	private $errLine;
-	
-	/**
-	 * @var object CodeIgniter object.
-	*/
-	private $ci;
 
 	/**
 	 * Build Error Message.
-	 * @version 10/10/11
+	 * @version 9/29/11
 	 * @param string $message - Message to be displayed later.
 	 * @param boolean $titlestat - determines if breadcumb will be displayed or not.
 	 * @param boolean $debug - See if we wish to see debugging details (default value is false).
@@ -61,8 +56,6 @@ class notifysys{
 	*/
 	public function __construct($params){
 
-		$this->ci =& get_instance();
-		
 		#define some values to use in the error class.
 		$this->msg = $params['message'];
 		$this->errorHeader = $params['eheader'];
@@ -161,13 +154,43 @@ class notifysys{
 		echo $tpl->outputHtml();
 	}
 
-	/**
-	 * Setup Error for Ajax Requests.
-	 * @param str $type - what type  of message are we displaying.
-	 * @access Public
-	 * @version 7/21/2011
+    /**
+		* Displays validate error message that will match the current style being used by the user.
+		* @version 7/21/11
+		* @access public
 	*/
-	public function displayAjaxError($type){
+	public function displayValidate(){
+	
+		global $title, $lang, $style;
+
+		//see if we're in install-mode
+		if (!defined('EBBINSTALLED')) {
+			$tpl = new templateEngine(0, "error-validate", "installer");
+		} else {
+			$tpl = new templateEngine($style, "error-validate");
+		}
+		
+		$tpl->parseTags(array(
+		"TITLE" => "$title",
+		"LANG-TITLE" => "$lang[error]",
+		"ERRORMSG" => "$this->msg"));
+
+		#see if the titlebar show display.
+		if ($this->displayTitle == false){
+			$tpl->removeBlock("titlebar");
+		}
+
+		#output result
+		echo $tpl->outputHtml();
+	}
+
+		/**
+			 * Setup Error for Ajax Requests.
+			 * @param str $type - what type  of message are we displaying.
+			 * @access Public
+			 * @version 7/21/2011
+		*/
+		public function displayAjaxError($type){
 		global $style;
 
 		//see if we're in install-mode

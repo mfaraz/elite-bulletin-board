@@ -1,31 +1,40 @@
 <?php
-if (!defined('IN_EBB') ) {
-	die("<b>!!ACCESS DENIED HACKER!!</b>");
-}
+if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
- * user.class.php
+ * user.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 6/5/2011
+ * @version 10/28/2011
 */
 
 class user{
 
 	#define data member.
+	
+	/**
+	 * Username in session.
+	 * @var string
+	*/
 	private $user;
 	
+	/**
+	 *  CodeIgniter object.
+	 * @var object
+	*/
+	private $ci;
+	
     /**
-	*__construct
-	*
-	*Setup User class structure.
-	*
-	*@modified 3/9/10
-	*
-	*@access public
+	 * Setup User class structure.
+	 * @version 3/9/10
+	 * @access public
 	*/
 	public function __construct($uName){
+		
+		//setup CodeIgniter instance.
+		$this->ci =& get_instance();
+		
 		$this->user = trim($uName);
 		
 		#run a validation on the username entered.
@@ -36,36 +45,25 @@ class user{
 	}
 
     /**
-	*__destruct
-	*
-	*Clear User data member.
-	*
-	*@modified 9/28/09
-	*
-	*@access public
+	 * Clear User data member.
+	 * @version 9/28/09
+	 * @access public
 	*/
 	public function __destruct(){
   		unset($this->user);
 	}
 	
 	/**
-	*checkUsername
-	*
-	*see if username entered is valid.
-	*
-	*@modified 10/27/09
-	*
-	*@return bool
-	*
-	*@access private
+	 * see if username entered is valid.
+	 * @version 10/28/11
+	 * @return bool
+	 * @access private
 	*/
 	private function checkUsername(){
-	
-	    global $db;
 
 	    #check against the database to see if the username match.
-        $db->SQL = "SELECT id FROM ebb_users WHERE Username='".$this->user."' LIMIT 1";
-		$validateStatus = $db->affectedRows();
+		$this->ci->db->select('id')->from('ebb_users')->where('Username', $this->user);
+		$validateStatus = $this->ci->db->count_all_results();
 
 		#setup bool. value to see if user is active or not.
 		if($validateStatus == 0){
@@ -76,28 +74,26 @@ class user{
 	}
 
 	/**
-			 * Obtains Status on any new Messages for defined user.
-			 * @param string $ucpMode determines if we want it in notification mode or just the count.
-			 * @access Public
-			 * @version 6/5/2011
-			 * @return  total new PMs to user.
-		 */
+	 * Obtains Status on any new Messages for defined user.
+	 * @param string $ucpMode determines if we want it in notification mode or just the count.
+	 * @access Public
+	 * @version 6/5/2011
+	 * @return  total new PMs to user.
+	*/
 	public function getNewPMCount($ucpMode=false){
 
-		global $db, $lang;
-
 		#total of new PM messages.
-		$db->SQL = "SELECT Read_Status FROM ebb_pm WHERE Reciever='".$this->user."' AND Read_Status=''";
-		$newPm = $db->affectedRows();
+		$this->ci->db->select('Read_Status')->from('ebb_pm')->where('Reciever', $this->user)->where('Read_Status', '');
+		$newPm = $this->ci->db->count_all_results();
 
 		//see if we're trying to get a count only.
 		if ($ucpMode) {
 			return ($newPm);
 		} else {
 			if($newPm == 0){
-				$pmMsg = $lang['nonewpm'];
+				$pmMsg = $this->ci->lang->line('nonewpm');
 			}else{
-				$pmMsg = $newPm.$lang['newpm'];
+				$pmMsg = $newPm.$this->ci->lang->line('newpm');
 			}
 
 			return($pmMsg);
@@ -105,50 +101,20 @@ class user{
 	}
 
 	/**
-	*userSettings
-	*
-	*Obtains selected user data from database.
-	*
-	*@param string $val - user value to fetch.
-	*
-	*@modified 10/19/09
-	*
-	*@return string $userPref - fetched value.
-	*
-	*@access public
-	*/
-	public function userSettings($val){
-
-		global $db;
-
-	    $uSetting = $db->filterMySQL($val);
-		$db->SQL = "SELECT ".$uSetting." FROM ebb_users WHERE Username='".$this->user."' LIMIT 1";
-		$userpref = $db->fetchResults();
-		
-		return ($userpref[$uSetting]);
-	}
-	
-	/**
-	*getPasswordSalt
-	*
-	*Obtains user's password salt when having to change their passwords.
-	*
-	*@modified 10/27/09
-	*
-	*@return password salt.
-	*
-	*@access public
+	 * Obtains user's password salt when having to change their passwords.
+	 * @version 10/28/11
+	 * @return password salt.
+	 * @access public
 	*/
 	
 	public function getPasswordSalt(){
 
-	    global $db;
-
 	    #obtain password salt.
-        $db->SQL = "SELECT salt FROM ebb_users WHERE Username='".$this->user."' LIMIT 1";
-		$pwdSlt = $db->fetchResults();
+		$this->ci->db->select('salt')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$query = $this->ci->db->get();
+		$pwdSlt = $query->row();
 
-		return($pwdSlt['salt']);
+		return($pwdSlt->salt);
 	}
 
 	/**
@@ -199,33 +165,6 @@ class user{
 		}
 
 		return($warn_bar);
-	}
-
-	/**
-	*getFeed
-	*
-	*Grab RSS feed data from defined rss address.
-	*
-	*@modified 9/28/09
-	*
-	*@param string $rss - RSS file being parsed.
-	*
-	*@return string $rssFeed - parsed RSS file.
-	*
-	*@access public
-	*/
-	public function getFeed($rss){
-
-		#prime loop var.
-		$rssFeed = '';
-		foreach ($rss->get_items() as $item){
-			$feedLink = $item->get_link(0);
-			$itemTitle = $item->get_title();
-			$itemDesc = $item->get_description();
-			$rssFeed .= '<a href="'.$feedLink.'">'.$itemTitle.'</a><br />'.$itemDesc.'<hr />';
-		}
-
-		return ($rssFeed);
 	}
 
 	/**

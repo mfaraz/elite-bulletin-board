@@ -1,0 +1,34 @@
+{% extends "/simple2/master.twig" %}
+
+{% block title %}{{boardName}} - {{LANG_LOGIN}}{% endblock %}
+
+{% block bodyRender %}
+
+{{BREADCRUMB|raw}}<br />
+
+{{LOGINFORM|raw}}
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-header" align="center">::{{LANG_LOGIN}}::</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{{LANG_USERNAME}}<br />[{{URL_TAG("login/register", LANG_REGISTER)|raw}}]</td>
+<td class="ui-widget-content" width="50%"><input type="text" name="username" class="text" size="30" id="usr" onblur="validateAlphaNumeric('usr', 'usrerr');" />
+<div id="usrerr"></div>
+{{VALIDATION_USERNAME|raw}}
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">{{LANG_PASSWORD}}<br />[{{URL_TAG("login/PasswordRecovery", LANG_FORGOT)|raw}}]</td>
+<td class="ui-widget-content" width="50%"><input type="password" name="password" class="text" size="30" id="pwd" onblur="validateAlphaNumeric('pwd', 'pwderr');" />
+<div id="pwderr"></div>
+{{VALIDATION_PASSWORD|raw}}
+</td>
+</tr><tr>
+<td class="ui-widget-content" width="50%">&nbsp;</td>
+<td class="ui-widget-content" width="50%"><input type="checkbox" name="auto_login" value="1" />{{LANG_REMEMBERTXT}}</td>
+</tr><tr>
+<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{{LANG_LOGIN}}" class="submit" /></td>
+</tr>
+</table>
+</form>
+
+{% endblock %}

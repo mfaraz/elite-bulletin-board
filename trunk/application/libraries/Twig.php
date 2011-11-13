@@ -2,20 +2,20 @@
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 
 /**
- * Twig.php
- * @package Elite Bulletin Board v3
- * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 9/7/2011
- * CREDIT
- * @author Bennet Matschullat <bennet.matschullat@giantmedia.de>
- * @since 07.03.2011 - 12:00:39
-*/
+	 * Twig.php
+	 * @package Elite Bulletin Board v3
+	 * @author Elite Bulletin Board Team <http://elite-board.us>
+	 * @copyright  (c) 2006-2011
+	 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+	 * @version 9/7/2011
+	 * CREDIT
+	 * @author Bennet Matschullat <bennet.matschullat@giantmedia.de>
+	 * @since 07.03.2011 - 12:00:39
+ */
 
 /**
- * This will help interactTwig within Codeigniter.
-*/
+	* This will help interactTwig within Codeigniter.
+ */
 class Twig {
     
     const TWIG_CONFIG_FILE = "twig";
@@ -26,8 +26,8 @@ class Twig {
     public $_twig_env;
     
     /**
-	 * constructor of twig ci class
-	*/
+		 * constructor of twig ci class
+	 */
     public function __construct()
     {
         $this->ci =& get_instance();
@@ -53,14 +53,15 @@ class Twig {
 		$this->_twig_env->addFunction('URL_TAG', new Twig_Function_Function('anchor'));
 		$this->_twig_env->addFunction('LinkTag', new Twig_Function_Function('link_tag'));
 		$this->_twig_env->addFunction('IMG', new Twig_Function_Function('img'));
+		$this->_twig_env->addFilter('PostedDate', new Twig_Filter_Function('datetimeFormatter'));
     }
 
 	/**
-	 * render a twig template file
-	 * @param int $styleID The style ID to look for.
-	 * @param string $template template name
-	 * @param array $data contains all varnames'
-	 * @param boolean $return
+		 * render a twig template file
+		 * @param int $styleID The style ID to look for.
+		 * @param string $template template name
+		 * @param array $data contains all varnames'
+		 * @param boolean $return
 	*/
     public function render($styleID, $template, $data = array(), $render = true) {
 
@@ -86,9 +87,9 @@ class Twig {
     }
 
 	/**
-	 * An internal function to ensure the user is using a valid style ID.
-	 * @param int $styleID style to validate
-	 * @access Private
+		 * An internal function to ensure the user is using a valid style ID.
+		 * @param int $styleID style to validate
+		 * @access Private
 	*/
 	private function StyleCheck($styleID){
 	    #get the style template path from the db.
@@ -100,10 +101,10 @@ class Twig {
 	}
 
 	/**
-	 * render a twig template file with no style required.
-	 * @param string $template template name
-	 * @param array $data contains all varnames'
-	 * @param boolean $return
+		 * render a twig template file with no style required.
+		 * @param string $template template name
+		 * @param array $data contains all varnames'
+		 * @param boolean $return
 	*/
 	public function renderNoStyle($template, $data = array(), $render = true) {
         $template = $this->_twig_env->loadTemplate($template);

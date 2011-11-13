@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/5/2011
+ * @version 10/27/2011
 */
 
 class loginmgr{
@@ -14,8 +14,8 @@ class loginmgr{
     #declare data members
     
     /**
-	* Username In Session
-	* @var string
+	 * Username In Session
+	 * @var string
 	*/
     private $user;
     
@@ -32,11 +32,11 @@ class loginmgr{
     private $ci;
 
     /**
-	 *Setup common value.
-	 *@version 10/5/11
-	 *@param string $usr - username under request.
-	 *@param string $pwd - password under request.
-	 *@access public
+	 * Setup common value.
+	 * @version 10/5/11
+	 * @param string $usr - username under request.
+	 * @param string $pwd - password under request.
+	 * @access public
 	*/
 	public function __construct($params){
 	
@@ -49,10 +49,10 @@ class loginmgr{
 	}
 
     /**
-	* Clean-up class after we're done.
-	* @version 8/10/09
-	* @access public
-	*/
+	 * Clean-up class after we're done.
+	 * @version 8/10/09
+	 * @access public
+	 */
 	public function __destruct(){
 
 		unset($this->user);
@@ -80,7 +80,7 @@ class loginmgr{
 	
     /**
 	 * Performs a check through the database to ensure the requested password is valid.
-	 * @version 10/5/11
+	 * @version 10/27/11
 	 * @return bool
 	 * @access private
 	*/
@@ -90,8 +90,8 @@ class loginmgr{
 	    $encryptPwd = sha1($this->pass.$this->getPwdSalt());
 
 	    #check against the database to see if the username and password match.
-        $Query = $this->ci->db->query("SELECT id FROM ebb_users WHERE Password=? LIMIT 1", $encryptPwd);
-        $validatePwd = $Query->num_rows();
+		$this->ci->db->select('id')->from('ebb_users')->where('Password', $encryptPwd)->limit(1);
+		$validatePwd = $this->ci->db->count_all_results();
 
 		#setup boolean return.
 		if($validatePwd == 0){
@@ -104,14 +104,14 @@ class loginmgr{
 	/**
 	 * Validates current login password.
 	 * @access Private
-	 * @version 10/5/11
+	 * @version 10/27/11
 	*/
 	private function validatePwdEncrypted() {
 
 	    #check against the database to see if the username and password match.
-        $Query = $this->ci->db->query("SELECT id FROM ebb_users WHERE Password=? LIMIT 1", $this->pass);
-        $validatePwd = $Query->num_rows();
-        
+		$this->ci->db->select('id')->from('ebb_users')->where('Password', $this->pass)->limit(1);
+		$validatePwd = $this->ci->db->count_all_results();
+
 		#setup boolean return.
 		if($validatePwd == 0){
 		    return(false);
@@ -121,25 +121,25 @@ class loginmgr{
 	}
 	
     /**
-	* Get password salt for requested user.
-	* @version 10/5/11
-	* @return string $pwdSlt
-	* @access private
+	 * Get password salt for requested user.
+	 * @version 10/27/11
+	 * @return string $pwdSlt
+	 * @access private
     */
 	private function getPwdSalt(){
 
 	    #check against the database to see if the username and password match.
-        $Query = $this->ci->db->query("SELECT salt FROM ebb_users WHERE Username=? LIMIT 1", $this->user);
-		$pwdSlt = $Query->row();
-		
+		$this->ci->db->select('salt')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$query = $this->ci->db->get();
+		$pwdSlt = $query->row();
 		return($pwdSlt->salt);
 	}
 
     /**
-	* Performs a check through the database to ensure the requested information is valid.
-	* @version 7/24/11
-	* @return bool
-	* @access public
+	 * Performs a check through the database to ensure the requested information is valid.
+	 * @version 7/24/11
+	 * @return bool
+	 * @access public
 	*/
 	public function validateLogin(){
 
@@ -177,10 +177,10 @@ class loginmgr{
 	}
 
     /**
-	* Performs a check through the database to ensure the user can access the adminstration panel.
-	* @version 7/24/11
-	* @return bool
-	* @access public
+	 * Performs a check through the database to ensure the user can access the adminstration panel.
+	 * @version 7/24/11
+	 * @return bool
+	 * @access public
 	*/
 	public function validateAdministrator(){
 	
@@ -233,7 +233,7 @@ class loginmgr{
     /**
 	 * Performs login process, creating any sessions or cookies needed for the ACP.
 	 * @param int $sessionLength The duration of the session.
-	 * @version 10/5/11
+	 * @version 10/27/11
 	 * @access public
 	*/
 	public function acpLogOn($sessionLength){
@@ -254,9 +254,9 @@ class loginmgr{
             'name'   => 'ebbacpu',
             'value'  => $this->user,
             'expire' => $expire,
-            'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-            'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-            'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+            'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+            'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+            'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
         );
         $this->input->set_cookie($ebbacpu);
 
@@ -264,9 +264,9 @@ class loginmgr{
             'name'   => 'ebbacpp',
             'value'  => $encryptPwd,
             'expire' => $expire,
-            'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-            'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-            'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+            'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+            'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+            'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
         );
         $this->input->set_cookie($ebbacpp);
 
@@ -275,9 +275,9 @@ class loginmgr{
 	}
 
     /**
-	* Performs logout process, removing any sessions or cookies needed for the ACP.
-	* @version 10/5/11
-	* @access public
+	 * Performs logout process, removing any sessions or cookies needed for the ACP.
+	 * @version 10/27/11
+	 * @access public
 	*/
 	public function acpLogOut(){
 
@@ -297,9 +297,9 @@ class loginmgr{
                 'name'   => 'ebbacpu',
                 'value'  => $this->user,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->input->set_cookie($ebbacpu);
 
@@ -307,24 +307,21 @@ class loginmgr{
                 'name'   => 'ebbacpp',
                 'value'  => $encryptPwd,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->input->set_cookie($ebbacpp);
-            
-            setcookie("ebbacpu", $this->user, $expire, $this->ci->preference->getPreferenceValue("cookie_path")->pref_value, $this->ci->preference->getPreferenceValue("cookie_domain")->pref_value, $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value, true);
-            setcookie("ebbacpp", $encryptPwd, $expire, $this->ci->preference->getPreferenceValue("cookie_path")->pref_value, $this->ci->preference->getPreferenceValue("cookie_domain")->pref_value, $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value, true);
-            
+
 			#clear session data.
 			$this->ci->session->all_userdata();
 		}
 	}
 
     /**
-	* Performs login process, creating any sessions or cookies needed for the system.
-	* @version 10/5/11
-	* @access public
+	 * Performs login process, creating any sessions or cookies needed for the system.
+	 * @version 10/27/11
+	 * @access public
 	*/
 	public function logOn($remember){
 
@@ -349,9 +346,9 @@ class loginmgr{
                 'name'   => 'ebbuser',
                 'value'  => $this->user,
                 'expire' => '2592000',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->ci->input->set_cookie($ebbuser);
             
@@ -359,9 +356,9 @@ class loginmgr{
                 'name'   => 'ebbpass',
                 'value'  => $encryptPwd,
                 'expire' => '2592000',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->ci->input->set_cookie($ebbpass);			
 		}
@@ -375,7 +372,7 @@ class loginmgr{
 	
     /**
 	 * Performs logout process, removing any sessions or cookies created from the system.
-	 * @version 10/5/11
+	 * @version 10/27/11
 	 * @access public
 	*/
 	public function logOut(){
@@ -391,9 +388,9 @@ class loginmgr{
                 'name'   => 'ebbuser',
                 'value'  => $this->user,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->ci->input->set_cookie($ebbuser);
             
@@ -401,9 +398,9 @@ class loginmgr{
                 'name'   => 'ebbpass',
                 'value'  => $encryptPwd,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
             $this->input->set_cookie($ebbpass);			
 
@@ -416,9 +413,9 @@ class loginmgr{
                 'name'   => 'ebbacpu',
                 'value'  => $this->user,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
                 );
                 $this->input->set_cookie($ebbacpu);
 
@@ -426,9 +423,9 @@ class loginmgr{
                     'name'   => 'ebbacpp',
                     'value'  => $encryptPwd,
                     'expire' => '',
-                    'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                    'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                    'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                    'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                    'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                    'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
                 );
                 $this->input->set_cookie($ebbacpp);
 			}
@@ -447,9 +444,9 @@ class loginmgr{
                 'name'   => 'ebbacpu',
                 'value'  => $this->user,
                 'expire' => '',
-                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
                 );
                 $this->input->set_cookie($ebbacpu);
 
@@ -457,9 +454,9 @@ class loginmgr{
                     'name'   => 'ebbacpp',
                     'value'  => $encryptPwd,
                     'expire' => '',
-                    'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain")->pref_value,
-                    'path'   => $this->ci->preference->getPreferenceValue("cookie_path")->pref_value,
-                    'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")->pref_value
+                    'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
+                    'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
+                    'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
                 );
                 $this->input->set_cookie($ebbacpp);
 			}
@@ -471,10 +468,10 @@ class loginmgr{
 	}
 
     /**
-	* Performs a check to ensure the session value is valid and not hijacked.
-	* @param $destroy bool - true will detroy old session data; false will not.
-	* @version 12/28/10
-	* @access public
+	 * Performs a check to ensure the session value is valid and not hijacked.
+	 * @param $destroy bool - true will detroy old session data; false will not.
+	 * @version 12/28/10
+	 * @access public
 	*/
     public function validateSession($destroy = false){
 
@@ -496,10 +493,10 @@ class loginmgr{
 	}
 
     /**
-	* creates a new session id and destroys the old session id(if any exists).
-	* @param $destroy bool - true will detroy old session data; false will not.
-	* @version 12/28/10
-	* @access public
+	 * creates a new session id and destroys the old session id(if any exists).
+	 * @param $destroy bool - true will detroy old session data; false will not.
+	 * @version 12/28/10
+	 * @access public
 	*/
     public function regenerateSession($destroy = false){
 
@@ -516,15 +513,16 @@ class loginmgr{
 	}
 
     /**
-	* Checks to see if the user is verified as active or still waiting for activation.
-	* @version 10/5/11
-	* @access public
+	 * Checks to see if the user is verified as active or still waiting for activation.
+	 * @version 10/27/11
+	 * @access public
 	*/
 	public function isActive(){
 
 	    #check against the database to see if the username and password match.
-        $Query = $this->ci->db->query("SELECT active FROM ebb_users WHERE Username=? LIMIT 1", $this->user);
-		$validateStatus = $Query->row();
+		$this->ci->db->select('active')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$query = $this->ci->db->get();
+		$validateStatus = $query->row();
         
 		#setup bool. value to see if user is active or not.
 		if($validateStatus->active == 0){
@@ -535,9 +533,9 @@ class loginmgr{
 	}
 
     /**
-	* disable user's active status.
-	* @version 10/5/11
-	* @access public
+	 * disable user's active status.
+	 * @version 10/5/11
+	 * @access public
 	*/
 	public function deactivateUser(){
 		
@@ -546,9 +544,9 @@ class loginmgr{
 	}
 
 	/**
-	* activates the user to allow them access the system.
-	* @version 10/5/11
-	* @access public
+	 * activates the user to allow them access the system.
+	 * @version 10/5/11
+	 * @access public
 	*/
 	public function activateUser(){
 
@@ -559,14 +557,15 @@ class loginmgr{
 
     /**
 	 * See how many times the user failed to login correctly.
-	 * @version 10/5/11
+	 * @version 10/27/11
 	 * @access public
 	*/
 	public function getFailedLoginCt(){
 
 	    #get the count from the user table.
-        $Query = $this->ci->db->query("SELECT failed_attempts FROM ebb_users WHERE Username=? LIMIT 1", $this->user);
-		$getFailedLoginCt = $Query->row();
+		$this->ci->db->select('failed_attempts')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$query = $this->ci->db->get();
+		$getFailedLoginCt = $query->row();
 
 		return($getFailedLoginCt->failed_attempts);
 	}
@@ -602,7 +601,7 @@ class loginmgr{
 
     /**
 	 *Checks to see if the user is banned or suspended.
-	 * @version 10/5/11
+	 * @version 10/27/11
 	 *  @access public
 	*/
 	public function checkBan(){
@@ -625,9 +624,9 @@ class loginmgr{
 		}
 		#see if the IP of the user is banned.
         $uip = detectProxy();
-		
-		$Query = $this->ci->db->query("SELECT ban_item FROM ebb_banlist WHERE ban_type='IP' AND ban_item LIKE ? LIMIT 1", '%'.$uip.'%');
-        $banChk = $Query->num_rows();
+
+		$this->ci->db->distinct('ban_item')->from('ebb_banlist')->where('ban_type', 'IP')->like('ban_item', $uip)->limit(1);
+		$banChk = $this->ci->db->count_all_results();
 		
 		#output an error msg.
 		if($banChk == 1){
