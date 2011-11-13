@@ -1,0 +1,10 @@
+{% extends "/simple2/master.twig" %}
+
+{% block title %}{{boardName}} - {{pageTitle}}{% endblock %}
+
+{% block bodyRender %}
+
+{{BREADCRUMB|raw}}<br />
+{{PAGINATION|raw}}<br />
+
+{% endblock %}

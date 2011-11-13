@@ -99,11 +99,11 @@ function informationPanel() {
 	if ($ci->db->count_all_results() == 0) {
 		#prime with stat-up data.
 		$infoLst = '<ul id="news">'."\n".'
-						<li><strong>'.$ci->preference->getPreferenceValue("board_name")->pref_value.' - '.$ci->lang->line('ticker_txt').'</strong></li>'."\n".'
+						<li><strong>'.$ci->preference->getPreferenceValue("board_name").' - '.$ci->lang->line('ticker_txt').'</strong></li>'."\n".'
 						<li>'.$lang['nonews'].'</li>'."\n".'</ul>';
 	} else {
 		#prime with stat-up data.
-		$infoLst = '<ul id="news">'."\n".'<li><strong>'.$ci->preference->getPreferenceValue("board_name")->pref_value.' - '.$ci->lang->line('ticker_txt').'</strong></li>'."\n";
+		$infoLst = '<ul id="news">'."\n".'<li><strong>'.$ci->preference->getPreferenceValue("board_name").' - '.$ci->lang->line('ticker_txt').'</strong></li>'."\n";
 
 		//loop through data.
 		foreach ($infoQ->result() as $ticker) {

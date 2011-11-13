@@ -1,12 +1,12 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
-	 *  groupPolicy.php
-	 * @package Elite Bulletin Board v3
-	 * @author Elite Bulletin Board Team <http://elite-board.us>
-	 * @copyright  (c) 2006-2011
-	 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-	 * @version 9/29/2011
+ *  groupPolicy.php
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2011
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 10/27/2011
 */
 
 class groupPolicy{
@@ -16,25 +16,25 @@ class groupPolicy{
 	#
 
 	/**
-		 * @var str Username.
+	 * @var str Username.
 	 */
 	private $user;
 
 	/**
-		* @var int GroupID.
+ 	 * @var int GroupID.
 	 */
 	private $gid;
 
 	/**
-		 * @var object CodeIgniter object.
+	 * @var object CodeIgniter object.
 	*/
 	private $ci;
 
     /**
-		* Validates user's group status and access.
-		* @version 3/9/10
-		* @param string $username - username used in group policy processing.
-		* @access public
+	 * Validates user's group status and access.
+	 * @version 3/9/10
+	 * @param string $username - username used in group policy processing.
+	 * @access public
 	*/
 	public function __construct($username){
 	
@@ -79,9 +79,9 @@ class groupPolicy{
 	}
 
     /**
-		* clear data member values.
-		* @version 8/27/09
-		* @access public
+	 * clear data member values.
+	 * @version 8/27/09
+	 * @access public
 	*/
 	public function __destruct(){
 		unset($this->user);
@@ -89,10 +89,10 @@ class groupPolicy{
 	}
 	
     /**
-		* Validates gid value used within class to ensure user is correctly authenticated.
-		* @version 9/29/11
-		* @return boolean (true|false)
-		* @access private
+	 * Validates gid value used within class to ensure user is correctly authenticated.
+	 * @version 10/27/11
+	 * @return boolean (true|false)
+	 * @access private
 	*/
 	private function validateGroup(){
 
@@ -104,8 +104,8 @@ class groupPolicy{
 		        return(false);
 		    }
 		}else{
-			$Query = $this->ci->db->query("SELECT id FROM ebb_groups WHERE id=? LIMIT 1", $this->gid);						
-			$validateGroup = $Query->num_rows();
+			$this->ci->db->select('id')->from('ebb_groups')->where('id', $this->gid)->limit(1);
+			$validateGroup = $this->ci->db->count_all_results();
 
 			if($validateGroup == 1){
 			    return (true);
@@ -116,10 +116,10 @@ class groupPolicy{
 	}
 	
 	/**
-		* Validates that the group user has an active membership in defined gid.
-		* @version 9/29/11
-		* @return boolean (true|false)
-		* @access private
+	 * Validates that the group user has an active membership in defined gid.
+	 * @version 9/29/11
+	 * @return boolean (true|false)
+	 * @access private
 	*/
 	private function validateGroupStatus(){
 	
@@ -131,9 +131,8 @@ class groupPolicy{
 		        return(false);
 		    }
 		}else{
-			$Query = $this->ci->db->query("SELECT gid FROM ebb_group_users WHERE Username=? AND Status='Active' LIMIT 1", $this->user);
-			$validateGroupStatus = $Query->num_rows();
-			
+			$this->ci->db->select('gid')->from('ebb_group_users')->where('Username', $this->user)->where('Status', 'Active')->limit(1);
+			$validateGroupStatus = $this->ci->db->count_all_results();
 			
 			if($validateGroupStatus == 1){
 			    return (true);
@@ -144,10 +143,10 @@ class groupPolicy{
 	}
 	
 	/**
-		* Obtains the GroupID to the group the defined user belongs to.
-		* @version 9/29/11
-		* @return string SQL result of the requested groupID.
-		* @access private
+	 * Obtains the GroupID to the group the defined user belongs to.
+	 * @version 10/27/11
+	 * @return string SQL result of the requested groupID.
+	 * @access private
 	*/
 	private function getGroupID(){
 	    
@@ -156,7 +155,8 @@ class groupPolicy{
 		    $getGID = 0;
 		    return($getGID);
 		}else{
-			$Query = $this->ci->db->query("SELECT gid FROM ebb_group_users WHERE Username=? AND Status='Active' LIMIT 1", $this->user);
+			$this->ci->db->select('gid')->from('ebb_group_users')->where('Username', $this->user)->where('Status', 'Active')->limit(1);
+			$Query = $this->ci->db->get();
 			$getGID = $Query->row();
 
 			return($getGID->gid);
@@ -164,73 +164,67 @@ class groupPolicy{
 	}
 	
 	/**
-	* Obtains the access level of the defined user.
-	* @version 9/29/11
-	* @return string  SQL result of requested access level.
-	* @access public
+	 * Obtains the access level of the defined user.
+	 * @version 10/27/11
+	 * @return string  SQL result of requested access level.
+	 * @access public
 	*/
 	public function groupAccessLevel(){
 	    
 	    #see if user is guest, if so, they have zero-level access.
 		if($this->user == "guest"){
-		    $getAccessLevel = 0;
-		    return($getAccessLevel);
+		    return(0);
 		}else{
-	    	$Query = $this->ci->db->query("SELECT Level FROM ebb_groups where id=? LIMIT 1", $this->gid);
-			
+			$this->ci->db->select('Level')->from('ebb_groups')->where('id', $this->gid)->limit(1);
+			$Query = $this->ci->db->get();
 			$accessLevel = $Query->row();
-			
 			return($accessLevel->Level);
 		}
 	}
 	
 	/**
-	* Obtain the profile in use for defined group.
-	* @version 9/29/11
-	* @return string  SQL result of requested group profile.
-	* @access public
+	 * Obtain the profile in use for defined group.
+	 * @version 10/27/11
+	 * @return string  SQL result of requested group profile.
+	 * @access public
 	*/
 	public function getGroupProfile(){
 
 	    #see if user is guest, if so, set profile to zero-level access.
 		if($this->user == "guest"){
-			$getAccessLevel = 0;
-			
-			return($getAccessLevel);
+			return(0);
 		}else{
-			$Query = $this->ci->db->query("SELECT permission_type FROM ebb_groups where id=? LIMIT 1", $this->gid);
+			$this->ci->db->select('permission_type')->from('ebb_groups')->where('id', $this->gid)->limit(1);
+			$Query = $this->ci->db->get();
 			$groupProfile = $Query->row();
-
 			return($groupProfile->permission_type);
 		}
 	}
 	
 	/**
-	* Obtain the group name for defined group.
-	* @version 9/29/11
-	* @return string SQL result of requested group name.
-	* @access public
+	 * Obtain the group name for defined group.
+	 * @version 10/27/11
+	 * @return string SQL result of requested group name.
+	 * @access public
 	*/
 	public function getGroupName(){
 
 	    #see if user is guest, if so, set gorpu name as simply guest.
 		if($this->user == "guest"){
-			$getGroupName = 'guest';
-
-			return($getGroupName);
+			return('guest');
 		}else{
-			$Query = $this->ci->db->query("SELECT Name FROM ebb_groups where id=? LIMIT 1", $this->gid);
+			$this->ci->db->select('Name')->from('ebb_groups')->where('id', $this->gid)->limit(1);
+			$Query = $this->ci->db->get();
 			$getGroupName = $Query->row();
-
 			return($getGroupName->Name);
 		}
 	}
 	
 	/**
-	* use to either promote or demote a user.
-	* @version 9/29/11
-	* @param integer $newGID new GID user is part of.
-	* @access public
+	 * use to either promote or demote a user.
+	 * @version 9/29/11
+	 * @param integer $newGID new GID user is part of.
+	 * @access public
 	*/
 	public function changeGroupID($newGID){
 
@@ -245,12 +239,12 @@ class groupPolicy{
 	}
 
 	/**
-	* validate user's privileges.
-	* @version 9/29/11
-	* @param string $permissionAction - action code being validated.
-	* @return integer $permissionValue - automatic deny return for guest account.
-	* @return string filtered string to use in SQL query.
-	* @access private
+	 * validate user's privileges.
+	 * @version 10/27/11
+	 * @param string $permissionAction - action code being validated.
+	 * @return integer $permissionValue - automatic deny return for guest account.
+	 * @return string filtered string to use in SQL query.
+	 * @access private
 	*/
 	private function accessVaildator($permissionAction){
 		
@@ -259,9 +253,9 @@ class groupPolicy{
 			return (false);
 		}else{
 			#first lets make sure the permission profile used is valid.
-			$Query = $this->ci->db->query("SELECT id FROM ebb_permission_profile WHERE id=?", $this->getGroupProfile()->permission_type);
-			$permissionProfileChk = $Query->num_rows();
-			
+			$this->ci->db->select('id')->from('ebb_permission_profile')->where('id', $this->getGroupProfile()->permission_type);
+			$permissionProfileChk = $this->ci->db->count_all_results();
+
 			#see if user ID is incorrect or Null.
 			if(($permissionProfileChk == 0) and ($this->user !== "guest")){
 				$params = array(
@@ -275,8 +269,8 @@ class groupPolicy{
 			}
 
 			#lets also check to make sure the action requested is valid.
-			$actionQ = $this->ci->db->query("SELECT id FROM ebb_permission_actions WHERE id=?", $permissionAction);
-			$permissionActionChk = $actionQ->num_rows();			
+			$this->ci->db->select('id')->from('ebb_permission_actions')->where('id', $permissionAction);
+			$permissionProfileChk = $this->ci->db->count_all_results();
 
 			if($permissionActionChk == 0){
 				$params = array(
@@ -290,8 +284,9 @@ class groupPolicy{
 			}
 
 			#see if user has correct permission to access requested permission.
-			$validQ = $this->ci->db->query("SELECT set_value FROM ebb_permission_data WHERE profile=? AND and permission=?", $this->getGroupProfile()->permission_type, $permissionAction);
-			$validatePermission = $validQ->row();
+			$this->ci->db->select('set_value')->from('ebb_permission_data')->where('profile', $this->getGroupProfile()->permission_type)->where('permission', $permissionAction);
+			$Query = $this->ci->db->get();
+			$validatePermission = $Query->row();
 
 			#output value in script.
 			if($validatePermission->set_value == 1){
@@ -303,11 +298,11 @@ class groupPolicy{
 	}
 
 	/**
-	* Validate to see if user can access the requested area.
-	* @version 8/27/09
-	* @param string $action - action in check.
-	* @return boolean $permissionChk - (true|false).
-	* @access private
+	 * Validate to see if user can access the requested area.
+	 * @version 8/27/09
+	 * @param string $action - action in check.
+	 * @return boolean $permissionChk - (true|false).
+	 * @access private
 	*/
 	private function permissionCheck($action){
 		
@@ -343,12 +338,12 @@ class groupPolicy{
 	}
 	
 	/**
-		* Validate to see if user can access the requested area.
-		* @version 3/22/10
-		* @param int $type - type of permission being checked (0=board, 1=group).
-		* @param string $action - The action being validated.
-		* @return boolean $permissionChk - (true|false).
-		* @access public
+	 * Validate to see if user can access the requested area.
+	 * @version 3/22/10
+	 * @param int $type - type of permission being checked (0=board, 1=group).
+	 * @param string $action - The action being validated.
+	 * @return boolean $permissionChk - (true|false).
+	 * @access public
 	*/
 	public function validateAccess($type, $action){
 	

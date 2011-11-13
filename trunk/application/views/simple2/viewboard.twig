@@ -1,0 +1,98 @@
+{% extends "/simple2/master.twig" %}
+
+{% block title %}{{boardName}} - {{pageTitle}}{% endblock %}
+
+{% block bodyRender %}
+
+{{BREADCRUMB|raw}}<br />
+{{PAGINATION|raw}}<br />
+
+{# display any sub-boards here. #}
+{% if SubBoardCount(BOARDID) > 0 %}
+
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr class="ui-widget-header">
+	<th width="4%">&nbsp;</th><th width="56%">{{LANG_BOARD}}</th><th width="10%">{{LANG_TOPIC}}</th><th width="10%">{{LANG_POST}}</th><th width="20%">{{LANG_LASTPOSTDATE}}</th>
+</tr>
+{% for b in SUBBOARDDATA %}
+<tr>
+	<td class="ui-widget-content" align="center">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("application/views/simple2/images/new.gif")|raw : IMG("application/views/simple2/images/old.gif")|raw }}</td>
+	<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/simple2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
+	<td class="ui-widget-content" align="center">{{b.id|counter("TopicCount")}}</td>
+	<td class="ui-widget-content" align="center">{{b.id|counter("PostCount")}}</td>
+	<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.Post_Link, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
+</tr>
+{% endfor %}
+</table><br />
+{% endif %}
+
+{# grab permissions for posting on this board. #}
+{% if LOGGEDUSER == "guest" %}
+{{IMG("application/views/simple2/images/locked.gif")|raw}}
+{% else %}
+
+{# can they post a new topic?. #}
+{% if CANPOST_TOPIC == TRUE %}
+{{URL_TAG("boards/newtopic/"~BOARDID, IMG("application/views/simple2/images/newtopic.gif"))|raw}}&nbsp;
+
+{# can they post a new poll topic?. #}
+{% elseif CANPOST_POLL == true %}
+{{URL_TAG("boards/newpoll/"~BOARDID, IMG("application/views/simple2/images/newpoll.gif"))|raw}}
+{% else %}
+{{IMG("application/views/simple2/images/locked.gif")|raw}}
+{% endif %}
+
+{% endif %}
+<br /><br />
+
+<table border="0" class="table" cellspacing="1" cellpadding="1">
+<tr>
+<th class="ui-widget-header" width="5%">&nbsp;</th>
+<th class="ui-widget-header" width="40%">{{LANG_TOPIC}}</th>
+<th class="ui-widget-header" width="15%">{{LANG_POSTEDBY}}</th>
+<th class="ui-widget-header" width="10%">{{LANG_REPLIES}}</th>
+<th class="ui-widget-header" width="10%">{{LANG_POSTVIEWS}}</th>
+<th class="ui-widget-header" width="20%">{{LANG_LASTPOSTEDBY}}</th>
+</tr>
+
+{% if BOARDCOUNT== 0 %}
+<tr>
+<td colspan="6" align="center" class="ui-widget-content">{{LANG_NOPOST}}</td>
+</tr>
+{% elseif CANREAD_TOPIC == FALSE %}
+<tr>
+<td colspan="6" align="center" class="ui-widget-content">{{LANG_NOREAD}}</td>
+</tr>
+{% else %}
+
+{% for t in BOARDDATA %}
+<tr>
+<td class="ui-widget-content" align="center" width="5%">
+{# icon setup. #}
+{% if t.important == 1 %}
+{{IMG("application/views/simple2/images/important.gif")|raw}}
+{% elseif t.Locked == 1 %}
+{{IMG("application/views/simple2/images/locked_topic.gif")|raw}}
+{% elseif t.Type == "Poll" %}
+{{IMG("application/views/simple2/images/poll.gif")|raw}}
+{% elseif t.tid|counter("TopicReplies") >= 15 %}
+{# topic is popular. #}
+{{IMG("application/views/simple2/images/hottopic.gif")|raw}}
+{% elseif t.tid|TopicReadStat(LOGGEDUSER) %}
+{{IMG("application/views/simple2/images/new.gif")|raw}}
+{% else %}
+{{IMG("application/views/simple2/images/old.gif")|raw}}
+{% endif %}
+</td>
+<td width="40%" class="ui-widget-content">{{ Attachment(t.tid) ? IMG("application/views/simple2/images/attachment.png")|raw : "" }} {{URL_TAG("boards/viewtopic/"~ t.tid, t.Topic)|raw}}</td>
+<td width="15%" class="ui-widget-content">{{t.author}}</td>
+<td width="10%" align="center" class="ui-widget-content">{{t.tid|counter("TopicReplies")}}</td>
+<td width="10%" align="center" class="ui-widget-content">{{t.Views|counter("TopicViews")}}</td>
+<td width="20%" class="ui-widget-content">{{t.last_update|PostedDate(TimeFormat, TimeZone)}}<br /><a href="viewtopic.php?{POSTLINK}">{{LANG_POSTEDBY}}</a>: {{t.Posted_User}}</td>
+</tr>
+{% endfor %}
+
+{% endif %}
+</table><br />
+
+{% endblock %}

@@ -2,12 +2,12 @@
 //security check
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
- * English.lang.php
- * @package Elite Bulletin Board v3
- * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/10/2011
+  * English.lang.php
+  * @package Elite Bulletin Board v3
+  * @author Elite Bulletin Board Team <http://elite-board.us>
+  * @copyright  (c) 2006-2011
+  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+  * @version 10/11/2011
 */
 
 #Common language tags.
@@ -15,7 +15,7 @@ $lang['login'] = 'Login';
 $lang['register'] = 'Register';
 $lang['logout'] = 'Logout';
 $lang['404'] = 'File does not exists.';
-$lang['welcome'] = 'Logged In As'; //TODO think about renaming array to loggedinas
+$lang['welcome'] = 'Logged In As'; #think about renaming array to loggedinas
 $lang['welcomeguest'] = 'Welcome Guest';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
@@ -57,7 +57,6 @@ $lang['nonews'] = 'No News To Report On.';
 $lang['groupstatus'] = 'GROUP STATUS ERROR!';
 $lang['extlookup'] = 'No file extension was entered.';
 $lang['noaction'] = 'No action was given by user.';
-$lang['spammer'] = 'This post contains spam-like content, please revise posting.';
 #Menu-based language tags.
 $lang['nonewpm'] = 'You have no new messages';
 $lang['newpm'] = '&nbsp;New Private Messages';
@@ -175,12 +174,12 @@ $lang['delpmsuccessfully'] = 'PM Deleted Successfully';
 $lang['archpmsuccessfully'] = 'PM Archived Successfully';
 
 #Login language tags
-$lang['blank'] = 'Please enter ALL of the information.';
+$login['nouser'] = 'No Username was entered.';
+$login['nopass'] = 'No Password was entered.';
 $lang['invaliduser'] = 'An Invalid Username was Entered.';
 $lang['pass'] = 'Password';
 $lang['reg'] = 'Need to register?';
 $lang['offlinemsg'] = 'Board is disabled, only Administrators will be allowed to login.';
-$lang['rememberlogin'] = 'Automatically Login';
 $lang['remembertxt'] = 'Tick this to always be logged on';
 $lang['login'] = 'Login';
 $lang['alreadylogged'] = 'you are already logged in.';
@@ -587,6 +586,9 @@ $lang['updateerr'] = 'Unable to Run Update Checker. To find out the latest versi
 $lang['manage'] = 'Manage';
 $lang['boardsetup'] = 'Board Setup';
 $lang['newsletter'] = 'Newsletter';
+/*
+$lang['createstyle'] = 'Create';
+*/
 $lang['banlist'] = 'Ban List';
 $lang['blacklist'] = 'Blacklisted Usernames';
 $lang['activateacct'] = 'Activate an account';
