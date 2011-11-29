@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/8/2011
+ * @version 11/16/2011
 */
 
 class EBB_Controller extends CI_Controller {
@@ -98,8 +98,11 @@ class EBB_Controller extends CI_Controller {
 		//delete any old entries
 		$this->db->delete('ebb_online', array('time <' => $sessionTimeout));
 
+		//echo var_dump($this->session->all_userdata());
+
 		#login setup
 		if (($this->input->cookie('ebbuser', TRUE) <> null && ($this->input->cookie('ebbpass', TRUE) <> null)) OR ($this->session->userdata('ebbuser') <> FALSE) && ($this->session->userdata('ebbpass') <> FALSE)) {
+
 			//see if user is logged in via cookies.
 			if ($this->input->cookie('ebbuser', TRUE) <> null) {				
 				$ebbuser = $this->input->cookie('ebbuser', TRUE);
@@ -129,18 +132,19 @@ class EBB_Controller extends CI_Controller {
 
 				//load user model.
 				$this->load->model('Usermodel');
-				$this->Usermodel->GetBasicUserData($ebbuser);
+				$this->Usermodel->getUser($ebbuser);
 
 				//setup logged in user.
-				$this->logged_user = $this->Usermodel->Username;
-				$this->style = $this->Usermodel->Style;
-				$this->timeFormat = $this->Usermodel->Time_format;
-				$this->timeZone = $this->Usermodel->Time_Zone;
-				$this->lng = $this->Usermodel->Language;
-				$this->suspend_length = $this->Usermodel->suspend_length;
-				$this->suspend_time = $this->Usermodel->suspend_time;
+				$this->logged_user = $this->Usermodel->getUserName();
+				$this->style = $this->Usermodel->getStyle();
+				$this->timeFormat = $this->Usermodel->getTimeFormat();
+				$this->timeZone = $this->Usermodel->getTimeZone();
+				$this->lng = $this->Usermodel->getLanguage();
+				$this->suspend_length = $this->Usermodel->getSuspendLength();
+				$this->suspend_time = $this->Usermodel->getSuspendTime();
 				
 				//see if a user is either suspended or banned.
+				//TODO take this out of loginmgr library and place in user helper.
 				$this->loginmgr->checkBan();
 
 				//update user's onhline status.
@@ -149,7 +153,6 @@ class EBB_Controller extends CI_Controller {
 				show_error('INVALID COOKIE OR SESSION!',500,"ERROR!");
 			}
 		} else {
-		//if ((!$this->session->userdata('ebbuser')) OR ($this->input->cookie('ebbuser', TRUE) == null)) {
 			//guest account.
 			$params[0] = 'guest';
 			$this->load->library('grouppolicy', $params);

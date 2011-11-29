@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/27/2011
+ * @version 11/20/2011
 */
 
 class groupPolicy{
@@ -195,9 +195,9 @@ class groupPolicy{
 			return(0);
 		}else{
 			$this->ci->db->select('permission_type')->from('ebb_groups')->where('id', $this->gid)->limit(1);
-			$Query = $this->ci->db->get();
-			$groupProfile = $Query->row();
-			return($groupProfile->permission_type);
+			$groupProfileQ = $this->ci->db->get();
+			$groupProfileR = $groupProfileQ->row();
+			return($groupProfileR->permission_type);
 		}
 	}
 	
@@ -240,7 +240,7 @@ class groupPolicy{
 
 	/**
 	 * validate user's privileges.
-	 * @version 10/27/11
+	 * @version 11/20/11
 	 * @param string $permissionAction - action code being validated.
 	 * @return integer $permissionValue - automatic deny return for guest account.
 	 * @return string filtered string to use in SQL query.
@@ -253,7 +253,9 @@ class groupPolicy{
 			return (false);
 		}else{
 			#first lets make sure the permission profile used is valid.
-			$this->ci->db->select('id')->from('ebb_permission_profile')->where('id', $this->getGroupProfile()->permission_type);
+			$gProfile = $this->getGroupProfile();
+
+			$this->ci->db->select('id')->from('ebb_permission_profile')->where('id', $gProfile);
 			$permissionProfileChk = $this->ci->db->count_all_results();
 
 			#see if user ID is incorrect or Null.
@@ -270,7 +272,7 @@ class groupPolicy{
 
 			#lets also check to make sure the action requested is valid.
 			$this->ci->db->select('id')->from('ebb_permission_actions')->where('id', $permissionAction);
-			$permissionProfileChk = $this->ci->db->count_all_results();
+			$permissionActionChk = $this->ci->db->count_all_results();
 
 			if($permissionActionChk == 0){
 				$params = array(
@@ -284,7 +286,7 @@ class groupPolicy{
 			}
 
 			#see if user has correct permission to access requested permission.
-			$this->ci->db->select('set_value')->from('ebb_permission_data')->where('profile', $this->getGroupProfile()->permission_type)->where('permission', $permissionAction);
+			$this->ci->db->select('set_value')->from('ebb_permission_data')->where('profile', $gProfile)->where('permission', $permissionAction);
 			$Query = $this->ci->db->get();
 			$validatePermission = $Query->row();
 

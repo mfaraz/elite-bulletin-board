@@ -114,7 +114,7 @@ function update_whosonline_users($user){
 
 /**
  * Used to update the whos online system.
- * @version 11/1/11
+ * @version 11/16/11
 */
 function update_whosonline_guest(){
 
@@ -122,7 +122,7 @@ function update_whosonline_guest(){
 	$ci =& get_instance();
 	$ip = detectProxy();
 
-	$ci->db->select('Username')->from('ebb_online')->where('ip', '');
+	$ci->db->select('ip')->from('ebb_online')->where('ip', $ip);
 
 	//see if we add or update online status.
 	if ($ci->db->count_all_results() == 0){

@@ -298,7 +298,7 @@ class Login extends EBB_Controller {
 
 					#setup error session.
 					$this->session->set_flashdata('NotifyType', 'error');
-                    $this->session->set_flashdata('NotifyMsg', $this->lang->line('nomatch'));
+                    $this->session->set_flashdata('NotifyMsg', $this->lang->line('invalidlogin'));
 
 					#direct user.
      				redirect('/login/', 'location');

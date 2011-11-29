@@ -356,7 +356,7 @@ img{
 }
 
 div#loading2{
-	background: #E9E9E9 url(../../template/simple2/images/loading.gif) no-repeat right;
+	background: #E9E9E9 url(../../../views/simple2/images/loading.gif) no-repeat right;
 	width: 200px;
 }
 
@@ -398,7 +398,7 @@ UPLOAD CSS
 	padding-left: 10px;
 }
 .uploadData .close {
-	background-image: url(../../template/simple2/images/close.gif);
+	background-image: url(../../../views/simple2/images/close.gif);
 	height: 16px;
 	width: 16px;
 	position: absolute;
@@ -606,10 +606,9 @@ a.hint:hover span{
 	position: absolute;
 	display: none;
 	z-index: 9999;
-	overflow: none;
 	padding: 0px 9px 9px 0px;
 	font-family : Verdana, Arial, Helvetica, sans-serif;
-	font-sixe: 13px;
+	font-size: 13px;
 	color: #000000;
 	background-color: #C3C9D5;
 	border: 1px solid #163061;

@@ -23,14 +23,32 @@ class Boardmodel extends CI_Model {
 	 * @version 10/26/11
 	 */
 	public function GetBoardName($bid) {
-
         $this->db->select('Board')->from('ebb_boards')->where('id', $bid);
 		$query = $this->db->get();
-
 		$row = $query->row();
-
 		return $row->Board;
 	}
+
+	/**
+	 * Grab the type of board.
+	 * @param int $bid
+	 * @return int type
+	 */
+	public function GetBoardType($bid) {
+		$this->db->select('type')->from('ebb_boards')->where('id', $bid);
+		$query = $this->db->get();
+		$row = $query->row();
+		return $row->type;
+	}
+
+	public function ValidateBoardID($bid) {
+
+		//SQL grabbing count of all topics for this board.
+		$this->db->select('id')->from('ebb_boards')->where('id', $bid);
+		return $this->db->count_all_results();
+
+	}
+
 
 	/**
 	 * Get an array of sub-boards.
@@ -111,34 +129,6 @@ class Boardmodel extends CI_Model {
 		//see if we have any records to show.
 		if($query->num_rows() > 0) {
 			return $query->result();
-		} else {
-			return FALSE;
-		}
-	}
-
-	/**
-	 * Get a list of all replies to a topic.
-	 * @version 9/6/11
-	 * @param int $tid Topic ID.
-	 * @param int $limit amount to show per page.
-	 * @param int $start what entry to start from.
-	 * @access public
-	 * @return array
-	*/
-	public function GetReplies($tid, $limit, $start) {
-		//SQL to get all topics from defined board.
-		$this->db->select('author, pid, tid, bid, Body, IP, Original_Date, disable_smiles, disable_bbcode')->from('ebb_posts')->where('tid', $tid)->limit($limit, $start);
-		$query = $this->db->get();
-
-		//see if we have any records to show.
-		if($query->num_rows() > 0) {
-
-			//loop through data and bind to an array.
-			foreach ($query->result() as $row) {
-				$replies[] = $row;
-			}
-
-			return $replies;
 		} else {
 			return FALSE;
 		}
