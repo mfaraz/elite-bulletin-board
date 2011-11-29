@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/12/2011
+ * @version 11/22/2011
 */
 
 /**
@@ -46,18 +46,18 @@ function GetCount($id, $type) {
 
 /**
  * checks to see if a board has neww topics or not.
- * @version 10/4/11
- * @param int $id Board ID.
+ * @version 11/22/11
+ * @param int $bid Board ID.
  * @param string $user user to check against.
  * @access public
 */
 function CheckReadStatus($bid, $user) {
 
 	$readCt = readBoardStat($bid, $user);
-	if ($readCt == 1){
-		$icon = true; //read
+	if ($readCt > 0){
+		$icon = TRUE; //read
 	}else{
-		$icon = false; //unread
+		$icon = FALSE; //unread
 	}
 
 	return $icon;
@@ -65,7 +65,7 @@ function CheckReadStatus($bid, $user) {
 
 /**
  * Check read status on a selected board.
- * @version 11/7/11
+ * @version 11/22/11
  * @param integer $tid - Topic ID to select a topic.
  * @param string $user - Username to check against.
  * @return boolean
@@ -78,7 +78,7 @@ function readTopicStat($tid, $user){
 
 	#see if user is guest.
 	if ($user == "guest") {
-	    $icon = false; //UnRead.
+	    $icon = 1; //UnRead.
 	}else{
 		//see if user visited the topic yet.
 		$ci->db->select('Topic')->from('ebb_read_topic')->where('Topic', $tid)->where('User', $user);
@@ -283,7 +283,7 @@ function CanReadTopics($id, $groupAccess) {
   * @param int $id
   * @param object $groupAccess
   * @return boolean
-  * @version 11/12/11
+  * @version 11/20/11
  */
 function CanPostTopic($id, $groupAccess) {
 
@@ -300,7 +300,9 @@ function CanPostTopic($id, $groupAccess) {
 		return FALSE;
     }elseif($groupAccess->validateAccess(1, 37) == false){
 		return FALSE;
-    }
+    } else {
+		return TRUE;
+	}
 }
 
 /**
@@ -308,7 +310,7 @@ function CanPostTopic($id, $groupAccess) {
   * @param int $id
   * @param object $groupAccess
   * @return boolean
-  * @version 11/12/11
+  * @version 11/20/11
  */
 function CanPostPoll($id, $groupAccess) {
 
@@ -325,7 +327,36 @@ function CanPostPoll($id, $groupAccess) {
         return FALSE;
 	}elseif($groupAccess->validateAccess(1, 35) == false){
 		return FALSE;
+	} else {
+		return TRUE;
 	}
 
+}
+
+/**
+  * See if user can post a reply.
+  * @param int $id
+  * @param object $groupAccess
+  * @return boolean
+  * @version 11/28/11
+ */
+function CanPostReply($id, $groupAccess) {
+
+	//grab Codeigniter objects.
+	$ci =& get_instance();
+
+	#board rules sql.
+	$ci->db->select('B_Reply')->from('ebb_board_access')->where('B_id',$id);
+	$postReplyQ = $ci->db->get();
+	$postReply = $postReplyQ->row();
+
+	#see if user can post a topic or not.
+	if ($groupAccess->validateAccess(0, $postReply->B_Reply) == false){
+		return FALSE;
+    }elseif($groupAccess->validateAccess(1, 38) == false){
+		return FALSE;
+    } else {
+		return TRUE;
+	}
 }
 ?>

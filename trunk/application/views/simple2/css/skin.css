@@ -18,7 +18,7 @@
 }
 .markItUpContainer  {
 	border:1px solid #3C769D;
-	background: #434750 url(../../template/simple2/images/bg-container.png) repeat-x top left;
+	background: #434750 url(../../../views/simple2/images/bg-container.png) repeat-x top left;
 	padding:5px 5px 2px 5px;
 	font:.9em Verdana, Arial, Helvetica, sans-serif;
 }
@@ -49,7 +49,7 @@
 	width:22px; height:5px;
 	margin-left:auto;
 	margin-right:auto;
-	background-image:url(../../template/simple2/images/handle.png);
+	background-image:url(../../../views/simple2/images/handle.png);
 	cursor:n-resize;
 }
 /***************************************************************************************/
@@ -66,7 +66,7 @@
 	display:block;
 }
 .markItUpHeader ul .markItUpDropMenu {
-	background:transparent url(../../template/simple2/images/menu.png) no-repeat 115% 50%;
+	background:transparent url(../../../views/simple2/images/menu.png) no-repeat 115% 50%;
 	margin-right:5px;
 }
 .markItUpHeader ul .markItUpDropMenu li {
@@ -97,7 +97,7 @@
 	border-bottom:1px solid #434750;
 }
 .markItUpHeader ul ul .markItUpDropMenu {
-	background:#F5F5F5 url(../../template/simple2/images/submenu.png) no-repeat 100% 50%;
+	background:#F5F5F5 url(../../../views/simple2/images/submenu.png) no-repeat 100% 50%;
 }
 /* next rows of buttons */
 .markItUpHeader ul ul ul {

@@ -81,6 +81,7 @@ class notifysys{
 	 * Displays error message that will match the current style being used by the user.
 	 * @version 7/21/11
 	 * @access public
+	 * @deprecated no longer needed.
 	*/
 	public function displayError(){
 
@@ -118,9 +119,10 @@ class notifysys{
 	}
 
     /**
-		* Displays general message that will match the current style being used by the user.
-		* @version 7/21/11
-		* @access public
+	 * Displays general message that will match the current style being used by the user.
+	 * @version 7/21/11
+	 * @access public
+	 * @deprecated no longer needed.
 	*/
 	public function displayMessage(){
 	
@@ -155,9 +157,10 @@ class notifysys{
 	}
 
     /**
-		* Displays validate error message that will match the current style being used by the user.
-		* @version 7/21/11
-		* @access public
+	 * Displays validate error message that will match the current style being used by the user.
+	 * @version 7/21/11
+	 * @access public
+	 * @deprecated no longer needed.
 	*/
 	public function displayValidate(){
 	
