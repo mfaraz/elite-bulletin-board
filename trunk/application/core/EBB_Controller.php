@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/16/2011
+ * @version 1/3/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -28,10 +28,10 @@ class EBB_Controller extends CI_Controller {
 	public $groupAccess;
 
 	/**
-	 * User's Group Profile.
-	 * @var integer
+	 * User's GroupID.
+	 * @var int
 	 */
-	public $groupProfile;
+	public $gid;
 
 	/**
 	 * User's Style selection.
@@ -123,18 +123,17 @@ class EBB_Controller extends CI_Controller {
 				$this->loginmgr->validateSession();
 				
 				//get group data.
-				$params[0] = $ebbuser;
-				$this->load->library('grouppolicy', $params);
+				$this->load->model('Groupmodel');
 
 				//detect group status.
-				$this->groupAccess = $this->grouppolicy->groupAccessLevel();
-				$this->groupProfile = $this->grouppolicy->getGroupProfile();
+				$this->groupAccess = $this->Groupmodel->getGroupAccessLevel();
 
 				//load user model.
 				$this->load->model('Usermodel');
 				$this->Usermodel->getUser($ebbuser);
 
 				//setup logged in user.
+				$this->gid = $this->Usermodel->getGid();
 				$this->logged_user = $this->Usermodel->getUserName();
 				$this->style = $this->Usermodel->getStyle();
 				$this->timeFormat = $this->Usermodel->getTimeFormat();
@@ -150,15 +149,16 @@ class EBB_Controller extends CI_Controller {
 				//update user's onhline status.
 				update_whosonline_users($this->logged_user);
 			} else {
-				show_error('INVALID COOKIE OR SESSION!',500,"ERROR!");
+				show_error('INVALID COOKIE OR SESSION!',500, $this->lang->line('error'));
 			}
 		} else {
 			//guest account.
-			$params[0] = 'guest';
+			$params['usr'] = 'guest';
 			$this->load->library('grouppolicy', $params);
 			$this->logged_user = "guest";
 			$this->groupAccess = 0;
 			$this->groupProfile = 0;
+			$this->gid = 0;
 			$this->style = $this->preference->getPreferenceValue("default_style");
 			$this->timeFormat = $this->preference->getPreferenceValue("timeformat");
 			$this->timeZone = $this->preference->getPreferenceValue("timezone");

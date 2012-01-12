@@ -1,18 +1,19 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
-	 * posting_helper.php
-	 * @package Elite Bulletin Board v3
-	 * @author Elite Bulletin Board Team <http://elite-board.us>
-	 * @copyright  (c) 2006-2011
-	 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-	 * @version 9/21/2011
+ * posting_helper.php
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2011
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 12/01/2011
 */
 
 /**
-* converts text-based smiles into graphical ones.
-* @param string $string - the smile code we're trying to make into an image.
-* @version 09/21/2011
+ * converts text-based smiles into graphical ones.
+ * @param string $string - the smile code we're trying to make into an image.
+ * @version 11/30/2011
+ * @return mixed
 */
 function smiles($string) {
 
@@ -23,37 +24,37 @@ function smiles($string) {
  	$ci->db->select('code, img_name')->from('ebb_smiles');
 	$smilesQ = $ci->db->get();
 
+	//loop through data and format.
 	foreach ($smilesQ->result() as $smileRes) {
-		$smilecode[] = $smileRes;
-		foreach ($smileRes as $smiles) {
-			$string = str_replace($smiles, '<img src="images/smiles/'.$smileRes->img_name.'" alt="" />',$string);
-		}
+		$string = str_replace($smileRes->code, img('images/smiles/'.$smileRes->img_name), $string);
 	}
 
 	return ($string);
 }
 
 /**
-*form_smiles
-*
-*Outputs the list of smiles available(up to 30).
-*@modified 12/12/10
-*
+ * Outputs the list of smiles available(up to 30).
+ * @param int $boardPref_smiles Does the board allow smiles?
+ * @version 12/01/11
+ * @return mixed
 */
-function form_smiles(){
+function form_smiles($boardPref_smiles = 1){
 
-	global $bName, $db;
+	#obtain codeigniter object.
+	$ci =& get_instance();
 
-	//TODO improve this so that it works with pages not needing this check.
-	if ($bName['Smiles'] == 0){
+	if ($boardPref_smiles == 0){
 		$smile = '';
 	}else{
 		$smile = '';
 		$x = 0;
-		$db->SQL = "SELECT DISTINCT img_name, code FROM ebb_smiles limit 30";
-		$smiles = $db->query();
 
-		while($row = mysql_fetch_assoc($smiles)){
+		#SQL to get info data.
+		$ci->db->distinct('img_name, code')->from('ebb_smiles')->limit(30);
+		$smilesQ = $ci->db->get();
+
+		//loop through to build a list of smiles.
+		foreach ($smilesQ->result() as $smileRes) {
 			if (($x % 30) == 0) {
 				//line break once we've reached our number per row assigned.
 				$smile .= "<br />";
@@ -62,8 +63,15 @@ function form_smiles(){
 				$x = 0;
 			}
 
+			//setup image properties.
+			$image_properties = array(
+			  'src' => 'images/smiles/'.$smileRes->img_name,
+			  'alt' => $smileRes->code,
+			  'title' => $smileRes->code
+			);
+
 			//output smiles and increment counter.
-			$smile .= '<a href="#smiles" title="'.$row['code'].'"><img src="images/smiles/'.$row['img_name'].'" alt="'.$row['code'].'" /></a>';
+			$smile .= '<a href="#smiles" title="'.$smileRes->code.'">'.img($image_properties).'</a>';
 			$x++;
 		}
 	}
@@ -71,12 +79,11 @@ function form_smiles(){
 }
 
 /**
-*BBCode
-*
-*Formats our messages converting over BBCode tags into HTML content.
-*@param string [str] - the string to check for our BBCode tags.
-*@modified 12/12/10
-*
+ * Formats our messages converting over BBCode tags into HTML content.
+ * @param string $string the string to check for our BBCode tags.
+ * @param boolean $allowimgs allow parsing of image tags?
+ * @version 12/12/10
+ * @return mixed
 */
 function BBCode($string, $allowimgs = false) {
 
@@ -110,24 +117,20 @@ function BBCode($string, $allowimgs = false) {
 }
 
 /**
-*youtubeParse
-*
-*This is a helper function for the you tube BBCode.
-*@param vCode [str] - the vcode assigned by youtube.
-*@modified 12/12/10
-*
+ * This is a helper function for the you tube BBCode.
+ * @param vCode [str] - the vcode assigned by youtube.
+ * @version 12/12/10
+ * @return mixed
 */
 function youtubeParse($vCode) {
 	return '<object width="425" height="350"><param name="movie" value="http://www.youtube.com/v/'.$vCode.'"></param><param name="wmode" value="transparent"></param><embed src="http://www.youtube.com/v/'.$vCode.'" type="application/x-shockwave-flash" wmode="transparent" width="425" height="350"></embed></object>';
 }
 
 /**
-*BBCode_print
-*
-*Same functionality as BBcode, only used for printer-friendly pages and has a limited number of things it'll parse.
-*@param string [str] - string to check for BBCode tags.
-*@modified 12/12/10
-*
+ * Same functionality as BBcode, only used for printer-friendly pages and has a limited number of things it'll parse.
+ * @param string [str] - string to check for BBCode tags.
+ * @version 12/12/10
+ * @return mixed
 */
 function BBCode_print($string) {
 
@@ -150,99 +153,99 @@ function BBCode_print($string) {
 }
 
 /**
-*language_filter
-*
-*Checks for foul language and spam-ish words.
-*@param string [str] - item to look for on banlist.
-*@param type [int] - (1=foul language;2=spam check)
-*@modified 12/12/10
-*
+ * Checks for foul language and spam-ish words.
+ * @param string [str] item to look for on banlist.
+ * @param type [int] (1=foul language;2=spam check)
+ * @version 12/01/11
+ * @return mixed
 */
 function language_filter($string, $type) {
 
-	global $db, $lang;
-	
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#see if an invalid operation was set.
 	if((!isset($string)) or (empty($string))){
-		die('spam check is null.');
+		show_error($ci->lang->line('invalidcensoraction'), 500, $ci->lang->line('error'));
 	}
+
+	#see if anything was entered.
 	if((!isset($type)) or (empty($type))){
-		die($lang['invalidcensoraction']);
+		show_error($ci->lang->line('nullspam'), 500, $ci->lang->line('error'));
 	}
+
+	#grab our banned words..
+	$ci->db->select('Original_Word')->from('ebb_censor')->where('action', $type);
+	$wordsQ = $ci->db->get();
+
 	#determine type action.
    	if($type == 1){
-		$db->SQL = "SELECT Original_Word FROM `ebb_censor` WHERE action='1'";
-		$words = $db->query();
+		#
+		# BAD WORD FILTER.
+		#
 
-		#see what to do based on action type.
 		$stars = '';
-		while ($row = mysql_fetch_assoc ($words)) {
-			$obscenities = array ($row['Original_Word']);
-			foreach ($obscenities as $curse_word) {
-				if (stristr(trim($string), $curse_word)) {
-					$length = strlen($curse_word);
-					for ($i = 1; $i <= $length; $i++) {
-						$stars .= "*";
-					}
-					$string = eregi_replace($curse_word,$stars,trim($string));
-					$stars = "";
+
+		//go through the list and clean-up any bad-words
+		foreach ($wordsQ->result() as $wordsRes) {
+
+			if (stristr(trim($string), $wordsRes->Original_Word)) {
+				$length = strlen($wordsRes->Original_Word);
+				for ($i = 1; $i <= $length; $i++) {
+					$stars .= "*";
 				}
+				$string = eregi_replace($wordsRes->Original_Word,$stars,trim($string));
+				$stars = "";
 			}
+			
 		}
 	}else{
-		$db->SQL = "SELECT Original_Word FROM `ebb_censor` where action='2'";
-		$words = $db->query();
+		#
+		# SPAM WORD FILTER.
+		#
 
-		while ($row = mysql_fetch_assoc ($words)) {
+		//go through the list and stop any attempt to post spam.
+		foreach ($wordsQ->result() as $wordsRes) {
+
 			//see if anything matches the spam word list.
-			if (preg_match("/\b".$row['Original_Word']."\b/i", $string)) {
-				die('SPAMMING ATTEMPT!');
+			if (preg_match("/\b".$wordsRes->Original_Word."\b/i", $string)) {
+				show_error($ci->lang->line('spamwarn'), 500, $ci->lang->line('error'));
 			}
+
 		}
 	}
    return ($string);
 }
 
 /**
-*flood_check
-*
-*Prevent users from performing an action too soon from another action.
-*@param string [str] - item to look for on database.
-*@param type [str] - (posting;search)
-*@modified 12/12/10
-*
+ * Prevent users from performing an action too soon from another action.
+ * @param string $type (posting;search).
+ * @param string $LastPost DB entry for last post time.
+ * @param string $LastSearch DB entry for last search time.
+ * @version 12/01/11
+ * @return boolean
 */
-function flood_check($string, $type){
-
-	global $db;
-
-   	if((!isset($string)) or (empty($string))){
-		die('No string found.');
-	}
-	if((!isset($type)) or (empty($type))){
-		die('No Type found.');
-	}
+function flood_check($type, $LastPost, $LastSearch){
 
 	#see what action to perform based on type.
 	switch($type){
 	case 'posting':
+		//30 second check.
 		$currtime = time() - 30;
-		$db->SQL = "SELECT last_post FROM ebb_users WHERE Username='$string'";
-		$get_time_r = $db->fetchResults();
 
 		#see if user is posting too quickly.
-		if ($get_time_r['last_post'] > $currtime){
+		if ($LastPost > $currtime){
 			$flood = 1;
 		}else{
 			$flood = 0;
 		}
 	break;
 	case 'search':
+		//20 second check.
 		$currtime = time() - 20;
-		$db->SQL = "SELECT last_search FROM ebb_users WHERE Username='$string'";
-		$get_time_r = $db->fetchResults();
 
 		#see if user is posting too quickly.
-		if ($get_time_r['last_search'] > $currtime){
+		if ($LastSearch > $currtime){
 			$flood = 1;
 		}else{
 			$flood = 0;
@@ -253,14 +256,13 @@ function flood_check($string, $type){
 }
 
 /**
-*post_count
-*
-*increments the user's post count.
-*@param string [str] - user to increment count.
-*@modified 12/12/10
-*
+* increments the user's post count.
+* @param string $string user to increment count.
+* @version 12/12/10
 */
 function post_count($string){
+
+	//may not be using this.
 
 	global $db;
 
@@ -275,14 +277,11 @@ function post_count($string){
 
 #error here!!! (should have explained what that was (~hindsight)
 /**
-*update_board
-*
-*updates the last post field.
-*@param bid [int] - BoardID.
-*@param newlink [str] - new link to newest post.
-*@param user [str] - the nw posted by user.
-*@modified 12/12/10
-*
+ * updates the last post field.
+ * @param bid [int] - BoardID.
+ * @param newlink [str] - new link to newest post.
+ * @param user [str] - the nw posted by user.
+ * @version 12/12/10
 */
 function update_board($bid, $newlink, $user){
 
@@ -303,14 +302,11 @@ function update_board($bid, $newlink, $user){
 
 #error here!!! (should have explained what that was (~hindsight)
 /**
-*update_topic
-*
-*updates the last post field.
-*@param tid [int] - TopicID.
-*@param newlink [str] - new link to newest post.
-*@param user [str] - the nw posted by user.
-*@modified 12/12/10
-*
+ * updates the last post field.
+ * @param tid [int] - TopicID.
+ * @param newlink [str] - new link to newest post.
+ * @param user [str] - the nw posted by user.
+ * @version 12/12/10
 */
 function update_topic($tid, $newlink, $user){
 

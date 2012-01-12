@@ -243,12 +243,17 @@ class Boards extends EBB_Controller {
 	public function viewtopic($id) {
 
 		//load library & helpers
-		$this->load->helper(array('boardindex', 'topic', 'user', 'form', 'posting'));
+		$this->load->helper(array('boardindex', 'topic', 'user', 'form', 'posting', 'group', 'attachment'));
 		$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
 
 		//load topic model.
 		$this->load->model('Topicmodel');
 		$this->Topicmodel->GetTopicData($id);
+
+		#see if user can view this topic.
+		if (CanReadTopics($this->Topicmodel->getBid(), $this->grouppolicy) == FALSE) {
+			show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
+		}
 
 		//setup pagination.
 		$config['base_url'] = $this->boardUrl . 'boards/viewtopic/'.$id;
@@ -266,8 +271,21 @@ class Boards extends EBB_Controller {
 		 #setup filters.
 		$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
 		$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
-		$this->twig->_twig_env->addFunction('Attachment', new Twig_Function_Function('HasAttachment'));
 		$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
+		//$this->twig->_twig_env->addFunction('Attachment', new Twig_Function_Function('HasAttachment'));
+		$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
+		$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
+		$this->twig->_twig_env->addFunction('ATTACH_BAR', new Twig_Function_Function('GetAttachments'));
+		$this->twig->_twig_env->addFunction('ATTACH_FILE_SIZE', new Twig_Function_Function('getFileSize'));
+
+		//$attachment = attachment_stat("post", $row['re_author'], $row['pid']);
+
+		//Grab some settings.
+		$disable_bbcode = $this->Topicmodel->getDisableBbCode();
+		$disable_smiles = $this->Topicmodel->getDisableSmiles();
+		$boardpref_bbcode = $this->Boardmodel->GetBoardSettings_BBCode($this->Topicmodel->getBid());
+		$boardpref_smiles = $this->Boardmodel->GetBoardSettings_Smiles($this->Topicmodel->getBid());
+		$boardpref_image = $this->Boardmodel->GetBoardSettings_Image($this->Topicmodel->getBid());
 
 		//render to HTML.
 		echo $this->twig->render($this->style, 'viewtopic', array (
@@ -305,19 +323,42 @@ class Boards extends EBB_Controller {
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'groupAccess' => $this->groupAccess,
 		  'LANG_PRINT' => $this->lang->line('ptitle'),
+		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
 		  'TOPICID' => $id,
+		  'DISABLE_SMILES' => $disable_smiles,
+		  'BOARDPREF_SMILES' => $boardpref_smiles,
+		  'DISABLE_BBCODE' => $disable_bbcode,
+		  'BOARDPREF_BBCODE' => $boardpref_bbcode,
+		  'BOARDPREF_IMAGE' => $boardpref_image,
+		  'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
+		  'LANG_WARNLEVEL' => $this->lang->line('warnlevel'),
+		  'TOPIC_TYPE' => $this->Topicmodel->getType(),
 		  'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
 		  'TOPIC_BODY' => $this->Topicmodel->getBody(),
 		  'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
 		  'TOPIC_IP' => $this->Topicmodel->getIp(),
 		  'TOPIC_POSTEDON' => $this->Topicmodel->getOriginalDate(),
+		  'AUTHOR_GROUPNAME' => $this->Topicmodel->getGroupProfile(),
+		  'AUTHOR_GROUPLEVEL' => $this->Topicmodel->getGroupAccess(),
+		  'AUTHOR_AVATAR' => $this->Topicmodel->getAvatar(),
+		  'AUTHOR_GID' => $this->Topicmodel->getGid(),
+		  'AUTHOR_POSTCOUNT' => $this->Topicmodel->getPostCount(),
+		  'AUTHOR_SIG' => $this->Topicmodel->getSig(),
+		  'AUTHOR_WARNLEVEL' => $this->Topicmodel->getWarningLevel(),
+		  'AUTHOR_CTITLE' => $this->Topicmodel->getCustomTitle(),
+		  'LANG_DOWNLOADS' => $this->lang->line('downloadct'),
+		  'LANG_ATTACHMENTS' => $this->lang->line('attachments'),
 		  'LANG_POSTED' => $this->lang->line('postedon'),
 		  'LANG_IP'  => $this->lang->line('ipmod'),
 		  'LANG_IPLOGGED' => $this->lang->line('iplogged'),
+          'POLL_QUESTION' => $this->Topicmodel->getQuestion(),
+          'POLLDATA' => $this->Topicmodel->GetPoll($id),
+          'LANG_VOTE' => $this->lang->line('vote'),
 		  'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], 0),
 		  'PAGINATION' => $this->pagination->create_links(),
 		  'BREADCRUMB' => $this->breadcrumb->output(),
-		  'CANPOST_REPLY' => CanPostReply($this->Topicmodel->getBid(), $this->grouppolicy),
+		  //'CANPOST_REPLY' => CanPostReply($this->Topicmodel->getBid(), $this->gid),
+		  //'GAC_WARNINGLEVELS' => CanAlterWarningLevels($this->gid),
 		  'LANG_NEWPOST' => $this->lang->line('newpost'),
 		  'LANG_OLDPOST' => $this->lang->line('oldpost'),
 		  'LANG_BOARD' => $this->lang->line('boards'),

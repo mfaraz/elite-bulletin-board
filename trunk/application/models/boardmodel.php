@@ -33,12 +33,65 @@ class Boardmodel extends CI_Model {
 	 * Grab the type of board.
 	 * @param int $bid
 	 * @return int type
+	 * @version 11/30/11
 	 */
 	public function GetBoardType($bid) {
 		$this->db->select('type')->from('ebb_boards')->where('id', $bid);
 		$query = $this->db->get();
 		$row = $query->row();
 		return $row->type;
+	}
+
+	/**
+	 * Grab the smiles settings for the selected board.
+	 * @param integer $bid
+	 * @return boolean
+	 * @version 11/30/11
+	 */
+	public function GetBoardSettings_Smiles($bid) {
+		$this->db->select('Smiles')->from('ebb_boards')->where('id', $bid);
+		$query = $this->db->get();
+		$row = $query->row();
+		return $row->Smiles;
+	}
+
+	/**
+	 * Grab the BBCode settings for the selected board.
+	 * @param integer $bid
+	 * @return boolean
+	 * @version 11/30/11
+	 */
+	public function GetBoardSettings_BBCode($bid) {
+		$this->db->select('BBcode')->from('ebb_boards')->where('id', $bid);
+		$query = $this->db->get();
+		$row = $query->row();
+		return $row->BBcode;
+	}
+	
+	/**
+	 * Grab the smiles settings for the selected board.
+	 * @param integer $bid
+	 * @return boolean
+	 * @version 11/30/11
+	 */
+	public function GetBoardSettings_Image($bid) {
+		$this->db->select('Image')->from('ebb_boards')->where('id', $bid);
+		$query = $this->db->get();
+		$row = $query->row();
+		return $row->Image;
+	}
+
+	/**
+	 * Grab the Post_Increment settings for the selected board.
+	 * @param integer $bid
+	 * @return boolean
+	 * @version 11/30/11
+	 */
+	public function GetBoardSettings_Post_Increment($bid) {
+		$this->db->select('Post_Increment')->from('ebb_boards')->where('id', $bid);
+		$query = $this->db->get();
+		$row = $query->row();
+		return $row->Post_Increment;
 	}
 
 	public function ValidateBoardID($bid) {

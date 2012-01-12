@@ -118,56 +118,6 @@ class user{
 	}
 
 	/**
-	*userWarn
-	*
-	*List current warning level of user and, if available, allow admin or moderator to raise or lower warning level.
-	*
-	*@modified 2/9/11
-	*
-	*@return string $warnBar - output warning level.
-	*
-	*@access public
-	*/
-	public function userWarn(){
-
-		global $db, $groupAccess, $groupPolicy, $userGroupPolicy, $styleImgDir, $lang, $tid, $bid, $logged_user;
-
-		#get user's warning level.
-		$db->SQL = "SELECT warning_level FROM ebb_users WHERE Username='".$this->user."' LIMIT 1";
-		$warn_r = $db->fetchResults();
-		$userChk = $db->affectedRows();
-
-		#see if username placed in the function is invalid.
-		if($userChk == 0){
-			$error = new notifySys($lang['nousernameentered'], true, true, __FILE__, __LINE__);
-			$error->genericError();
-		}
-		#see if user has moderator status, if so let them alter warning level.
-		if (($groupAccess == 1) OR ($groupAccess == 2)){
-			#see if user they wish to warn is higher in rank than them, if so don't let them set anything.
-			if(($groupPolicy->groupAccessLevel() == 2) and ($userGroupPolicy->groupAccessLevel() == 1)){
-				$warn_bar = '<div class="warningheader">'.$lang['warnlevel'].'</div><div class="warnlevel"><img src="'.$styleImgDir.'images/bar.gif" alt="'.$lang['warnlevel'].'" height="10" width="'.$warn_r['warning_level'].'" />&nbsp;('.$warn_r['warning_level'].'%)</div>';
-			}else{
-				#see if user has permission to alter warning value.
-				if($groupPolicy->validateAccess(1, 25) == true){
-					$warn_bar = '<div class="warningheader">'.$lang['warnlevel'].'</div><div class="warnlevel"><img src="'.$styleImgDir.'images/bar.gif" alt="'.$lang['warnlevel'].'" height="10" width="'.$warn_r['warning_level'].'" />&nbsp;(<a href="manage.php?mode=warn&amp;user='.$this->user.'&amp;bid='.$bid.'&amp;tid='.$tid.'">'.$warn_r['warning_level'].'%</a>)</div>';
-				}else{
-					$warn_bar = '<div class="warningheader">'.$lang['warnlevel'].'</div><div class="warnlevel"><img src="'.$styleImgDir.'images/bar.gif" alt="'.$lang['warnlevel'].'" height="10" width="'.$warn_r['warning_level'].'" />&nbsp;('.$warn_r['warning_level'].'%)</div>';
-				}
-			}
-		}else{
-			#see if user is the actual user.
-			if($this->user == $logged_user){
-				$warn_bar = '<div class="warningheader">'.$lang['warnlevel'].'</div><div class="warnlevel"><img src="'.$styleImgDir.'images/bar.gif" alt="'.$lang['warnlevel'].'" height="10" width="'.$warn_r['warning_level'].'" />&nbsp;('.$warn_r['warning_level'].'%)</div>';
-			}else{
-				$warn_bar = '';
-			}
-		}
-
-		return($warn_bar);
-	}
-
-	/**
 	*latestTopics
 	*
 	*Grab latest topics created by the user.

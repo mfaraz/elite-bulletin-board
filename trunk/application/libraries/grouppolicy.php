@@ -9,6 +9,10 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @version 11/20/2011
 */
 
+//
+// REBUILT THIS NOW THATGID IS INCLUDED ON EBB_USERS.
+//
+
 class groupPolicy{
 
 	#
@@ -38,16 +42,14 @@ class groupPolicy{
 	*/
 	public function __construct($username){
 	
-	    global $lang;
-
 		$this->ci =& get_instance();
 	
 		#see if user = guest.
-		if($username[0] == "guest"){
+		if($username['usr'] == "guest"){
 			$this->gid = 0;
 			$this->user = "guest";
 		}else{
-			$this->user = $username[0];
+			$this->user = $username['usr'];
 
 			#run a check on system
 			if($this->validateGroupStatus() == true){
@@ -66,14 +68,7 @@ class groupPolicy{
 					$this->ci->notifysys->genericError();
 				}
 			}else{
-				$params = array(
-					  'message' => $this->ci->lang->line('groupstatus'),
-					  'titleStat' => true,
-					  'debug' => true,
-					  'line' => __FILE__,
-					  'file' => __LINE__);
-				$this->ci->load->library('notifysys', $params);
-				$this->ci->notifysys->genericError();
+				show_error($this->ci->lang->line('groupstatus').': '.$this->user.'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->ci->lang->line('error'));
 			}
 		}
 	}
@@ -120,6 +115,7 @@ class groupPolicy{
 	 * @version 9/29/11
 	 * @return boolean (true|false)
 	 * @access private
+	 * @deprecated no longer needed as of v3 RC2.
 	*/
 	private function validateGroupStatus(){
 	
@@ -147,6 +143,7 @@ class groupPolicy{
 	 * @version 10/27/11
 	 * @return string SQL result of the requested groupID.
 	 * @access private
+	 * @deprecated no longer needed as of v3 RC2.
 	*/
 	private function getGroupID(){
 	    
