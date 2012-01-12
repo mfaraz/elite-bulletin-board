@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/22/2011
+ * @version 1/10/2012
 */
 
 class Topicmodel extends CI_Model {
@@ -32,6 +32,15 @@ class Topicmodel extends CI_Model {
 	private $question;
 	private $disableBbCode;
 	private $disableSmiles;
+	private $author_gid;
+	private $author_postcount;
+	private $author_warninglevel;
+	private $author_avatar;
+	private $author_signature;
+	private $author_ctitle;
+
+	private $author_group_profile;
+	private $author_group_access;
 
 
 	/**
@@ -504,6 +513,206 @@ class Topicmodel extends CI_Model {
 	}
 
 	/**
+	 * set value for gid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null
+	 *
+	 * @param mixed $gid
+	 * @return Usermodel
+	 */
+	public function &setGid($gid) {
+		$this->notifyChanged("gid");
+		$this->author_gid=$gid;
+		return $this;
+	}
+
+	/**
+	 * get value for gid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getGid() {
+		return $this->author_gid;
+	}
+
+	/**
+	 * set value for Post_Count
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @param mixed $postCount
+	 * @return Usermodel
+	 */
+	public function &setPostCount($postCount) {
+		$this->notifyChanged("Post_Count");
+		$this->author_postcount=$postCount;
+		return $this;
+	}
+
+	/**
+	 * get value for Post_Count
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getPostCount() {
+		return $this->author_postcount;
+	}
+
+	/**
+	 * set value for warning_level
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $warningLevel
+	 * @return Usermodel
+	 */
+	public function &setWarningLevel($warningLevel) {
+		$this->notifyChanged("warning_level");
+		$this->author_warninglevel=$warningLevel;
+		return $this;
+	}
+
+	/**
+	 * get value for warning_level
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getWarningLevel() {
+		return $this->author_warninglevel;
+	}
+
+	/**
+	 * set value for Avatar
+	 *
+	 * type:VARCHAR,size:255,default:
+	 *
+	 * @param mixed $avatar
+	 * @return Usermodel
+	 */
+	public function &setAvatar($avatar) {
+		$this->notifyChanged("Avatar");
+		$this->author_avatar=$avatar;
+		return $this;
+	}
+
+	/**
+	 * get value for Avatar
+	 *
+	 * type:VARCHAR,size:255,default:
+	 *
+	 * @return mixed
+	 */
+	public function getAvatar() {
+		return $this->author_avatar;
+	}
+
+	/**
+	 * set value for Sig
+	 *
+	 * type:TINYTEXT,size:255,default:null
+	 *
+	 * @param mixed $sig
+	 * @return Usermodel
+	 */
+	public function &setSig($sig) {
+		$this->notifyChanged("Sig");
+		$this->author_signature=$sig;
+		return $this;
+	}
+
+	/**
+	 * get value for Sig
+	 *
+	 * type:TINYTEXT,size:255,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getSig() {
+		return $this->author_signature;
+	}
+
+	/**
+	 * set value for Custom_Title
+	 *
+	 * type:VARCHAR,size:20,default:null
+	 *
+	 * @param mixed $customTitle
+	 * @return Usermodel
+	 */
+	public function &setCustomTitle($customTitle) {
+		$this->notifyChanged("Custom_Title");
+		$this->author_ctitle=$customTitle;
+		return $this;
+	}
+
+	/**
+	 * get value for Custom_Title
+	 *
+	 * type:VARCHAR,size:20,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getCustomTitle() {
+		return $this->author_ctitle;
+	}
+
+	/**
+	 * set value for profile
+	 *
+	 * type:VARCHAR,size:30,default:null
+	 *
+	 * @param mixed $groupProfile
+	 * @return Groupmodel
+	 */
+	public function &setGroupProfile($groupProfile) {
+		$this->notifyChanged("profile");
+		$this->author_group_profile=$groupProfile;
+		return $this;
+	}
+
+	/**
+	 * get value for profile
+	 *
+	 * type:VARCHAR,size:30,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getGroupProfile() {
+		return $this->author_group_profile;
+	}
+
+	/**
+	 * set value for access_level
+	 *
+	 * type:TINYINT,size:1,default:null
+	 *
+	 * @param mixed $groupAccess
+	 * @return Groupmodel
+	 */
+	public function &setGroupAccess($groupAccess) {
+		$this->notifyChanged("access_level");
+		$this->author_group_access=$groupAccess;
+		return $this;
+	}
+
+	/**
+	 * get value for access_level
+	 *
+	 * type:TINYINT,size:1,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getGroupAccess() {
+		return $this->author_group_access;
+	}
+
+	/**
 	 * METHODS
 	*/
 	
@@ -545,11 +754,18 @@ class Topicmodel extends CI_Model {
 
 	/**
 	 * Grab topic data.
-	 * @param int $tid
+	 * @param int $tid TopicID
+	 * @version 1/11/12
+	 * @access public
 	 */
 	public function GetTopicData($tid) {
 
-		$this->db->select('tid, bid, author, Topic, Body, Type, important, IP, Original_Date, last_update, Posted_User, Post_Link, Locked, Views, Question, disable_bbcode, disable_smiles')->from('ebb_topics')->where('tid', $tid);
+		//fetch topic data.
+		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.Type, t.important, t.IP, t.Original_Date, t.last_update, t.Posted_User, t.Post_Link, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
+		$this->db->from('ebb_topics t');
+		$this->db->join('ebb_users u', 't.author=u.Username', 'LEFT');
+		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
+		$this->db->where('tid', $tid);
 		$query = $this->db->get();
 		$TopicData = $query->row();
 
@@ -571,20 +787,36 @@ class Topicmodel extends CI_Model {
 		$this->setTopic($TopicData->Topic);
 		$this->setType($TopicData->Type);
 		$this->setViews($TopicData->Views);
+		$this->setAvatar($TopicData->Avatar);
+		$this->setPostCount($TopicData->Post_Count);
+		$this->setSig($TopicData->Sig);
+		$this->setWarningLevel($TopicData->warning_level);
+		$this->setCustomTitle($TopicData->Custom_Title);
+		$this->setGroupAccess($TopicData->access_level);
+		$this->setGroupProfile($TopicData->profile);
 	}
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 9/6/11
+	 * @version 1/11/12
 	 * @param int $tid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
 	 * @access public
-	 * @return array
+	 * @return array,boolean
 	*/
 	public function GetReplies($tid, $limit, $start) {
+
+		//setup reply data array.
+		$replies = array();
+
 		//SQL to get all topics from defined board.
-		$this->db->select('author, pid, tid, bid, Body, IP, Original_Date, disable_smiles, disable_bbcode')->from('ebb_posts')->where('tid', $tid)->limit($limit, $start);
+		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
+		$this->db->from('ebb_posts p');
+		$this->db->join('ebb_users u', 'p.author=u.Username', 'LEFT');
+		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
+		$this->db->where('tid', $tid);
+		$this->db->limit($limit, $start);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -601,14 +833,66 @@ class Topicmodel extends CI_Model {
 		}
 	}
 	
-	public function GetPoll() {
+    /**
+     * Get Poll Options
+     * @param integer $tid TopicID
+     * @return array,boolean
+     */
+	public function GetPoll($tid) {
 		
+        //setup reply data array.
+		$pollOpt = array();
+
+		//SQL to get all topics from defined board.
+		$this->db->select('Poll_Option, option_id');
+		$this->db->from('ebb_poll');
+		$this->db->where('tid', $tid);
+		$query = $this->db->get();
+
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+
+			//loop through data and bind to an array.
+			foreach ($query->result() as $row) {
+				$pollOpt[] = $row;
+			}
+
+			return $pollOpt;
+		} else {
+			return FALSE;
+		}
+        
 	}
 	
 	public function CastVote() {
 		
 	}
+    
+    public function ShowPollResults($tid) {
+       
+        //setup reply data array.
+		$pollRes = array();
 
+		//SQL to get all topics from defined board.
+		$this->db->select('Poll_Option, option_id');
+		$this->db->from('ebb_poll');
+		$this->db->where('tid', $tid);
+		$query = $this->db->get();
+
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+
+			//loop through data and bind to an array.
+			foreach ($query->result() as $row) {
+				$pollRes[] = $row;
+			}
+
+			return $pollRes;
+		} else {
+			return FALSE;
+		}
+        
+    }
 }
 
 ?>

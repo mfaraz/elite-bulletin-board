@@ -25,23 +25,45 @@
 </p>
 
 {# display a poll if present. #}
-{POLL}<br />
+{% if TOPIC_TYPE == "Poll" %}
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+    <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
+</tr><tr>
+    <td align="center" class="ui-widget-content">    
+        {# TODO: add rules for guests, already voted, and non voting rights. #}    
 
-<!-- START move -->
-{{URL_TAG("maintenance/move/"~TOPICID, IMG("application/views/simple2/images/move.gif"))|raw}}
-<!-- END move -->
+        {% for p in POLLDATA %}
+        <input type="radio" name="vote" value="{{p.option_id}}" />{{p.Poll_Option}}<br />
+        {% endfor %}
+    </td>
+</tr><tr>
+    <td align="center" class="ui-widget-content">
+        <input type="hidden" name="user_name" value="{{LOGGEDUSER}}" />
+        <input type="submit" name="submit" value="{{LANG_VOTE}}" class="submit" />
+    </td>
+</tr>
+</table>
+<br />
+{% endif %}
 
-<!-- START deletetopic -->
-<a href="#" onclick="confirmDlg('{LANG_DELPROMPT}', '{BOARDDIR}/manage.php?mode=delete&amp;bid={BID}&amp;tid={TID}');return false;"><img src="template/simple2/images/deletetopic.gif" alt="" border="0" /></a>
-<!-- END deletetopic -->
+{# Show these buttons only when the user is an admin or a moderator. #}
+{% if groupAccess == 1 or groupAccess == 2 %}
+	<!-- START move -->
+	{{URL_TAG("maintenance/move/"~TOPICID, IMG("application/views/simple2/images/move.gif"))|raw}}
+	<!-- END move -->
 
-<!-- START lock -->
-{{URL_TAG("maintenance/lock/"~TOPICID, IMG("application/views/simple2/images/lock.gif"))|raw}}<br />
-<!-- END lock -->
+	<!-- START deletetopic -->
+	<a href="#" onclick="confirmDlg('{LANG_DELPROMPT}', '{BOARDDIR}/manage.php?mode=delete&amp;bid={BID}&amp;tid={TID}');return false;"><img src="template/simple2/images/deletetopic.gif" alt="" border="0" /></a>
+	<!-- END deletetopic -->
 
-<!-- START unlock -->
-{{URL_TAG("maintenance/unlock/"~TOPICID, IMG("application/views/simple2/images/unlock.gif"))|raw}}<br />
-<!-- END unlock -->
+	{%if TOPIC_LOCKED == 1 %}
+		{{URL_TAG("maintenance/lock/"~TOPICID, IMG("application/views/simple2/images/unlock.gif"))|raw}}<br />
+	{%else%}
+		{{URL_TAG("maintenance/unlock/"~TOPICID, IMG("application/views/simple2/images/lock.gif"))|raw}}<br />
+	{% endif %}
+
+{% endif %}
 
 <table border="0" class="table" cellpadding="1" cellspacing="1">
 <tr>
@@ -71,21 +93,83 @@
 </span></td>
 </tr><tr>
 <td width="15%" valign="top" class="ui-widget-header">
-    <b>{{TOPIC_AUTHOR}}</b><br />{CUSTOMTITLE}<i>{RANK}</i><br />{RANKICON}<br /><br /><img src="{AVATAR}" alt="" /><br /><br />{LANG-POSTCOUNT}: {POSTCOUNT}<br />{WARNINGBAR}
+    <b>{{TOPIC_AUTHOR}}</b><br />
+	{{AUTHOR_CTITLE}}<br />
+	<em>{{AUTHOR_GROUPNAME}}</em><br />
+	{%if AUTHOR_GROUPLEVEL == 1 %}
+		{{IMG("application/views/simple2/images/adminstar.gif")|raw}}
+	{%elseif AUTHOR_GROUPLEVEL == 2 %}
+		{{IMG("application/views/simple2/images/modstar.gif")|raw}}
+	{%elseif AUTHOR_GROUPLEVEL == 3 %}
+		{{IMG("application/views/simple2/images/fullstar.gif")|raw}}
+	{%endif%}
+	<br /><br />
+
+	{%if AUTHOR_AVATAR == "" %}
+		{{IMG("images/noavatar.gif")|raw}}<br /><br />
+	{%else%}
+		<img src="{{AUTHOR_AVATAR}}" alt="" /><br /><br />
+	{%endif%}
+	{{LANG_POSTCOUNT}}: {{AUTHOR_POSTCOUNT}}<br />
+
+	{# See if user is an admin or moderator. #}
+	{%if groupAccess == 1 or groupAccess == 2 %}
+		{#see if user they wish to warn is higher in rank than them, if so don't let them set anything. #}
+		{%if groupAccess == 2 and AUTHOR_GROUPLEVEL == 1 %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+		{%else%}
+			{# See if user has preoper permissions to do this. #}
+			{% if GAC_WARNINGLEVELS == TRUE %}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{URL_TAG("maintenance/warn/"~TOPIC_AUTHOR, AUTHOR_WARNLEVEL)|raw}}%</div>
+			{%else%}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+			{%endif%}
+		{%endif%}
+	{%else%}
+		{# See if author is logged in user. #}
+		{% if TOPIC_AUTHOR == LOGGEDUSER %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+		{%endif%}
+	{%endif%}
 </td>
 <td width="85%" valign="top" class="ui-widget-content">
 <!-- START qedit -->
 	<!-- Quick Edit coming for v3.0.0 RC2 -->
 <!-- END qedit -->
 <br />
-<div id="topic">{{TOPIC_BODY}}</div><br />{ATTACHMENT}<br />{SIGNATURE}</td>
-</tr><tr>
+<div id="topic">
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, TOPIC_BODY),1))|raw}}
+</div><br />
+
+{# grab a list of attachments, if logged in. #}
+{% if LOGGEDUSER != "guest" and ATTACH_BAR("topic", TOPIC_AUTHOR, TOPICID) != FALSE %}
+<div class="attachheader">{{LANG_ATTACHMENTS}}</div>
+<div class="attachment">
+{% for a in ATTACH_BAR("topic", TOPIC_AUTHOR, TOPICID) %}
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{% endfor %}
+</div>
+{% endif %}
+<br />
+
+_________________<br />
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, AUTHOR_SIG),1))|raw}}</td>
+</tr>
+
+{# Hide user bar if user is guest. #}
+{% if LOGGEDUSER != "guest" %}
+<tr>
 <td colspan="2" align="right" class="ui-widget-header">
     {{URL_TAG("profile/#/"~AUTHOR, IMG("application/views/simple2/images/profile.gif"))|raw}}&nbsp;
     {{URL_TAG("profile/#/PM/compose/"~AUTHOR, IMG("application/views/simple2/images/pm.gif"))|raw}}&nbsp;
     {{URL_TAG("boards/reporttopic"~TOPICID, IMG("application/views/simple2/images/report.gif"))|raw}}
 </td>
 </tr>
+{%endif %}
 </table><br />
 
 {# display a list of replies if present. #}
@@ -93,11 +177,11 @@
 
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
-<td colspan="2" class="ui-widget-header">{LANG_POSTEDON}: {POSTEDON}
+<td colspan="2" class="ui-widget-header">{{LANG_POSTED}}: {{r.Original_Date|PostedDate(TimeFormat, TimeZone)}}
 <span class="postopt">
 &nbsp;
 <!-- START viewip -->
-{LANG_IP}&nbsp;{{URL_TAG("maintenance/viewip/", r.IP)|raw}}
+{{LANG_IP}}&nbsp;{{URL_TAG("maintenance/viewip/", r.IP)|raw}}
 <!-- END viewip -->
 
 <!-- START iplogged -->
@@ -119,20 +203,81 @@
 </span></td>
 </tr><tr>
 <td width="15%" class="ui-widget-header" valign="top">
-    <b>{{r.author}}</b><br />{CUSTOMTITLE}<i>{RANKNAME}</i><br />{RANKICON}<br /><br /><img src="{AVATAR}" alt="" /><br /><br />{LANG-POSTCOUNT}: {POSTCOUNT}<br />{WARNINGBAR}
+    <b>{{r.author}}</b><br />
+	{{r.Custom_Title}}<br />
+	<em>{{r.profile}}</em><br />
+	{%if r.access_level == 1 %}
+		{{IMG("application/views/simple2/images/adminstar.gif")|raw}}
+	{%elseif r.access_level == 2 %}
+		{{IMG("application/views/simple2/images/modstar.gif")|raw}}
+	{%elseif r.access_level == 3 %}
+		{{IMG("application/views/simple2/images/fullstar.gif")|raw}}
+	{%endif%}
+
+	<br /><br />
+	{%if r.Avatar == "" %}
+		{{IMG("images/noavatar.gif")|raw}}<br /><br />
+	{%else%}
+		<img src="{{r.Avatar}}" alt="" /><br /><br />
+	{%endif%}
+	{{LANG_POSTCOUNT}}: {{r.Post_Count}}<br />
+
+	{# See if user is an admin or moderator. #}
+	{%if groupAccess == 1 or groupAccess == 2 %}
+		{#see if user they wish to warn is higher in rank than them, if so don't let them set anything. #}
+		{%if groupAccess == 2 and AUTHOR_GROUPLEVEL == 1 %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{r.warning_level}}%</div>
+		{%else%}
+			{# See if user has preoper permissions to do this. #}
+			{% if GAC_WARNINGLEVELS == TRUE %}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{URL_TAG("maintenance/warn/"~TOPIC_AUTHOR, r.warning_level)|raw}}%</div>
+			{%else%}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{r.warning_level}}%</div>
+			{%endif%}
+		{%endif%}
+	{%else%}
+		{# See if author is logged in user. #}
+		{% if r.author == LOGGEDUSER %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{r.warning_level}}%</div>
+		{%endif%}
+	{%endif%}
 </td>
 <td width="85%" valign="top" class="ui-widget-content">
 <!-- START qedit -->
 	<!-- Quick Edit coming for v3.0.0 RC2 -->
 <!-- END qedit -->
-<br /><div id="edit">{POSTBODY}</div><br />{ATTACHMENT}<br />{SIGNATURE}</td>
-</tr><tr>
+<br />
+<div id="edit">
+	{{nl_2_br(Spam_Filter(FormatMsg(r.disable_smiles, BOARDPREF_SMILES, r.disable_bbcode, BOARDPREF_BBCODE, BOARDPREF_IMAGE, r.Body),1))|raw}}
+</div><br />
+
+{# grab a list of attachments #}
+{% if LOGGEDUSER != "guest" and ATTACH_BAR("post", r.author, r.pid) != FALSE %}
+<div class="attachheader">{{LANG_ATTACHMENTS}}</div>
+<div class="attachment">
+{% for a in ATTACH_BAR("topic", r.author, r.pid) %}
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{% endfor %}
+</div>
+{% endif %}
+<br />
+_________________<br />
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, r.Sig),1))|raw}}</td>
+</tr>
+{# Hide user bar if user is guest. #}
+{% if LOGGEDUSER != "guest" %}
+<tr>
 <td colspan="2" align="right" class="ui-widget-header">
-    {{URL_TAG("profile/#/"~r.re_author, IMG("application/views/simple2/images/profile.gif"))|raw}}&nbsp;
-    {{URL_TAG("profile/#/PM/compose/"~r.re_author, IMG("application/views/simple2/images/pm.gif"))|raw}}&nbsp;
-    {{URL_TAG("boards/reportpost"~r.pid, IMG("application/views/simple2/images/report.gif"))|raw}}
+    {{URL_TAG("profile/#/"~r.author, IMG("application/views/simple2/images/profile.gif"))|raw}}&nbsp;
+    {{URL_TAG("profile/#/PM/compose/"~r.author, IMG("application/views/simple2/images/pm.gif"))|raw}}&nbsp;
+    {{URL_TAG("boards/reportpost/"~r.pid, IMG("application/views/simple2/images/report.gif"))|raw}}
 </td>
 </tr>
+{% endif %}
 </table><br />
 
 {% endfor %}

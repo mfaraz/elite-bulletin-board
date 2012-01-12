@@ -253,6 +253,46 @@ function getSubBoard($boardID) {
 }
 
 /**
+ * Format our topic body.
+ * @param boolean $topic_smiles Topic Settings to Allow Smiles.
+ * @param boolean $board_smiles Board Settings to Allow Smiles.
+ * @param boolean $topic_bbcode Topic Settings to Allow BBCode.
+ * @param boolean $board_bbcode Board Settings to Allow BBCode.
+ * @param boolean $board_Image Board Settings to Allow Images.
+ * @param mixed $body Topic Body to format.
+ * @version 11/30/11
+ * @return string
+ */
+function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbcode, $board_Image, $body) {
+
+	$topicBody = $body;
+
+	#see if user wish to allow smiles.
+	if($topic_smiles == 0){
+		#see if board allows smiles.
+		if ($board_smiles == 1){
+			$topicBody = smiles($topicBody);
+		}
+	}
+
+	#see if user wish to allow bbcode.
+	if($topic_bbcode == 0){
+		#see if board allow BBCode formatting.
+		if ($board_bbcode == 1){
+			$topicBody = BBCode($topicBody);
+		}
+
+		#see if board allows use of [img] tag.
+		if ($board_Image == 1){
+			$topicBody = BBCode($topicBody, true);
+		}
+	}
+
+	return ($topicBody);
+}
+
+
+/**
   * See if user can read topics
   * @param int $id
   * @param object $groupAccess
@@ -343,20 +383,35 @@ function CanPostPoll($id, $groupAccess) {
 function CanPostReply($id, $groupAccess) {
 
 	//grab Codeigniter objects.
-	$ci =& get_instance();
+	//$ci =& get_instance();
 
 	#board rules sql.
-	$ci->db->select('B_Reply')->from('ebb_board_access')->where('B_id',$id);
-	$postReplyQ = $ci->db->get();
-	$postReply = $postReplyQ->row();
+	//$ci->db->select('B_Reply')->from('ebb_board_access')->where('B_id',$id);
+	//$postReplyQ = $ci->db->get();
+	//$postReply = $postReplyQ->row();
 
 	#see if user can post a topic or not.
-	if ($groupAccess->validateAccess(0, $postReply->B_Reply) == false){
-		return FALSE;
-    }elseif($groupAccess->validateAccess(1, 38) == false){
-		return FALSE;
-    } else {
+	//if ($groupAccess->validateAccess(0, $postReply->B_Reply) == false){
+	//	return FALSE;
+    //}elseif($groupAccess->validateAccess(1, 38) == false){
+	//	return FALSE;
+    //} else {
 		return TRUE;
-	}
+	//}
+}
+
+/**
+ * See if user can rise or lower a user's warning level.
+ * @param object $groupAccess
+ * @return boolean
+ */
+function CanAlterWarningLevels($groupAccess) {
+
+	//if($groupAccess->validateAccess(1, 25)){
+		return TRUE;
+	//} else {
+	//	return FALSE;
+	//}
+
 }
 ?>

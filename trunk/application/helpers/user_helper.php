@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/1/2011
+ * @version 12/7/2011
 */
 
 /**
@@ -630,15 +630,23 @@ function ThemeList($theme){
 	#obtain codeigniter object.
 	$ci =& get_instance();
 
+	//our assocative array.
+	$StyleArray = array();
+
 	//SQL query.
 	$ci->db->select('id, Name')->from('ebb_style');
 	$styleList = $ci->db->get();
 	
 	//build an array list for drop-down.
 	$styles = $styleList->result_array();
+
+	//go through array list and convert it to an assocative array.
+	foreach($styles as $value) {
+		$StyleArray[] = $value;
+	}
 	
 	//setup form based on user's selection.
-	echo form_dropdown('style', $styles, $theme, 'class="text"');
+	return form_dropdown('style', $StyleArray, $theme, 'class="text"');
 }
 
 /**
@@ -666,6 +674,112 @@ function LanguageList($language){
 	}
 	
 	//setup form based on user's selection.
-	echo form_dropdown('language', $AssocArray, $language, 'class="text"');
+	return form_dropdown('language', $AssocArray, $language, 'class="text"');
+}
+
+
+/**
+ * Get User's Avatar.
+ * @param string $user Username to look for.
+ * @version 12/5/11
+ * @return string
+ * @uses When using the UserModel isn't possible.
+ */
+function GetAvatar($user) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#grab our avatar.
+	$ci->db->select('Avatar')->from('ebb_users')->where('Username', $user)->limit(1);
+	$userQ = $ci->db->get();
+	$Avatar_R = $userQ->row();
+
+	return $Avatar_R->Avatar;
+
+}
+
+/**
+ * Get User's Post Count.
+ * @param string $user Username to look for.
+ * @version 12/5/11
+ * @return string
+ * @uses When using the UserModel isn't possible.
+ */
+function GetPostCount($user) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#grab our post count.
+	$ci->db->select('Post_Count')->from('ebb_users')->where('Username', $user)->limit(1);
+	$userQ = $ci->db->get();
+	$Post_Count_R = $userQ->row();
+
+	return $Post_Count_R->Post_Count;
+
+}
+
+/**
+ * Get User's Post Count.
+ * @param string $user Username to look for.
+ * @version 12/5/11
+ * @return string
+ * @uses When using the UserModel isn't possible.
+ */
+function GetCustomTitle($user) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#grab our custom title.
+	$ci->db->select('Custom_Title')->from('ebb_users')->where('Username', $user)->limit(1);
+	$userQ = $ci->db->get();
+	$Custom_Title_R = $userQ->row();
+
+	return $Custom_Title_R->Custom_Title;
+
+}
+
+/**
+ * Get User's Signature.
+ * @param string $user Username to look for.
+ * @version 12/5/11
+ * @return string
+ * @uses When using the UserModel isn't possible.
+ */
+function GetSignature($user) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#grab our signature.
+	$ci->db->select('Sig')->from('ebb_users')->where('Username', $user)->limit(1);
+	$userQ = $ci->db->get();
+	$Sig_R = $userQ->row();
+
+	return $Sig_R->Sig;
+
+}
+
+/**
+ * Get User's Warning Level.
+ * @param string $user Username to look for.
+ * @version 12/5/11
+ * @return string
+ * @uses When using the UserModel isn't possible.
+ */
+function GetWarningLevel($user) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#get user's warning level.
+	$ci->db->select('warning_level')->from('ebb_users')->where('Username', $user)->limit(1);
+	$userQ = $ci->db->get();
+	$Warn_R = $userQ->row();
+
+	return $Warn_R->warning_level;
+	
 }
 ?>

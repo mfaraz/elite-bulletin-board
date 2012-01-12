@@ -67,6 +67,29 @@ function redirectToHttps(){
 }
 
 /**
+ * Generates Captcha Question and saves it to session for validation.
+ * @return string
+ */
+function GenerateCaptchaQuestion() {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#randomize two sets of numbers ranging from 0 to 9.
+	$math1 = rand("0", "9");
+	$math2 = rand("0", "9");
+
+	//do some basic math.
+	$question = "%d + %d = ?";
+	$answer = md5($math1 + $math2);
+
+	//save encrypted answer in session.
+	$ci->session->set_userdata('CAPTCHA_Ans', $answer);
+
+	return sprintf($question, $math1, $math2);
+}
+
+/**
  * Checks to see if installation files are still on server.
  * @version 10/5/09
  * @return integer $setupExist - results of check.

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/16/2011
+ * @version 12/29/2011
 */
 
 class Usermodel extends CI_Model {
@@ -15,6 +15,7 @@ class Usermodel extends CI_Model {
 	private $userName;
 	private $password;
 	private $salt;
+	private $gid;
 	private $email;
 	private $customTitle;
 	private $lastVisit;
@@ -181,6 +182,31 @@ class Usermodel extends CI_Model {
 	 */
 	public function getSalt() {
 		return $this->salt;
+	}
+
+	/**
+	 * set value for gid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null
+	 *
+	 * @param mixed $gid
+	 * @return Usermodel
+	 */
+	public function &setGid($gid) {
+		$this->notifyChanged("gid");
+		$this->gid=$gid;
+		return $this;
+	}
+
+	/**
+	 * get value for gid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getGid() {
+		return $this->gid;
 	}
 
 	/**
