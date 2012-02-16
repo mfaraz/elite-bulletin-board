@@ -6,9 +6,12 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 1/10/2012
+ * @version 02/02/2012
 */
 
+/**
+ * Topic Entity
+ */
 class Topicmodel extends CI_Model {
 
 	/**
@@ -38,50 +41,12 @@ class Topicmodel extends CI_Model {
 	private $author_avatar;
 	private $author_signature;
 	private $author_ctitle;
-
 	private $author_group_profile;
 	private $author_group_access;
-
-
-	/**
-	 * store for old instance after object has been modified
-	 *
-	 * @var Topicmodel
-	 */
-	private $oldInstance=null;
-	
+		
     public function __construct() {
         parent::__construct();
     }
-
-	/**
-	 * get old instance if this has been modified, otherwise return null
-	 *
-	 * @return Topicmodel
-	*/
-	public function getOldInstance() {
-		return $this->oldInstance;
-	}
-
-	/**
-	 * called when the field with the passed id has changed
-	 *
-	 * @param int $fieldId
-	*/
-	protected function notifyChanged($fieldId) {
-		if (is_null($this->getOldInstance())) {
-			$this->oldInstance=clone $this;
-			$this->oldInstance->notifyPristine();
-		}
-	}
-
-	/**
-	 * set this instance into pristine state
-	*/
-	public function notifyPristine() {
-		$this->oldInstance=null;
-	}
-
 
 	/**
 	 * PROPERTIES
@@ -96,7 +61,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setAuthor($author) {
-		$this->notifyChanged("AUTHOR");
 		$this->author=$author;
 		return $this;
 	}
@@ -121,7 +85,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setTiD($tiD) {
-		$this->notifyChanged("TID");
 		$this->tiD=$tiD;
 		return $this;
 	}
@@ -146,7 +109,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setBid($bid) {
-		$this->notifyChanged("bid");
 		$this->bid=$bid;
 		return $this;
 	}
@@ -171,7 +133,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setTopic($topic) {
-		$this->notifyChanged("Topic");
 		$this->topic=$topic;
 		return $this;
 	}
@@ -196,7 +157,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setBody($body) {
-		$this->notifyChanged("Body");
 		$this->body=$body;
 		return $this;
 	}
@@ -221,7 +181,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setType($type) {
-		$this->notifyChanged("Type");
 		$this->type=$type;
 		return $this;
 	}
@@ -246,7 +205,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setImportant($important) {
-		$this->notifyChanged("important");
 		$this->important=$important;
 		return $this;
 	}
@@ -271,7 +229,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setIp($ip) {
-		$this->notifyChanged("IP");
 		$this->ip=$ip;
 		return $this;
 	}
@@ -296,7 +253,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setOriginalDate($originalDate) {
-		$this->notifyChanged("Original_Date");
 		$this->originalDate=$originalDate;
 		return $this;
 	}
@@ -321,7 +277,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setLastUpdate($lastUpdate) {
-		$this->notifyChanged("last_update");
 		$this->lastUpdate=$lastUpdate;
 		return $this;
 	}
@@ -346,7 +301,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setPostedUser($postedUser) {
-		$this->notifyChanged("Posted_User");
 		$this->postedUser=$postedUser;
 		return $this;
 	}
@@ -371,7 +325,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setPostLink($postLink) {
-		$this->notifyChanged("Post_Link");
 		$this->postLink=$postLink;
 		return $this;
 	}
@@ -396,7 +349,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setLocked($locked) {
-		$this->notifyChanged("Locked");
 		$this->locked=$locked;
 		return $this;
 	}
@@ -421,7 +373,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setViews($views) {
-		$this->notifyChanged("Views");
 		$this->views=$views;
 		return $this;
 	}
@@ -446,7 +397,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setQuestion($question) {
-		$this->notifyChanged("Question");
 		$this->question=$question;
 		return $this;
 	}
@@ -471,7 +421,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setDisableBbCode($disableBbCode) {
-		$this->notifyChanged("disable_bbcode");
 		$this->disableBbCode=$disableBbCode;
 		return $this;
 	}
@@ -496,7 +445,6 @@ class Topicmodel extends CI_Model {
 	 * @return Topicmodel
 	*/
 	public function &setDisableSmiles($disableSmiles) {
-		$this->notifyChanged("disable_smiles");
 		$this->disableSmiles=$disableSmiles;
 		return $this;
 	}
@@ -521,7 +469,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setGid($gid) {
-		$this->notifyChanged("gid");
 		$this->author_gid=$gid;
 		return $this;
 	}
@@ -546,7 +493,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setPostCount($postCount) {
-		$this->notifyChanged("Post_Count");
 		$this->author_postcount=$postCount;
 		return $this;
 	}
@@ -571,7 +517,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setWarningLevel($warningLevel) {
-		$this->notifyChanged("warning_level");
 		$this->author_warninglevel=$warningLevel;
 		return $this;
 	}
@@ -596,7 +541,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setAvatar($avatar) {
-		$this->notifyChanged("Avatar");
 		$this->author_avatar=$avatar;
 		return $this;
 	}
@@ -621,7 +565,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setSig($sig) {
-		$this->notifyChanged("Sig");
 		$this->author_signature=$sig;
 		return $this;
 	}
@@ -646,7 +589,6 @@ class Topicmodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setCustomTitle($customTitle) {
-		$this->notifyChanged("Custom_Title");
 		$this->author_ctitle=$customTitle;
 		return $this;
 	}
@@ -671,7 +613,6 @@ class Topicmodel extends CI_Model {
 	 * @return Groupmodel
 	 */
 	public function &setGroupProfile($groupProfile) {
-		$this->notifyChanged("profile");
 		$this->author_group_profile=$groupProfile;
 		return $this;
 	}
@@ -696,7 +637,6 @@ class Topicmodel extends CI_Model {
 	 * @return Groupmodel
 	 */
 	public function &setGroupAccess($groupAccess) {
-		$this->notifyChanged("access_level");
 		$this->author_group_access=$groupAccess;
 		return $this;
 	}
@@ -863,9 +803,24 @@ class Topicmodel extends CI_Model {
 		}
         
 	}
-	
-	public function CastVote() {
-		
+
+	/**
+	 * Saves Vote Cast in the DataBase.
+	 * @param string $user User who casted the vote
+	 * @param integer $tid the topic that holding the vote
+	 * @param integer $vote The vote value user selected
+	 * @version 1/12/12
+	 */
+	public function CastVote($user, $tid, $vote) {
+
+		//INSERT INTO ebb_votes (Username, tid, Vote) VALUES('$logged_user', '$tid', '$vote')
+		$data = array(
+		  'Username' => $user,
+		  'tid' => $tid,
+		  'Vote' => $vote
+		);
+		$this->db->insert('ebb_votes', $data);
+
 	}
     
     public function ShowPollResults($tid) {

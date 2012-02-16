@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
   * @author Elite Bulletin Board Team <http://elite-board.us>
   * @copyright  (c) 2006-2011
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 10/11/2011
+  * @version 1/15/2012
 */
 
 #Common language tags.
@@ -30,6 +30,9 @@ $lang['username'] = 'Username';
 $lang['pages'] = 'Pages';
 $lang['next'] = 'Next';
 $lang['prev'] = 'Previous';
+$lang['spamwarn'] = 'SPAMMING ATTEMPT!';
+$lang['nullspam'] = 'spam check is null.';
+
 //TODO this may be considered as obsolete.
 $lang['closewindow'] = 'Close this Window';
 
@@ -52,6 +55,8 @@ $lang['nosmid'] = 'No Smile ID was Located.';
 $lang['nocensorid'] = 'No Censor ID was Located.';
 $lang['invalidprofile'] = 'Invalid Profile ID entered.';
 $lang['invalidaction'] = 'Invalid action request entered.';
+$lang['invalidgid'] = 'Invalid GroupID provided.';
+$lang['invalidpref'] = 'Invalid Preference Value defined.';
 #general error messages.
 $lang['nonews'] = 'No News To Report On.';
 $lang['groupstatus'] = 'GROUP STATUS ERROR!';
@@ -191,7 +196,7 @@ $lang['noacctkey'] = 'No activation key was found.';
 $lang['correctinfo'] = "Your account has been activated. <a href=\"login.php\">Login</a>.";
 #auth.php language tags.
 $lang['inactiveuser'] = 'This user has not activated their account. you may either click on the link in the email or contact the admin.';
-$lang['nomatch'] ='You could not be logged in! the username and/or password are invalid. go back and try again. Please be aware that you have five(5) tries, after that the account will locked and will require an administrative activation.';
+$lang['invalidlogin'] ='You could not be logged in! the username and/or password are invalid.';
 $lang['lockeduser'] = 'You are trying to login to a user\'s account that has been locked out.';
 #registration language tags
 $lang['email'] = 'Email';
@@ -299,7 +304,7 @@ $lang['sameboard'] = 'The board you selected is where the topic already exist.';
 $lang['condel'] = 'Are you sure you wish to delete this?';
 #poll box language tags.
 $lang['total'] = 'Total Votes';
-$lang['vote'] = 'Vote';
+$lang['castvote'] = 'Cast Vote';
 $lang['novote'] = 'No vote was casted.';
 #post form language tags.
 $lang['newtopic'] = 'Post New Topic';

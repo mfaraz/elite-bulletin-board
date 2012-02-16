@@ -175,8 +175,32 @@ class Login extends EBB_Controller {
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'BREADCRUMB' =>$this->breadcrumb->output(),
 		  'LANG_EMAIL' => $this->lang->line('email'),
-		  'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
-		  'LANG_GETPASS' => $this->lang->line('getpassword')
+		  'LANG_RULE' => $this->lang->line('nospecialchar'),
+		  'LANG_CONFIRMPWD' => $this->lang->line('confirmpass'),
+		  'LANG_TIME' => $this->lang->line('timezone'),
+		  'LANG_TIMEFORMAT' => $this->lang->line('timeformat'),
+		  'TIMEFORMAT' => $this->timeFormat,
+		  'LANG_TIMEINFO' => $this->lang->line('timeinfo'),
+		  'LANG_PMNOTIFY' => $this->lang->line('pm_notify'),
+		  'LANG_SHOWEMAIL' => $this->lang->line('showemail'),
+		  'LANG_YES' => $this->lang->line('yes'),
+		  'LANG_NO' => $this->lang->line('no'),
+		  'LANG_STYLE' => $this->lang->line('style'),
+		  'STYLE' => ThemeList($this->style),
+		  'LANG_LANGUAGE' => $this->lang->line('defaultlang'),
+		  'LANGUAGE' => LanguageList($this->lng),
+		  'LANG_CAPTCHA' => $this->lang->line('captcha'),
+		  'LANG_CAPTCHAHELP' => $this->lang->line('securitynotice'),
+		  'LANG_RELOAD' => $this->lang->line('reloadimg'),
+		  'LANG_AGREE' => $this->lang->line('agree'),
+		  'PREF_RULES' => $this->preference->getPreferenceValue('rules_status'),
+		  'RULES' => $this->preference->getPreferenceValue('rules'),
+		  'COPPA' => $this->preference->getPreferenceValue("coppa"),
+		  'COPPA_13' => $this->lang->line('coppa13'),
+		  'COPPA_16' => $this->lang->line('coppa16'),
+		  'COPPA_18' => $this->lang->line('coppa18'),
+		  'COPPA_21' => $this->lang->line('coppa21'),
+		  'CAPTCHA' => GenerateCaptchaQuestion()
 		));
 	}
 
@@ -369,7 +393,11 @@ class Login extends EBB_Controller {
 	 * @version 10/11/11
 	*/
 	public function CreateUser() {
-		
+
+
+		//clears session
+		$this->ci->session->all_userdata();
+
 	}
 }
 ?>

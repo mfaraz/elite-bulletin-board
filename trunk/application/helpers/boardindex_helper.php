@@ -6,12 +6,12 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/22/2011
+ * @version 02/15/2012
 */
 
 /**
  * Get a total of various things.
- * @version 10/27/11
+ * @version 1/12/12
  * @param int $id any kind of integer.
  * @param string $type The total we're looking for.
  * @access public
@@ -38,10 +38,56 @@ function GetCount($id, $type) {
 		case 'TopicViews':
 			return number_format($id);
 		break;
+		case 'PollCount':
+			$ci->db->select('tid')->from('ebb_votes')->where('tid', $id);
+			return number_format($ci->db->count_all_results());
+		break;
 		default:
 			return FALSE;//invalid choice.
 		break;
 	}	
+}
+
+/**
+ * Get a total of votes casted for a defined option.
+ * @param integer $vote the vote we're calculating.
+ * @param integer $tid the topic id tosearch by
+ * @return integer
+ * @version 1/12/12
+ */
+function CalcVotes($vote, $tid) {
+	//grab Codeigniter objects.
+	$ci =& get_instance();
+	$ci->db->select('tid')->from('ebb_votes')->where('Vote', $vote)->where('tid', $tid);
+	return $ci->db->count_all_results();
+}
+
+
+/**
+ * Check to see defined user casted a vote.
+ * @param string $usr Logged In User
+ * @param integer $tid TopicID
+ * @return boolean
+ * @version 1/12/12
+ */
+function CheckVoteStatus($usr, $tid) {
+	
+	//set to false if user is not logged in.
+	if ($usr == "guest") {
+		return FALSE;
+	} else {
+		//grab Codeigniter objects.
+		$ci =& get_instance();
+		$ci->db->select('tid')->from('ebb_votes')->where('Username', $usr)->where('tid', $tid);
+		$voteCount = $ci->db->count_all_results();
+
+		//see if logged in user already voted.
+		if ($voteCount == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 }
 
 /**
@@ -206,7 +252,7 @@ function boardStats($type){
 
 /**
  * Will list all sub-boards linked to a parent board.
- * @version 9/26/11
+ * @version 02/15/12
  * @param int $boardID - Board ID to search for any sub-boards.
  * @access public
 */
@@ -237,12 +283,14 @@ function getSubBoard($boardID) {
 				$marker = '';
 			}
 
+			//TODO: use entity here
+
 			#board rules sql.
 			$boardRule = $ci->db->query("SELECT B_Read FROM ebb_board_access WHERE B_id=?", $row->id);
 			$readAccess = $boardRule->row();
 			
 			#see if user can view the board.
-			if ($ci->grouppolicy->validateAccess(0, $readAccess->B_Read) == true){
+			if ($ci->Groupmodel->validateAccess(0, $readAccess->B_Read)){
 				$subBoard .= sprintf("<i>%s</i>%s", anchor('boards/viewboard/'.$row->id, $row->Board), $marker);
 			}
 
@@ -289,129 +337,5 @@ function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbc
 	}
 
 	return ($topicBody);
-}
-
-
-/**
-  * See if user can read topics
-  * @param int $id
-  * @param object $groupAccess
-  * @return boolean
-  * @version 11/12/11
- */
-function CanReadTopics($id, $groupAccess) {
-
-	//grab Codeigniter objects.
-	$ci =& get_instance();
-
-	#board rules sql.
-	$ci->db->select('B_Read')->from('ebb_board_access')->where('B_id',$id);
-	$readTopicQ = $ci->db->get();
-	$readTopic = $readTopicQ->row();
-
-	//can user read topics?
-	if ($groupAccess->validateAccess(0, $readTopic->B_Read) == false){
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-
-}
-
-/**
-  * See if user can post topics.
-  * @param int $id
-  * @param object $groupAccess
-  * @return boolean
-  * @version 11/20/11
- */
-function CanPostTopic($id, $groupAccess) {
-
-	//grab Codeigniter objects.
-	$ci =& get_instance();
-
-	#board rules sql.
-	$ci->db->select('B_Post')->from('ebb_board_access')->where('B_id',$id);
-	$postTopicQ = $ci->db->get();
-	$postTopic = $postTopicQ->row();
-
-	#see if user can post a topic or not.
-	if ($groupAccess->validateAccess(0, $postTopic->B_Post) == false){
-		return FALSE;
-    }elseif($groupAccess->validateAccess(1, 37) == false){
-		return FALSE;
-    } else {
-		return TRUE;
-	}
-}
-
-/**
-  * See if user can post topic polls.
-  * @param int $id
-  * @param object $groupAccess
-  * @return boolean
-  * @version 11/20/11
- */
-function CanPostPoll($id, $groupAccess) {
-
-	//grab Codeigniter objects.
-	$ci =& get_instance();
-
-	#board rules sql.
-	$ci->db->select('B_Poll')->from('ebb_board_access')->where('B_id',$id);
-	$postPollsQ = $ci->db->get();
-	$postPolls = $postPollsQ->row();
-
-	#see if user can post a topic poll or not.
-	if ($groupAccess->validateAccess(0, $postPolls->B_Poll) == false){
-        return FALSE;
-	}elseif($groupAccess->validateAccess(1, 35) == false){
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-
-}
-
-/**
-  * See if user can post a reply.
-  * @param int $id
-  * @param object $groupAccess
-  * @return boolean
-  * @version 11/28/11
- */
-function CanPostReply($id, $groupAccess) {
-
-	//grab Codeigniter objects.
-	//$ci =& get_instance();
-
-	#board rules sql.
-	//$ci->db->select('B_Reply')->from('ebb_board_access')->where('B_id',$id);
-	//$postReplyQ = $ci->db->get();
-	//$postReply = $postReplyQ->row();
-
-	#see if user can post a topic or not.
-	//if ($groupAccess->validateAccess(0, $postReply->B_Reply) == false){
-	//	return FALSE;
-    //}elseif($groupAccess->validateAccess(1, 38) == false){
-	//	return FALSE;
-    //} else {
-		return TRUE;
-	//}
-}
-
-/**
- * See if user can rise or lower a user's warning level.
- * @param object $groupAccess
- * @return boolean
- */
-function CanAlterWarningLevels($groupAccess) {
-
-	//if($groupAccess->validateAccess(1, 25)){
-		return TRUE;
-	//} else {
-	//	return FALSE;
-	//}
-
 }
 ?>
