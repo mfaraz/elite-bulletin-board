@@ -6,15 +6,18 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/28/2011
+ * @version 02/15/2012
 */
 
-
+/**
+ * @class Boards
+ * Board Controller.
+ */
 class Boards extends EBB_Controller {
 
 	function __construct() {
  		parent::__construct();
-		$this->load->model('Boardmodel');
+		$this->load->model(array('Boardmodel', 'Boardaccessmodel'));
 		$this->load->helper(array('common', 'posting'));
 
 	}
@@ -32,6 +35,9 @@ class Boards extends EBB_Controller {
 		$this->load->helper(array('boardindex', 'topic', 'user', 'form'));
 		$this->load->library('datetime_52', 'encrypt');
 
+		$data = array();
+		$data2 = array();
+
 		//SQL CI style.
 		$this->db->select('id, Board')->from('ebb_boards')->where('type', 1)->order_by("B_Order", "asc");
 		$query = $this->db->get();
@@ -45,12 +51,13 @@ class Boards extends EBB_Controller {
 			foreach ($query2->result() as $row2) {
 
 				#board rules sql.
+				//TODO: use entity here
 				$this->db->select('B_Read')->from('ebb_board_access')->where('B_id',$row2->id);
 				$readAccessQ = $this->db->get();
 				$readAccess = $readAccessQ->row();
 
 				#see if user can view the board.
-				if ($this->grouppolicy->validateAccess(0, $readAccess->B_Read) == true){
+				if ($this->Groupmodel->validateAccess(0, $readAccess->B_Read)){
 					$data2[] = $row2;
 				}
 
@@ -135,11 +142,50 @@ class Boards extends EBB_Controller {
 		//don't allow user to view category boards.
 		if (!isset($id) OR (empty($id)) OR (!is_numeric($id))) {
 			show_error($this->lang->line('nobid'),404,$this->lang->line('error'));
-		}elseif ($this->Boardmodel->ValidateBoardID($id) == 0) {
-			show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
-		}elseif ($this->Boardmodel->GetBoardType($id) == 1) {
-			redirect('/', 'location');
-			exit();
+		}else {
+
+			if ($this->Boardmodel->ValidateBoardID($id) == 0) {
+				show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
+			}elseif ($this->Boardmodel->getType() == 1) {
+				redirect('/', 'location');
+				exit();
+			}
+
+			//load entity.
+			$this->Boardmodel->GetBoardSettings($id);
+			$this->Boardaccessmodel->GetBoardAccess($id);
+
+			//
+			// Permission Validation
+			//
+
+			#see if user can view this topic.
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
+				//show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
+				$CanRead = FALSE;
+			} else {
+				$CanRead = TRUE;
+			}
+
+
+			#see if user can post a topic or not.
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost()) == false){
+				$CanPost = FALSE;
+			}elseif($this->Groupmodel->validateAccess(1, 37) == false){
+				$CanPost = FALSE;
+			} else {
+				$CanPost = TRUE;
+			}
+
+			#see if user can post a topic poll or not.
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll()) == false){
+				$CanPostPoll = FALSE;
+			}elseif($this->Groupmodel->validateAccess(1, 35) == false){
+				$CanPostPoll = FALSE;
+			} else {
+				$CanPostPoll = TRUE;
+			}
+
 		}
 
 		//load pagination library
@@ -164,7 +210,7 @@ class Boards extends EBB_Controller {
 
 		//add breadcrumbs
 		$this->breadcrumb->append_crumb($this->title, '/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->GetBoardName($id), '/viewboard');
+		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard');
 
         #setup filters.
 		$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
@@ -177,7 +223,7 @@ class Boards extends EBB_Controller {
 		//render to HTML.
 		echo $this->twig->render($this->style, 'viewboard', array (
 		  'boardName' => $this->title,
-		  'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->GetBoardName($id),
+		  'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
 		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
@@ -217,9 +263,9 @@ class Boards extends EBB_Controller {
 		  'BREADCRUMB' => $this->breadcrumb->output(),
 		  'LANG_NOREAD' => $this->lang->line('noread'),
 		  'LANG_NOPOST' => $this->lang->line('nopost'),
-		  'CANREAD_TOPIC' => CanReadTopics($id, $this->grouppolicy),
-		  'CANPOST_TOPIC' => CanPostTopic($id, $this->grouppolicy),
-		  'CANPOST_POLL' => CanPostPoll($id, $this->grouppolicy),
+		  'CANREAD_TOPIC' => $CanRead,
+		  'CANPOST_TOPIC' => $CanPost,
+		  'CANPOST_POLL' => $CanPostPoll,
 		  'LANG_NEWPOST' => $this->lang->line('newpost'),
 		  'LANG_OLDPOST' => $this->lang->line('oldpost'),
 		  'LANG_BOARD' => $this->lang->line('boards'),
@@ -248,14 +294,97 @@ class Boards extends EBB_Controller {
 
 		//load topic model.
 		$this->load->model('Topicmodel');
+
+		//load entities
 		$this->Topicmodel->GetTopicData($id);
+		$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+
+		//
+		// Permission Validation
+		//
 
 		#see if user can view this topic.
-		if (CanReadTopics($this->Topicmodel->getBid(), $this->grouppolicy) == FALSE) {
+		if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
 			show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
 		}
+		
+		#see if user can post a reply or not.
+		if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBReply())){
+			//see if we got any group-based permission overwritting the board-level permission.
+			if($this->Groupmodel->validateAccess(1, 38)){
+				$CanReply = TRUE;
+			} else {
+				$CanReply = FALSE;
+			}
+		} else {
+			$CanReply = FALSE;
+		}
+		
+		#see if user can vote.
+		if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBVote())) {
+			//see if we got any group-based permission overwritting the board-level permission.
+			if($groupAccess->ValidateAccess(1, 36)) {
+				$CanVote = TRUE;
+			} else {
+				$CanVote = FALSE;
+			}
+		} else {
+			$CanVote = TRUE;
+		}
 
-		//setup pagination.
+		#see if this user can delete a topic as a moderator/admin.
+		if($this->Groupmodel->ValidateAccess(1, 21)){
+			$CanDeleteACL = TRUE;
+		} else {
+			$CanDeleteACL = FALSE;
+		}
+
+		#see if user can move topic.
+		if($this->Groupmodel->ValidateAccess(1, 23)){
+			$CanMoveACL = TRUE;
+		} else {
+			$CanMoveACL = FALSE;
+		}
+
+		#see if user can lock/unlock a topic.
+		if($this->Groupmodel->ValidateAccess(1, 22)){
+			$CanToggleLockACL = TRUE;
+		} else {
+			$CanToggleLockACL = FALSE;
+		}
+
+		#see if user can alter warning levels.
+		if($this->Groupmodel->validateAccess(1, 25)){
+			$canAlterWarn = TRUE;
+		} else {
+			$canAlterWarn = FALSE;
+		}
+
+		#see if user can view poster's IP.
+		if($this->Groupmodel->ValidateAccess(1, 24)){
+			$canSeeIP = TRUE;
+		} else {
+			$canSeeIP = FALSE;
+		}
+
+		#see if user can alter topic.
+		if($this->Groupmodel->ValidateAccess(1, 38)){
+			$CanEdit = TRUE;
+		} else {
+			$CanEdit = FALSE;
+		}
+
+		#see if user can delete topic.
+		if($this->Groupmodel->ValidateAccess(1, 21)){
+			$CanDelete = TRUE;
+		} else {
+			$CanDelete = FALSE;
+		}
+
+		//
+		// Setup Pagination.
+		//
 		$config['base_url'] = $this->boardUrl . 'boards/viewtopic/'.$id;
 		$config['total_rows'] = GetCount($id, 'TopicReplies');
 		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
@@ -265,27 +394,27 @@ class Boards extends EBB_Controller {
 		
 		//add breadcrumbs
 		$this->breadcrumb->append_crumb($this->title, '/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->GetBoardName($this->Topicmodel->getBid()), '/boards/viewboard/'.$this->Topicmodel->getBid());
+		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
 		$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic');
 
 		 #setup filters.
 		$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
 		$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
 		$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
-		//$this->twig->_twig_env->addFunction('Attachment', new Twig_Function_Function('HasAttachment'));
 		$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
 		$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
 		$this->twig->_twig_env->addFunction('ATTACH_BAR', new Twig_Function_Function('GetAttachments'));
 		$this->twig->_twig_env->addFunction('ATTACH_FILE_SIZE', new Twig_Function_Function('getFileSize'));
-
-		//$attachment = attachment_stat("post", $row['re_author'], $row['pid']);
+		$this->twig->_twig_env->addFunction('MATH_ROUND', new Twig_Function_Function('Round'));
+		$this->twig->_twig_env->addFunction('CALC_VOTE', new Twig_Function_Function('CalcVotes'));
+		$this->twig->_twig_env->addFunction('VOTECHECK', new Twig_Function_Function('CheckVoteStatus'));
 
 		//Grab some settings.
 		$disable_bbcode = $this->Topicmodel->getDisableBbCode();
 		$disable_smiles = $this->Topicmodel->getDisableSmiles();
-		$boardpref_bbcode = $this->Boardmodel->GetBoardSettings_BBCode($this->Topicmodel->getBid());
-		$boardpref_smiles = $this->Boardmodel->GetBoardSettings_Smiles($this->Topicmodel->getBid());
-		$boardpref_image = $this->Boardmodel->GetBoardSettings_Image($this->Topicmodel->getBid());
+		$boardpref_bbcode = $this->Boardmodel->getBbCode();
+		$boardpref_smiles = $this->Boardmodel->getSmiles();
+		$boardpref_image = $this->Boardmodel->getImage();
 
 		//render to HTML.
 		echo $this->twig->render($this->style, 'viewtopic', array (
@@ -353,12 +482,21 @@ class Boards extends EBB_Controller {
 		  'LANG_IPLOGGED' => $this->lang->line('iplogged'),
           'POLL_QUESTION' => $this->Topicmodel->getQuestion(),
           'POLLDATA' => $this->Topicmodel->GetPoll($id),
-          'LANG_VOTE' => $this->lang->line('vote'),
+          'LANG_VOTE' => $this->lang->line('castvote'),
+		  'LANG_TOTAL' => $this->lang->line('total'),
+		  'TOTAL_VOTES' => GetCount($id, 'PollCount'),
 		  'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], 0),
 		  'PAGINATION' => $this->pagination->create_links(),
 		  'BREADCRUMB' => $this->breadcrumb->output(),
-		  //'CANPOST_REPLY' => CanPostReply($this->Topicmodel->getBid(), $this->gid),
-		  //'GAC_WARNINGLEVELS' => CanAlterWarningLevels($this->gid),
+		  'CANPOST_REPLY' => $CanReply,
+		  'CANVOTE' => $CanVote,
+		  'GAC_WARNINGLEVELS' => $canAlterWarn,
+		  'GAC_SEEIP' => $canSeeIP,
+		  'GAC_EDITTOPIC' => $CanEdit,
+		  'GAC_DELETETOPIC' => $CanDelete,
+		  'GAC_DELETEACL' => $CanDeleteACL,
+		  'GAC_MOVEACL' => $CanMoveACL,
+		  'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
 		  'LANG_NEWPOST' => $this->lang->line('newpost'),
 		  'LANG_OLDPOST' => $this->lang->line('oldpost'),
 		  'LANG_BOARD' => $this->lang->line('boards'),

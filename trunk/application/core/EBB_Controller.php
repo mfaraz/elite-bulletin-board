@@ -6,14 +6,14 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 1/3/2012
+ * @version 02/15/2012
 */
 
 class EBB_Controller extends CI_Controller {
 
-	#
-	#define data member.
-	#
+	/**
+	 * define data member.
+	*/
 
 	/**
 	 * Current Logged In user.
@@ -84,7 +84,7 @@ class EBB_Controller extends CI_Controller {
 	/**
 	 * Loads global data.
 	 * @access Public
-	 * @version 9/13/2011
+	 * @version 02/15/12
 	 */
 	public function __construct() {
 
@@ -95,10 +95,8 @@ class EBB_Controller extends CI_Controller {
 		//update online data.
 		$sessionTimeout = time() - 300;
 
-		//delete any old entries
+		//delete any online data from the last 3 minutes.
 		$this->db->delete('ebb_online', array('time <' => $sessionTimeout));
-
-		//echo var_dump($this->session->all_userdata());
 
 		#login setup
 		if (($this->input->cookie('ebbuser', TRUE) <> null && ($this->input->cookie('ebbpass', TRUE) <> null)) OR ($this->session->userdata('ebbuser') <> FALSE) && ($this->session->userdata('ebbpass') <> FALSE)) {
@@ -123,10 +121,10 @@ class EBB_Controller extends CI_Controller {
 				$this->loginmgr->validateSession();
 				
 				//get group data.
-				$this->load->model('Groupmodel');
+				//$this->load->model('Groupmodel');
 
 				//detect group status.
-				$this->groupAccess = $this->Groupmodel->getGroupAccessLevel();
+				$this->groupAccess = $this->Groupmodel->getLevel();
 
 				//load user model.
 				$this->load->model('Usermodel');
@@ -153,9 +151,8 @@ class EBB_Controller extends CI_Controller {
 			}
 		} else {
 			//guest account.
-			$params['usr'] = 'guest';
-			$this->load->library('grouppolicy', $params);
 			$this->logged_user = "guest";
+			$this->Groupmodel->IsGuest = TRUE;
 			$this->groupAccess = 0;
 			$this->groupProfile = 0;
 			$this->gid = 0;
@@ -163,8 +160,6 @@ class EBB_Controller extends CI_Controller {
 			$this->timeFormat = $this->preference->getPreferenceValue("timeformat");
 			$this->timeZone = $this->preference->getPreferenceValue("timezone");
 			$this->lng = $this->preference->getPreferenceValue("default_language");
-			
-			$this->load->helper('user');
 			
 			//keep guest session in tact.
 			update_whosonline_guest();

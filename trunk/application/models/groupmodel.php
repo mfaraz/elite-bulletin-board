@@ -6,105 +6,223 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 1/3/2012
+ * @version 02/15/2012
 */
 
+/**
+ * Group Entity
+ */
 class Groupmodel extends CI_Model {
 
-	#
-	#define data member.
-	#
-
 	/**
-	 * @var str Username.
-	 */
-	public $user;
+	 * DATA MEMBERS
+	*/
 
-	/**
- 	 * @var int GroupID.
-	 */
-	public $gid;
+	private $id;
+	private $name;
+	private $description;
+	private $enrollment;
+	private $level;
+	private $permissionType;
+	public $IsGuest = FALSE; //flag to see if user is a guest or not.
 
-    public function __construct()
-    {
+	public function __construct() {
         parent::__construct();
     }
 
-    /**
-	 * Validates gid value used within class to ensure user is correctly authenticated.
-	 * @version 1/3/12
-	 * @return boolean
-	 * @access private
+	/**
+	 * PROPERTIES
 	*/
-	private function validateGroup(){
 
-	    #see if this is a guest, if so, do some hard-coded checks.
-		if($this->user == "guest"){
-		    if(($this->user == "guest") and ($this->gid == 0)){
-		        return(true);
-		    }else{
-		        return(false);
-		    }
-		}else{
-			$this->db->select('id')->from('ebb_permission_profile')->where('id', $this->gid)->limit(1);
-			$validateGroup = $this->db->count_all_results();
-
-			if($validateGroup == 1){
-			    return (true);
-			}else{
-			    return(false);
-			}
-		}
+	/**
+	 * set value for id
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $id
+	 * @return Groupmodel
+	 */
+	public function &setId($id) {
+		$this->id=$id;
+		return $this;
 	}
 
 	/**
-	 * Obtains the access level of the defined user.
-	 * @version 1/3/12
-	 * @return string SQL result of requested access level.
-	 * @access public
-	*/
-	public function getGroupAccessLevel(){
-
-	    #see if user is guest, if so, they have zero-level access.
-		if($this->user == "guest"){
-		    return(0);
-		}else{
-			$this->db->select('access_level')->from('ebb_permission_profile')->where('id', $this->gid)->limit(1);
-			$Query = $this->db->get();
-			$accessLevel = $Query->row();
-			return($accessLevel->access_level);
-		}
+	 * get value for id
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
+	 */
+	public function getId() {
+		return $this->id;
 	}
 
 	/**
-	 * Obtain the group name for defined group.
-	 * @version 1/3/12
-	 * @return string SQL result of requested group name.
-	 * @access public
-	*/
-	public function getGroupName(){
+	 * set value for Name
+	 *
+	 * type:VARCHAR,size:30,default:
+	 *
+	 * @param mixed $name
+	 * @return Groupmodel
+	 */
+	public function &setName($name) {
+		$this->name=$name;
+		return $this;
+	}
 
-	    #see if user is guest, if so, set gorpu name as simply guest.
-		if($this->user == "guest"){
-			return('guest');
-		}else{
-			$this->db->select('profile')->from('ebb_permission_profile')->where('id', $this->gid)->limit(1);
-			$Query = $this->db->get();
-			$getGroupName = $Query->row();
-			return($getGroupName->profile);
+	/**
+	 * get value for Name
+	 *
+	 * type:VARCHAR,size:30,default:
+	 *
+	 * @return mixed
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	 * set value for Description
+	 *
+	 * type:TINYTEXT,size:255,default:null
+	 *
+	 * @param mixed $description
+	 * @return Groupmodel
+	 */
+	public function &setDescription($description) {
+		$this->description=$description;
+		return $this;
+	}
+
+	/**
+	 * get value for Description
+	 *
+	 * type:TINYTEXT,size:255,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getDescription() {
+		return $this->description;
+	}
+
+	/**
+	 * set value for Enrollment
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $enrollment
+	 * @return Groupmodel
+	 */
+	public function &setEnrollment($enrollment) {
+		$this->enrollment=$enrollment;
+		return $this;
+	}
+
+	/**
+	 * get value for Enrollment
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getEnrollment() {
+		return $this->enrollment;
+	}
+
+	/**
+	 * set value for Level
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $level
+	 * @return Groupmodel
+	 */
+	public function &setLevel($level) {
+		$this->level=$level;
+		return $this;
+	}
+
+	/**
+	 * get value for Level
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getLevel() {
+		return $this->level;
+	}
+
+	/**
+	 * set value for permission_type
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @param mixed $permissionType
+	 * @return Groupmodel
+	 */
+	public function &setPermissionType($permissionType) {
+		$this->permissionType=$permissionType;
+		return $this;
+	}
+
+	/**
+	 * get value for permission_type
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getPermissionType() {
+		return $this->permissionType;
+	}
+
+	/**
+	 * METHODS
+	*/
+
+	/**
+	 * Populate properties with data.
+	 * @param integer $gid defined GroupID assigned to logged in user.
+	 * @version 1/13/12
+	 */
+	public function GetGroupData($gid) {
+
+		//fetch topic data.
+		$this->db->select('id, Name, Description, Enrollment, Level, permission_type');
+		$this->db->from('ebb_groups');
+		$this->db->where('id', $gid);
+		$query = $this->db->get();
+		$GroupData = $query->row();
+
+
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			$this->setId($GroupData->id);
+			$this->setName($GroupData->Name);
+			$this->setDescription($GroupData->Description);
+			$this->setEnrollment($GroupData->Enrollment);
+			$this->setLevel($GroupData->Level);
+			$this->setPermissionType($GroupData->permission_type);
+		} else {
+			//no record was found, throw an error.
+			show_error($this->lang->line('invalidgid').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			log_message('error', 'invalid GroupID was provided.'); //log error in error log.
 		}
+
 	}
 
 	/**
 	 * use to either promote or demote a user.
-	 * @version 1/3/12
+	 * @version 02/15/12
 	 * @param integer $newGID new GID user is part of.
 	 * @access public
 	*/
 	public function changeGroupID($newGID){
 
 	    #see if user is guest, if so, exit without result.
-		if($this->user == "guest"){
+		if($this->IsGuest == TRUE){
             show_error($this->lang->line('groupstatus'),500, $this->lang->line('error'));
 		}else{
 			$this->db->where('Username', $this->user);
@@ -114,7 +232,7 @@ class Groupmodel extends CI_Model {
 
 	/**
 	 * validate user's privileges.
-	 * @version 1/3/12
+	 * @version 02/15/12
 	 * @param string $permissionAction action code being validated.
 	 * @return integer $permissionValue automatic deny return for guest account.
 	 * @return string filtered string to use in SQL query.
@@ -123,7 +241,7 @@ class Groupmodel extends CI_Model {
 	private function accessVaildator($permissionAction){
 
 		#see if user is guest, if so, deny any requests.
-		if ($this->user == "guest") {
+		if ($this->IsGuest == TRUE) {
 			return (false);
 		} else {
 			#see if user ID is incorrect or Null.
@@ -156,7 +274,7 @@ class Groupmodel extends CI_Model {
 
 	/**
 	 * Validate to see if user can access the requested area.
-	 * @version 12/30/11
+	 * @version 02/15/12
 	 * @param string $action action in check.
 	 * @return boolean
 	 * @access private
@@ -164,18 +282,18 @@ class Groupmodel extends CI_Model {
 	private function permissionCheck($action){
 
 		#autmatically fail check if user is a guest, and its not set to public.
-		if(($this->user == "guest") AND ($action != 0)) {
+		if(($this->IsGuest == TRUE) AND ($action != 0)) {
 		    $permissionChk = false;
 		} else {
-			if(($action == 1) AND ($this->groupAccessLevel() == 1)) { //ADMIN ONLY
+			if(($action == 1) AND ($this->getLevel() == 1)) { //ADMIN ONLY
 				$permissionChk = true;
-			} elseif(($action == 2) AND ($this->groupAccessLevel() == 1) or ($this->groupAccessLevel() == 2)) { //MODERATOR OR ADMIN
+			} elseif(($action == 2) AND ($this->getLevel() == 1) or ($this->getLevel() == 2)) { //MODERATOR OR ADMIN
 				$permissionChk = true;
-			} elseif(($action == 3) AND ($this->groupAccessLevel() == 3) or ($this->groupAccessLevel() == 2) or ($this->groupAccessLevel() == 1)) { //REG. USERS
+			} elseif(($action == 3) AND ($this->getLevel() == 3) or ($this->getLevel() == 2) or ($this->getLevel() == 1)) { //REG. USERS
 				$permissionChk = true;
 			} elseif($action == 4){ //NO ONE
 				$permissionChk = false;
-			} elseif(($action == 5) and ($checkgroup == 1) or ($this->groupAccessLevel() == 1) or ($checkmod == 1)) { //PRIVATE
+			//} elseif(($action == 5) and ($checkgroup == 1) or ($this->groupAccessLevel() == 1) or ($checkmod == 1)) { //PRIVATE
 				//REBUILD THIS LOGIC
 				$permissionChk = true;
 			} elseif($action == 0) { //EVERYONE

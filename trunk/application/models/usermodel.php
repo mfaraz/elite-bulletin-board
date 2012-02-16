@@ -6,10 +6,17 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 12/29/2011
+ * @version 02/02/2012
 */
 
+/**
+ * User Entity
+ */
 class Usermodel extends CI_Model {
+
+	/**
+	 * DATA MEMBERS
+	*/
 
 	private $id;
 	private $userName;
@@ -45,44 +52,13 @@ class Usermodel extends CI_Model {
 	private $suspendLength;
 	private $suspendTime;
 
-	/**
-	 * store for old instance after object has been modified
-	 *
-	 * @var Usermodel
-	 */
-	private $oldInstance=null;
-
 	public function __construct() {
         parent::__construct();
     }
 
 	/**
-	 * get old instance if this has been modified, otherwise return null
-	 *
-	 * @return Usermodel
-	 */
-	public function getOldInstance() {
-		return $this->oldInstance;
-	}
-
-	/**
-	 * called when the field with the passed id has changed
-	 *
-	 * @param int $fieldId
-	 */
-	protected function notifyChanged($fieldId) {
-		if (is_null($this->getOldInstance())) {
-			$this->oldInstance=clone $this;
-			$this->oldInstance->notifyPristine();
-		}
-	}
-
-	/**
-	 * set this instance into pristine state
-	 */
-	public function notifyPristine() {
-		$this->oldInstance=null;
-	}
+	 * PROPERTIES
+	*/
 
 	/**
 	 * set value for id
@@ -93,7 +69,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setId($id) {
-		$this->notifyChanged("id");
 		$this->id=$id;
 		return $this;
 	}
@@ -118,7 +93,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setUserName($userName) {
-		$this->notifyChanged("Username");
 		$this->userName=$userName;
 		return $this;
 	}
@@ -143,7 +117,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setPassword($password) {
-		$this->notifyChanged("Password");
 		$this->password=$password;
 		return $this;
 	}
@@ -168,7 +141,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setSalt($salt) {
-		$this->notifyChanged("salt");
 		$this->salt=$salt;
 		return $this;
 	}
@@ -193,7 +165,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setGid($gid) {
-		$this->notifyChanged("gid");
 		$this->gid=$gid;
 		return $this;
 	}
@@ -218,7 +189,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setEmail($email) {
-		$this->notifyChanged("Email");
 		$this->email=$email;
 		return $this;
 	}
@@ -243,7 +213,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setCustomTitle($customTitle) {
-		$this->notifyChanged("Custom_Title");
 		$this->customTitle=$customTitle;
 		return $this;
 	}
@@ -268,7 +237,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setLastVisit($lastVisit) {
-		$this->notifyChanged("last_visit");
 		$this->lastVisit=$lastVisit;
 		return $this;
 	}
@@ -293,7 +261,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setPmNotify($pmNotify) {
-		$this->notifyChanged("PM_Notify");
 		$this->pmNotify=$pmNotify;
 		return $this;
 	}
@@ -318,7 +285,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setHideEmail($hideEmail) {
-		$this->notifyChanged("Hide_Email");
 		$this->hideEmail=$hideEmail;
 		return $this;
 	}
@@ -343,7 +309,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setMSn($mSn) {
-		$this->notifyChanged("MSN");
 		$this->mSn=$mSn;
 		return $this;
 	}
@@ -368,7 +333,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setAol($aol) {
-		$this->notifyChanged("AOL");
 		$this->aol=$aol;
 		return $this;
 	}
@@ -393,7 +357,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setYahoo($yahoo) {
-		$this->notifyChanged("Yahoo");
 		$this->yahoo=$yahoo;
 		return $this;
 	}
@@ -418,7 +381,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setIcq($icq) {
-		$this->notifyChanged("ICQ");
 		$this->icq=$icq;
 		return $this;
 	}
@@ -443,7 +405,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setWww($www) {
-		$this->notifyChanged("WWW");
 		$this->www=$www;
 		return $this;
 	}
@@ -468,7 +429,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setLocation($location) {
-		$this->notifyChanged("Location");
 		$this->location=$location;
 		return $this;
 	}
@@ -493,7 +453,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setAvatar($avatar) {
-		$this->notifyChanged("Avatar");
 		$this->avatar=$avatar;
 		return $this;
 	}
@@ -518,7 +477,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setSig($sig) {
-		$this->notifyChanged("Sig");
 		$this->sig=$sig;
 		return $this;
 	}
@@ -543,7 +501,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setTimeFormat($timeFormat) {
-		$this->notifyChanged("Time_format");
 		$this->timeFormat=$timeFormat;
 		return $this;
 	}
@@ -568,7 +525,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setTimeZone($timeZone) {
-		$this->notifyChanged("Time_Zone");
 		$this->timeZone=$timeZone;
 		return $this;
 	}
@@ -593,7 +549,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setDateJoined($dateJoined) {
-		$this->notifyChanged("Date_Joined");
 		$this->dateJoined=$dateJoined;
 		return $this;
 	}
@@ -618,7 +573,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setIp($ip) {
-		$this->notifyChanged("IP");
 		$this->ip=$ip;
 		return $this;
 	}
@@ -643,7 +597,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setStyle($style) {
-		$this->notifyChanged("Style");
 		$this->style=$style;
 		return $this;
 	}
@@ -668,7 +621,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setLanguage($language) {
-		$this->notifyChanged("Language");
 		$this->language=$language;
 		return $this;
 	}
@@ -693,7 +645,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setPostCount($postCount) {
-		$this->notifyChanged("Post_Count");
 		$this->postCount=$postCount;
 		return $this;
 	}
@@ -718,7 +669,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setLastPost($lastPost) {
-		$this->notifyChanged("last_post");
 		$this->lastPost=$lastPost;
 		return $this;
 	}
@@ -743,7 +693,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setLastSearch($lastSearch) {
-		$this->notifyChanged("last_search");
 		$this->lastSearch=$lastSearch;
 		return $this;
 	}
@@ -768,7 +717,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setFailedAttempts($failedAttempts) {
-		$this->notifyChanged("failed_attempts");
 		$this->failedAttempts=$failedAttempts;
 		return $this;
 	}
@@ -793,7 +741,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setActive($active) {
-		$this->notifyChanged("active");
 		$this->active=$active;
 		return $this;
 	}
@@ -818,7 +765,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setActKey($actKey) {
-		$this->notifyChanged("act_key");
 		$this->actKey=$actKey;
 		return $this;
 	}
@@ -843,7 +789,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setWarningLevel($warningLevel) {
-		$this->notifyChanged("warning_level");
 		$this->warningLevel=$warningLevel;
 		return $this;
 	}
@@ -868,7 +813,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setSuspendLength($suspendLength) {
-		$this->notifyChanged("suspend_length");
 		$this->suspendLength=$suspendLength;
 		return $this;
 	}
@@ -893,7 +837,6 @@ class Usermodel extends CI_Model {
 	 * @return Usermodel
 	 */
 	public function &setSuspendTime($suspendTime) {
-		$this->notifyChanged("suspend_time");
 		$this->suspendTime=$suspendTime;
 		return $this;
 	}
@@ -908,6 +851,10 @@ class Usermodel extends CI_Model {
 	public function getSuspendTime() {
 		return $this->suspendTime;
 	}
+
+	/**
+	 * METHODS
+	*/
 
 	/**
 	 * Assign values from hash where the indexes match the tables field names
@@ -959,21 +906,87 @@ class Usermodel extends CI_Model {
 	/**
 	 * Creates a new user.
 	 * @access Public
-	 * @version 9/5/2011
+	 * @version 1/31/2012
 	*/
 	public function CreateUser() {
+		#setup values.
+		$data = array(
+		  'Username' => $this->getUserName(),
+		  'Password' => $this->getPassword(),
+		  'salt' => $this->getSalt(),
+		  'gid' => $this->getGid(),
+		  'Email' => $this->getEmail(),
+		  'Custom_Title' => $this->getCustomTitle(),
+		  'PM_Notify' => $this->getPmNotify(),
+		  'Hide_Email' => $this->getHideEmail(),
+		  'MSN' => $this->getMSn(),
+		  'AOL' => $this->getAol(),
+		  'Yahoo' => $this->getYahoo(),
+		  'ICQ' => $this->getIcq(),
+		  'WWW' => $this->getWww(),
+		  'Location' => $this->getLocation(),
+		  'Avatar' => $this->getAvatar(),
+		  'Sig' => $this->getSig(),
+		  'Time_format' => $this->getTimeFormat(),
+		  'Time_Zone' => $this->getTimeZone(),
+		  'Date_Joined' => $this->getDateJoined(),
+		  'IP' => $this->getIp(),
+		  'Style' => $this->getStyle(),
+		  'Language' => $this->getLanguage(),
+		  'Post_Count' => $this->getPostCount(),
+		  'last_post' => $this->getLastPost(),
+		  'last_search' => $this->getLastSearch(),
+		  'failed_attempts' => $this->getFailedAttempts(),
+		  'active' => $this->getActive(),
+		  'warning_level' => $this->getWarningLevel(),
+		  'suspend_length' => $this->getSuspendLength(),
+		  'suspend_time' => $this->getSuspendTime()
+        );
 
+		#add new preference.
+		$this->ci->db->insert('ebb_preference', $data);
 	}
 
 	/**
 	 * Update a current user.
-	 * @param string $user User who is getting updated.
 	 * @access Public
-	 * @version 9/5/2011
+	 * @version 1/31/2012
 	*/
-	public function UpdateUser($user) {
+	public function UpdateUser() {
+		#update user.
+		$data = array(
+		  'Username' => $this->getUserName(),
+		  'Password' => $this->getPassword(),
+		  'salt' => $this->getSalt(),
+		  'gid' => $this->getGid(),
+		  'Email' => $this->getEmail(),
+		  'Custom_Title' => $this->getCustomTitle(),
+		  'PM_Notify' => $this->getPmNotify(),
+		  'Hide_Email' => $this->getHideEmail(),
+		  'MSN' => $this->getMSn(),
+		  'AOL' => $this->getAol(),
+		  'Yahoo' => $this->getYahoo(),
+		  'ICQ' => $this->getIcq(),
+		  'WWW' => $this->getWww(),
+		  'Location' => $this->getLocation(),
+		  'Avatar' => $this->getAvatar(),
+		  'Sig' => $this->getSig(),
+		  'Time_format' => $this->getTimeFormat(),
+		  'Time_Zone' => $this->getTimeZone(),
+		  'Style' => $this->getStyle(),
+		  'Language' => $this->getLanguage(),
+		  'Post_Count' => $this->getPostCount(),
+		  'last_post' => $this->getLastPost(),
+		  'last_search' => $this->getLastSearch(),
+		  'failed_attempts' => $this->getFailedAttempts(),
+		  'active' => $this->getActive(),
+		  'warning_level' => $this->getWarningLevel(),
+		  'suspend_length' => $this->getSuspendLength(),
+		  'suspend_time' => $this->getSuspendTime()
+        );
 
+		$this->db->where('Username', $this->getUserName());
+		$this->db->update('ebb_preference', $data);
 	}
-
 }
 ?>

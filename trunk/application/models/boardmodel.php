@@ -6,110 +6,475 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/12/2011
+ * @version 02/03/2012
 */
 
+/**
+ * Board Entity
+ */
 class Boardmodel extends CI_Model {
+	
+	/**
+	 * DATA MEMBERS
+	*/
 
-    public function __construct()
-    {
+	private $id;
+	private $board;
+	private $description;
+	private $lastUpdate;
+	private $postedUser;
+    private $tiD;
+    private $piD;
+    private $lastPage;
+	//private $postLink;
+	private $type;
+	private $category;
+	private $smiles;
+	private $bbCode;
+	private $postIncrement;
+	private $image;
+	private $bOrder;
+
+	public function __construct() {
         parent::__construct();
     }
 
 	/**
-	 * Return Name of Board.
-	 * @param int $bid BoardID
-	 * @return string Board Name
-	 * @version 10/26/11
+	 * PROPERTIES
+	*/
+
+	/**
+	 * set value for id 
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $id
+	 * @return EbbBoardsmodel
 	 */
-	public function GetBoardName($bid) {
-        $this->db->select('Board')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->Board;
+	public function &setId($id) {
+		$this->id=$id;
+		return $this;
 	}
 
 	/**
-	 * Grab the type of board.
-	 * @param int $bid
-	 * @return int type
-	 * @version 11/30/11
+	 * get value for id 
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
 	 */
-	public function GetBoardType($bid) {
-		$this->db->select('type')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->type;
+	public function getId() {
+		return $this->id;
 	}
 
 	/**
-	 * Grab the smiles settings for the selected board.
-	 * @param integer $bid
-	 * @return boolean
-	 * @version 11/30/11
+	 * set value for Board 
+	 *
+	 * type:VARCHAR,size:50,default:
+	 *
+	 * @param mixed $board
+	 * @return EbbBoardsmodel
 	 */
-	public function GetBoardSettings_Smiles($bid) {
-		$this->db->select('Smiles')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->Smiles;
+	public function &setBoard($board) {
+		$this->board=$board;
+		return $this;
 	}
 
 	/**
-	 * Grab the BBCode settings for the selected board.
-	 * @param integer $bid
-	 * @return boolean
-	 * @version 11/30/11
+	 * get value for Board 
+	 *
+	 * type:VARCHAR,size:50,default:
+	 *
+	 * @return mixed
 	 */
-	public function GetBoardSettings_BBCode($bid) {
-		$this->db->select('BBcode')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->BBcode;
-	}
-	
-	/**
-	 * Grab the smiles settings for the selected board.
-	 * @param integer $bid
-	 * @return boolean
-	 * @version 11/30/11
-	 */
-	public function GetBoardSettings_Image($bid) {
-		$this->db->select('Image')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->Image;
+	public function getBoard() {
+		return $this->board;
 	}
 
 	/**
-	 * Grab the Post_Increment settings for the selected board.
-	 * @param integer $bid
-	 * @return boolean
-	 * @version 11/30/11
+	 * set value for Description 
+	 *
+	 * type:VARCHAR,size:100,default:null
+	 *
+	 * @param mixed $description
+	 * @return EbbBoardsmodel
 	 */
-	public function GetBoardSettings_Post_Increment($bid) {
-		$this->db->select('Post_Increment')->from('ebb_boards')->where('id', $bid);
-		$query = $this->db->get();
-		$row = $query->row();
-		return $row->Post_Increment;
+	public function &setDescription($description) {
+		$this->description=$description;
+		return $this;
 	}
 
-	public function ValidateBoardID($bid) {
+	/**
+	 * get value for Description 
+	 *
+	 * type:VARCHAR,size:100,default:null
+	 *
+	 * @return mixed
+	 */
+	public function getDescription() {
+		return $this->description;
+	}
+
+	/**
+	 * set value for last_update 
+	 *
+	 * type:VARCHAR,size:14,default:null,nullable
+	 *
+	 * @param mixed $lastUpdate
+	 * @return EbbBoardsmodel
+	 */
+	public function &setLastUpdate($lastUpdate) {
+		$this->lastUpdate=$lastUpdate;
+		return $this;
+	}
+
+	/**
+	 * get value for last_update 
+	 *
+	 * type:VARCHAR,size:14,default:null,nullable
+	 *
+	 * @return mixed
+	 */
+	public function getLastUpdate() {
+		return $this->lastUpdate;
+	}
+
+	/**
+	 * set value for Posted_User 
+	 *
+	 * type:VARCHAR,size:25,default:null,nullable
+	 *
+	 * @param mixed $postedUser
+	 * @return EbbBoardsmodel
+	 */
+	public function &setPostedUser($postedUser) {
+		$this->postedUser=$postedUser;
+		return $this;
+	}
+
+	/**
+	 * get value for Posted_User 
+	 *
+	 * type:VARCHAR,size:25,default:null,nullable
+	 *
+	 * @return mixed
+	 */
+	public function getPostedUser() {
+		return $this->postedUser;
+	}
+
+	/**
+	 * set value for tid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $tiD
+	 * @return Topicmodel
+	*/
+	public function &setTiD($tiD) {
+		$this->tiD=$tiD;
+		return $this;
+	}
+
+	/**
+	 * get value for tid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
+	*/
+	public function getTiD() {
+		return $this->tiD;
+	}
+
+	/**
+	 * set value for pid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $tiD
+	 * @return Topicmodel
+	*/
+	public function &setPiD($piD) {
+		$this->piD=$piD;
+		return $this;
+	}
+
+	/**
+	 * get value for pid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
+	*/
+	public function getPiD() {
+		return $this->piD;
+	}
+
+	/**
+	 * set value for last_page
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $type
+	 * @return EbbBoardsmodel
+	 */
+	public function &setLastPage($lastPage) {
+		$this->lastPage=$lastPage;
+		return $this;
+	}
+
+	/**
+	 * get value for last_page
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getLastPage() {
+		return $this->lastPage;
+	}
+
+	/**
+	 * set value for type 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $type
+	 * @return EbbBoardsmodel
+	 */
+	public function &setType($type) {
+		$this->type=$type;
+		return $this;
+	}
+
+	/**
+	 * get value for type 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getType() {
+		return $this->type;
+	}
+
+	/**
+	 * set value for Category 
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @param mixed $category
+	 * @return EbbBoardsmodel
+	 */
+	public function &setCategory($category) {
+		$this->category=$category;
+		return $this;
+	}
+
+	/**
+	 * get value for Category 
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getCategory() {
+		return $this->category;
+	}
+
+	/**
+	 * set value for Smiles 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $smiles
+	 * @return EbbBoardsmodel
+	 */
+	public function &setSmiles($smiles) {
+		$this->smiles=$smiles;
+		return $this;
+	}
+
+	/**
+	 * get value for Smiles 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getSmiles() {
+		return $this->smiles;
+	}
+
+	/**
+	 * set value for BBcode 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $bbCode
+	 * @return EbbBoardsmodel
+	 */
+	public function &setBbCode($bbCode) {
+		$this->bbCode=$bbCode;
+		return $this;
+	}
+
+	/**
+	 * get value for BBcode 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getBbCode() {
+		return $this->bbCode;
+	}
+
+	/**
+	 * set value for Post_Increment 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $postIncrement
+	 * @return EbbBoardsmodel
+	 */
+	public function &setPostIncrement($postIncrement) {
+		$this->postIncrement=$postIncrement;
+		return $this;
+	}
+
+	/**
+	 * get value for Post_Increment 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getPostIncrement() {
+		return $this->postIncrement;
+	}
+
+	/**
+	 * set value for Image 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $image
+	 * @return EbbBoardsmodel
+	 */
+	public function &setImage($image) {
+		$this->image=$image;
+		return $this;
+	}
+
+	/**
+	 * get value for Image 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getImage() {
+		return $this->image;
+	}
+
+	/**
+	 * set value for B_Order 
+	 *
+	 * type:TINYINT,size:3,default:0
+	 *
+	 * @param mixed $bOrder
+	 * @return EbbBoardsmodel
+	 */
+	public function &setBOrder($bOrder) {
+		$this->bOrder=$bOrder;
+		return $this;
+	}
+
+	/**
+	 * get value for B_Order 
+	 *
+	 * type:TINYINT,size:3,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getBOrder() {
+		return $this->bOrder;
+	}
+
+	/**
+	 * METHODS
+	*/
+
+    /**
+     * Validates Selected Board Exists.
+     * @param integer $bid
+     * @return integer
+     */
+    public function ValidateBoardID($bid) {
 
 		//SQL grabbing count of all topics for this board.
 		$this->db->select('id')->from('ebb_boards')->where('id', $bid);
 		return $this->db->count_all_results();
 
 	}
+	
+	public function CreateBoard() {
 
+	}
+
+	public function EditBoard() {
+
+	}
+
+	public function DeleteBoard() {
+
+	}
+
+
+    /**
+     * Load Entity with values from our database.
+     * @param integer $bid
+     * @version 2/3/12
+     */
+	public function GetBoardSettings($bid) {
+
+        //fetch board data.
+		$this->db->select('id, Board, Description, last_update, Posted_User, tid, pid, last_page, type, Category, Smiles, BBCode, Post_Increment, Image, B_Order');
+		$this->db->from('ebb_boards');
+		$this->db->where('id', $bid);
+		$query = $this->db->get();
+		$BoardData = $query->row();
+
+        //setup property values.
+        $this->setId($BoardData->id);
+        $this->setBoard($BoardData->Board);
+        $this->setDescription($BoardData->Description);
+        $this->setLastUpdate($BoardData->last_update);
+        $this->setPostedUser($BoardData->Posted_User);
+        $this->setTiD($BoardData->tid);
+        $this->setPiD($BoardData->pid);
+        $this->setLastPage($BoardData->last_page);
+        $this->setType($BoardData->type);
+        $this->setCategory($BoardData->Category);
+        $this->setSmiles($BoardData->Smiles);
+        $this->setBbCode($BoardData->BBCode);
+        $this->setPostIncrement($BoardData->Post_Increment);
+        $this->setImage($BoardData->Image);
+        $this->setBOrder($BoardData->B_Order);
+	}
 
 	/**
 	 * Get an array of sub-boards.
 	 * @param int $boardID
 	 * @return array
-	 * @version 11/12/11
+	 * @version 1/31/12
 	*/
 	public function GetSubBoards($boardID) {
+
+		//setup reply data array.
+		$subboards = array();
 
 		#board sql.
 		$this->db->select('id, Board, Description, last_update, Posted_User, Post_Link')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
@@ -130,7 +495,7 @@ class Boardmodel extends CI_Model {
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 9/6/11
+	 * @version 1/31/12
 	 * @param int $bid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
@@ -138,6 +503,10 @@ class Boardmodel extends CI_Model {
 	 * @return array
 	*/
 	public function GetTopics($bid, $limit, $start) {
+
+		//build data array.
+		$topics = array();
+
 		//SQL to get all topics from defined board.
 		$this->db->select('bid, last_update, Topic, author, Posted_User, Post_Link, tid, Views, Type, important, Locked')->from('ebb_topics')->where('bid', $bid)->order_by('last_update', 'desc')->limit($limit, $start);
 		$query = $this->db->get();
@@ -156,36 +525,5 @@ class Boardmodel extends CI_Model {
 		}
 	}
 
-	/**
-	 * Get a count of all replies to a topic.
-	 * @version 9/6/11
-	 * @param int $tid Topic ID.
-	 * @access public
-	*/
-	public function CountReplies($tid) {
-		//SQL grabbing count of all topics for this board.
-		$this->db->select('pid')->from('ebb_posts')->where('tid', $tid);
-		return $this->db->count_all_results();
-	}
-
-	/**
-	 * Get selected  topic.
-	 * @version 9/6/11
-	 * @param int $tid Topic ID.
-	 * @access public
-	*/
-	public function ReadTopic($tid) {
-		//SQL to get all topics from defined board.
-		$this->db->select('author, Topic, Body, Views, Locked, IP, Original_Date, Type, disable_smiles, disable_bbcode')->from('ebb_topics')->where('tid', $tid);
-		$query = $this->db->get();
-
-		//see if we have any records to show.
-		if($query->num_rows() > 0) {
-			return $query->result();
-		} else {
-			return FALSE;
-		}
-	}
-
-} //END Class
+}
 ?>

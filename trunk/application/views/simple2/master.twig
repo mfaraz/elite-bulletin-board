@@ -114,13 +114,13 @@ FormResults("{{NOTIFY_TYPE}}", "{{NOTIFY_MSG}}"); //display message.
  	{{LOGINFORM|raw}}
 
 	<p>
-	{{LANG_USERNAME}}&nbsp;[<a href="register.php">{{LANG_REGISTER}}</a>]<br />
+	{{LANG_USERNAME}}&nbsp;[{{URL_TAG("login/register", LANG_REGISTER)|raw}}]<br />
 	<input type="text" name="username" class="text" size="30" id="user" tabindex="1" onblur="validateAlphaNumeric('user', 'usererr');" />
 	<div id="usererr"></div>
 	</p>
 
 	<p>
-	{{LANG_PASSWORD}}&nbsp;[<a href="login.php?mode=lostpassword">{{LANG_FORGOT}}</a>]<br />
+	{{LANG_PASSWORD}}&nbsp;[{{URL_TAG("login/PasswordRecovery", LANG_FORGOT)|raw}}]<br />
 	<input type="password" name="password" class="text" size="30" id="pass" tabindex="2" onblur="validateAlphaNumeric('pass', 'passerr');" />
 	<div id="passerr"></div>
 	</p>
@@ -172,6 +172,7 @@ FormResults("{{NOTIFY_TYPE}}", "{{NOTIFY_MSG}}"); //display message.
 <td align="center" width="100%" class=" ui-corner-left ui-corner-right ui-widget-content">{{LANG_POWERED}}: <a href="http://elite-board.us/" target="_blank">Elite Bulletin Board</a> &#169; 2006-2012</td>
 </tr>
 </table>
+<span style="float:right;">{{IMG("application/views/simple2/images/fuelbyci.png")|raw}}</span>
 </div>
 </body>
 </html>

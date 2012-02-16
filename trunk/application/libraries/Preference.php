@@ -1,18 +1,18 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
-  *  Preference.php
+  * Preference.php
   * @package Elite Bulletin Board v3
   * @author Elite Bulletin Board Team <http://elite-board.us>
   * @copyright  (c) 2006-2011
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 10/11/2011
+  * @version 1/17/2012
 */
 
 class Preference{
 
 	/**
-	  * @var object CodeIgniter object.
+	 * @var object CodeIgniter object.
 	*/
 	private $ci;
 
@@ -23,74 +23,65 @@ class Preference{
  	
 	/**
 	 * Obtains the value of a defined preference.
-	 * @version 10/11/11
+	 * @version 1/17/12
 	 * @param string $prefName Name of preference to look for.
 	 * @access public
 	*/
 	public function getPreferenceValue($prefName){
-		//SQL grabbing count of all topics for this board.
-		$this->ci->db->select('pref_value')->from('ebb_preference')->where('pref_name', $prefName)->limit(1);
-		$query = $this->ci->db->get();
-		$res = $query->row();
-
-		return $res->pref_value;
+		//get preference value.
+		$this->ci->Preferencemodel->GetPreferenceData($prefName);
+		return $this->ci->Preferencemodel->getPrefValue();
 	}
 
-	/**
-	 * Obtains the type of a defined preference.
-	 * @version 10/11/11
-	 * @param string $prefName Name of preference to look for.
-	 * @access public
-	*/
-	public function getPreferenceType($prefName){
-		//SQL grabbing count of all topics for this board.
-		$this->ci->db->select('pref_type')->from('ebb_preference')->where('pref_name', $prefName)->limit(1);
-		$query = $this->ci->db->get();
-		$res = $query->row();
-
-		return $res->pref_value;
-	}
-	
 	/**
 	 * Save the defined preference value.
-	 * @version 9/6/11
+	 * @version 1/17/12
 	 * @param string $prefName Name of preference to look for.
+	 * @param string $prefType The value type of this preference.
 	 * @param string $prefValue New value of preference.
 	 * @access public
 	*/
-	public function savePreferences($prefName, $prefValue){		
-		#update preferences.
-		$this->ci->db->where('pref_name', $prefName);
-		$this->ci->db->update('ebb_preference', array('pref_value' => $prefValue));
+	public function savePreferences($prefName, $prefType, $prefValue){
+		//populate properties with values.
+		$this->ci->Preferencemodel->setPrefName($prefName);
+		$this->ci->Preferencemodel->setPrefType($prefType);
+		$this->ci->Preferencemodel->setPrefValue($prefValue);
+
+		//update preferences.
+		$this->ci->Preferencemodel->UpdatePreferenceValue();
 	}
 
 	/**
 	 * Create a new preference value(used for updates or modification-purposes only).
-	 * @version 10/1/11
+	 * @version 1/17/12
 	 * @param string $prefName Name of preference to look for.
 	 * @param string $prefValue Value of preference.
 	 * @param string $prefType Type of preference.
 	 * @access public
 	*/
 	public function newPreference($prefName, $prefValue, $prefType){
-		#setup values.
-		$data = array(
-		   'pref_name' => $prefName,
-		   'pref_value' => $prefValue,
-		   'pref_type' => $prefType);
+		//populate properties with values.
+		$this->ci->Preferencemodel->setPrefName($prefName);
+		$this->ci->Preferencemodel->setPrefValue($prefValue);
+		$this->ci->Preferencemodel->setPrefType($prefType);
 
-		#add new preference.
-		$this->ci->db->insert('ebb_preference', $data);
+		//add new preference.
+		$this->ci->Preferencemodel->CreatePreferenceValue();
 	}
 
 	/**
 	 * Deletes a preference from the database(used for updates or modification-purposes only).
-	 * @version 10/1/11
+	 * @version 1/17/12
 	 * @param string $prefName Name of preference to look for.
 	 * @access public
 	*/
 	public function deletePreference($prefName){
-		$this->ci->db->delete('ebb_preference', array(' pref_name' => $prefName));
+
+		//populate properties with values.
+		$this->ci->Preferencemodel->setPrefName($prefName);
+
+		//call delete method.
+		$this->ci->Preferencemodel->DeletePreferenceValue();
 	}
 }
 ?>

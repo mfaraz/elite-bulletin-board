@@ -43,7 +43,7 @@ class Twig {
         
         // register autoloader        
         Twig_Autoloader::register();
-        log_message('debug', 'twig autoloader loaded');
+        //log_message('debug', 'twig autoloader loaded');
         
         // init paths
         $this->_template_dir = $this->ci->config->item('template_dir');
