@@ -6,7 +6,17 @@
 
 {{BREADCRUMB|raw}}<br />
 
-{{LOGINFORM|raw}}
+<!-- validation box. -->
+<div align="center" style="display:none;" id="div_ErrMsgLogin">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsgLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p id="validateLogin"></p>
+		</div>
+	</div>
+</div>
+
+{{LOGINFORM_FULL|raw}}
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
 <td colspan="2" class="ui-widget-header" align="center">::{{LANG_LOGIN}}::</td>
@@ -30,5 +40,27 @@
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+
+new FormValidator('frmLogin', [{
+	name: 'username',
+	display: '{{LANG_USERNAME}}',
+	rules: 'required'
+}, {
+	name: 'password',
+	display: '{{LANG_PASSWORD}}',
+	rules: 'required'
+}], function(errors, event) {
+
+	if (errors.length > 0) {
+		$('#validateLogin').empty();
+		$('#validateLogin').append(errors.join('<br />'));
+		$('#div_ErrMsgLogin').show();
+	} else {
+		event.returnValue = true; //allow form to process.
+	}
+
+});
+</script>
 
 {% endblock %}

@@ -1,7 +1,8 @@
 /*
 ========================================
 Filename: style.css
-Last Modified: 6/5/2011
+Last Modified: 02/19/2012
+Simple2 CSS template file for Elite Bulletin Board v3.0.0 RC2
 ========================================
 */
 
@@ -298,17 +299,22 @@ padding-right: 0;
 PASSWORD STRENGTH TESTER CSS
 ==============================
 */
-.pwd0{background:url(../../images/meter.png) no-repeat 0 0;width:138px;height:7px;}
-.pwd10{background-position:0 -7px;}
-.pwd20{background-position:0 -14px;}
-.pwd30{background-position:0 -21px;}
-.pwd40{background-position:0 -28px;}
-.pwd50{background-position:0 -35px;}
-.pwd60{background-position:0 -42px;}
-.pwd70{background-position:0 -49px;}
-.pwd80{background-position:0 -56px;}
-.pwd90{background-position:0 -63px;}
-.pwd100{background-position:0 -70px;}
+.PwdStrengthBox{
+	width:110px;
+	text-align:right;
+}
+.strength-text{
+	font-size:1.2em;
+	font-weight:bold;
+}
+.PwdStrengthBox span.password-strength{
+	width:110px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	height:10px;
+	background-color:#555;
+	display:block;
+}
 
 /*
 ==============================

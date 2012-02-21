@@ -1,6 +1,6 @@
 /**
 Filename: common.js
-Last Modified: 6/25/2011
+Last Modified: 02/20/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -8,56 +8,6 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 */
-
-/*
-*displayMsg
-*
-*output message in HTML format.
-*@param msg[string] - message to output.
-*@param ele[string] - the element id to look for.
-*@param icon[string] - used to see if user wants to use an icon or not.
-*@return HTML-friendly message.
-*
-*/
-function displayMsg(msg, ele, icon){
-	obj = document.getElementById(ele);
-	
-	if (obj){
-		//see what type of icon to use, if any.
-		if(icon == "err"){
-			obj.innerHTML = "<div id=\"error\"><img src=\"images/error.gif\" alt=\"\" />" + msg + "</div>";
-		}else if(icon == "info"){
-			obj.innerHTML = "<div id=\"info\"><img src=\"images/info.gif\" alt=\"\" />" + msg + "</div>";
-		}else if(icon == "ok"){
-			obj.innerHTML = "<div id=\"ok\"><img src=\"images/ok.gif\" alt=\"\" />" + msg + "</div>";
-        }else if(icon == "loading"){
-			obj.innerHTML = "<div id=\"loading\"><img src=\"images/loading.gif\" alt=\"\" />" + msg + "</div>";
-		}else if(icon == "none"){
-			obj.innerHTML = "<div>" + msg + "</div>";
-		}
-	}else{
-	    alert('No Object Found!');
-	}
-}
-
-/**
- *clearMsg
- *
- *clear any messages made from previous function.
- *
- *@param ele[string] - the element id to look for.
- *
- *@return nulled html code.
- *
-*/
-function clearMsg(ele){
-	obj = document.getElementById(ele);
-	if (obj){
-	   obj.innerHTML = "<div></div>";
-	}else{
-	    alert('No Object Found!');
-	}
-}
 
 /**
  *gotoUrl

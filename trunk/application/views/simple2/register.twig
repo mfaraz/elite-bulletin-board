@@ -6,24 +6,44 @@
 
 {{BREADCRUMB|raw}}<br />
 
-<script type="text/javascript" src="includes/js/validation.js"></script>
-<script type="text/javascript" src="includes/js/pwdTester.js"></script>
-<script type="text/javascript" src="includes/js/jquery.captchaRefresh.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/pwdTester.js"></script>
 <script type="text/javascript">
-//init. our password strength script.
-$.fn.passwordStrength.defaults = {
-	classes : Array('pwd10','pwd20','pwd30','pwd40','pwd50','pwd60','pwd70','pwd80','pwd90','pwd100'),
-	targetDiv : '#passwordStrengthRes',
-	cache : {}
-}
-
 $(document).ready(function(){
-	$('#pwd').passwordStrength();
-
-	//captcha reload.
-	jQuery('#captchaReload').captchaRefresh({src: 'includes/captchaEngine.php'});
+	$( '#password' ).live( 'keyup', function() {
+	var howStrong = passwordStrength( $( this ).val() );
+	$( '.strength-text', $( this ).next() ).text( howStrong );
+	var sColor = '#555';
+	switch( howStrong ) {
+		case 'Strong' :
+			$( '.password-strength', $( this ).next() ).css( 'background-color', '#006600' );
+			break;
+		case 'Medium' :
+			$( '.password-strength', $( this ).next() ).css( 'background-color', '#009900' );
+			break;
+		case 'Weak' :
+			$( '.password-strength', $( this ).next() ).css( 'background-color', '#CC9900' );
+			break;
+		case 'Short' :
+			$( '.password-strength', $( this ).next() ).css( 'background-color', '#FF0000' );
+			break;
+		default :
+			$( '.password-strength', $( this ).next() ).css( 'background-color', '#555' );
+	}
+	}).focusout( function() {
+		$( this ).trigger( 'keyup' );
+	});
 });
 </script>
+
+<!-- validation box. -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p id="validateRes"></p>
+		</div>
+	</div>
+</div>
 
 {{REGISTERFORM|raw}}
 <table border="0" class="table" cellspacing="1" cellpadding="1">
@@ -31,23 +51,24 @@ $(document).ready(function(){
 <td colspan="2" class="ui-widget-header" align="center">{{LANG_REGISTER}}</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_EMAIL}}</td>
-<td class="ui-widget-content" width="50%"><input name="email" type="text" size="30" maxlength="255" class="text" id="email" onblur="validateEmail('email', 'emailerr');" /><div id="emailerr"></div></td>
+<td class="ui-widget-content" width="50%"><input name="email" type="text" size="30" maxlength="255" class="text" id="email" /></td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_USERNAME}}<a href="#" class="hint">[?]<span>{{LANG_RULE}}</span></a></td>
-<td class="ui-widget-content" width="50%"><input name="username" type="text" size="30" maxlength="25" class="text" id="usr" onblur="validateAlphaNumeric('usr', 'usrerr');" /><div id="usrerr"></div></td>
+<td class="ui-widget-content" width="50%"><input name="username" type="text" size="30" maxlength="25" class="text" id="username" /></td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_PASSWORD}}</td>
-<td class="ui-widget-content" width="50%"><input name="password" type="password" size="30" class="text" id="pwd" onblur="validateNotNull('pwd', 'pwderr');" /><div id="pwderr"></div>
-<div id="passwordStrengthRes" class="pwd0"></div></td>
+<td class="ui-widget-content" width="50%"><input name="password" type="password" size="30" class="text" id="password" />
+<div class="PwdStrengthBox"><span class="password-strength"></span> <span class="strength-text">Type Password</span></div>
+</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_CONFIRMPWD}}</td>
-<td class="ui-widget-content" width="50%"><input name="vert_password" type="password" size="30" class="text" id="vpass" onblur="validateAlphaNumeric('vpass', 'vpasserr');" /><div id="vpasserr"></div></td>
+<td class="ui-widget-content" width="50%"><input name="password_confirm" type="password" size="30" class="text" id="password_confirm" /></td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_TIME}}</td>
 <td class="ui-widget-content" width="50%">{TIME}</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_TIMEFORMAT}}<a href="#" class="hint">[?]<span>{{LANG_TIMEINFO}}</span></a></td>
-<td class="ui-widget-content" width="50%"><input type="text" name="time_format" value="{{TIMEFORMAT}}" size="30" maxlength="14" class="text" id="timeform" onblur="validateAlphaNumeric('timeform', 'timeformerr');" /><div id="timeformerr"></div></td>
+<td class="ui-widget-content" width="50%"><input type="text" name="time_format" value="{{TIMEFORMAT}}" size="30" maxlength="14" class="text" id="time_format" /></td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_PMNOTIFY}}</td>
 <td class="ui-widget-content" width="50%"><input type="radio" name="pm_notice" value="1" />{{LANG_YES}} <input type="radio" name="pm_notice" value="0" />{{LANG_NO}}</td>
@@ -65,7 +86,7 @@ $(document).ready(function(){
 <tr>
 <td class="ui-widget-content" width="50%">{{LANG_CAPTCHA}}<a href="#" class="hint">[?]<span>{{LANG_CAPTCHAHELP}}</span></a></td>
 <td class="ui-widget-content" width="50%">
-	<input type="text" name="captcha" size="10" class="text" id="captcha" onblur="validateAlphaNumeric('captcha', 'captchaerr');" />&nbsp;<strong>{{CAPTCHA}}</strong>
+	<input type="text" name="captcha" size="10" class="text" id="captcha" />&nbsp;<strong>{{CAPTCHA}}</strong>
 <div id="captchaerr"></div></td>
 </tr>
 <!-- END captcha -->
@@ -88,7 +109,7 @@ $(document).ready(function(){
 	{%elseif COPPA == 21%}
 		<strong>{{COPPA_21}}</strong>
 	{%else%}
-
+		{# Show nothing #}
 	{%endif%}
 </td>
 </tr>
@@ -97,5 +118,43 @@ $(document).ready(function(){
 </tr>
 </table>
 </form>
+
+<script type="text/javascript">
+new FormValidator('frmRegister', [{
+    name: 'username',
+    display: '{{LANG_USERNAME}}',
+    rules: 'alpha_numeric'
+}, {
+    name: 'password',
+	display: '{{LANG_PASSWORD}}',
+    rules: 'required'
+}, {
+    name: 'password_confirm',
+    display: '{{LANG_CONFIRMPWD}}',
+    rules: 'required|matches[password]'
+}, {
+    name: 'email',
+	display: '{{LANG_EMAIL}}',
+    rules: 'valid_email'
+}, {
+    name: 'time_format',
+    display: '{{LANG_TIMEFORMAT}}',
+    rules: 'required'
+}, {
+    name: 'captcha',
+    display: '{{LANG_CAPTCHA}}',
+    rules: 'required|numeric'
+}], function(errors, event) {
+
+    if (errors.length > 0) {
+        $('#validateRes').empty();
+        $('#validateRes').append(errors.join('<br />'));
+        $('#div_ErrMsg').show();
+    } else {
+        event.returnValue = true; //allow form to process.
+    }
+    
+});
+</script>
 
 {% endblock %}

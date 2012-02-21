@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/27/2011
+ * @version 02/20/2012
 */
 
 class loginmgr{
@@ -38,7 +38,7 @@ class loginmgr{
 	 * @param string $pwd - password under request.
 	 * @access public
 	*/
-	public function __construct($params){
+	public functon __construct($params){
 	
 		//get CodeIgniter objects.
 		$this->ci =& get_instance();	
@@ -80,24 +80,27 @@ class loginmgr{
 	
     /**
 	 * Performs a check through the database to ensure the requested password is valid.
-	 * @version 10/27/11
+	 * @version 02/20/12
 	 * @return bool
 	 * @access private
 	*/
 	private function validatePwd(){
 
-        #encrypt password.
-	    $encryptPwd = sha1($this->pass.$this->getPwdSalt());
+		#check against the database to see if the username and password match.
+		$this->ci->db->select('Password')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$query = $this->db->get();
+		$pwdFetch = $query->row();
 
-	    #check against the database to see if the username and password match.
-		$this->ci->db->select('id')->from('ebb_users')->where('Password', $encryptPwd)->limit(1);
-		$validatePwd = $this->ci->db->count_all_results();
-
-		#setup boolean return.
-		if($validatePwd == 0){
-		    return(false);
-		}else{
-		    return(true);
+		//see if that username is in the database, if not fail immediately!
+		if($query->num_rows() > 0) {
+			return (false);
+		} else {
+			//validate hash matches 100%.
+			if (verifyHash($this->pass, $pwdFetch->Password) === true) {
+				return(false);
+			}else{
+				return(true);
+			}
 		}
 	}
 
@@ -105,6 +108,7 @@ class loginmgr{
 	 * Validates current login password.
 	 * @access Private
 	 * @version 10/27/11
+	 * @deprecated may not be needed.
 	*/
 	private function validatePwdEncrypted() {
 
@@ -125,6 +129,7 @@ class loginmgr{
 	 * @version 10/27/11
 	 * @return string $pwdSlt
 	 * @access private
+	 * @deprecated may not be needed.
     */
 	private function getPwdSalt(){
 
@@ -162,6 +167,8 @@ class loginmgr{
 	 * @version 7/24/2011
 	*/
 	public function validateLoginSession(){
+
+		//@todo rebuild this to use new blowfish setup.
 
 		#See if this is a guest account.
 		if(($this->user == "guest") OR ($this->pass == "guest")){

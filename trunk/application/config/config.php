@@ -245,7 +245,7 @@ $config['encryption_key'] = 'a$%^@gfb12';
 |
 */
 $config['sess_cookie_name']		= 'ebb_session';
-$config['sess_expiration']		= 7200;
+$config['sess_expiration']		= 3600;
 $config['sess_expire_on_close']	= TRUE;
 $config['sess_encrypt_cookie']	= TRUE;
 $config['sess_use_database']	= TRUE;
@@ -296,7 +296,7 @@ $config['global_xss_filtering'] = TRUE;
 $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = 'csrf_ebb_tokin';
 $config['csrf_cookie_name'] = 'csrf_ebb_validation';
-$config['csrf_expire'] = 7200;
+$config['csrf_expire'] = 3600;
 
 /*
 |--------------------------------------------------------------------------
