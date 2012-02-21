@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 12/7/2011
+ * @version 02/20/2012
 */
 
 /**
@@ -63,20 +63,38 @@ function makeRandomPassword() {
 /**
  * Used to create a random-generated password salt.
  * @return string
- * @version 4/19/10
+ * @version 02/20/12
 */
-function createPwdSalt() {
-  $salt = "/*-+^&~abchefghjkmnpqrstuvwxyz0123456789";
-  srand((double)microtime()*1000000);
-  	$i = 0;
-  	$pSalt = '';
-  	while ($i <= 7) {
-    		$num = rand() % 33;
-    		$tmp = substr($salt, $num, 1);
-    		$pSalt = $pSalt . $tmp;
-    		$i++;
-  	}
-  	return ($pSalt);
+function makeSalt() {
+    static $seed = "./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    $algo = '$2a'; //DON'T CHANGE THIS!!
+    $strength = '$12'; //too high will time out script.
+    $salt = '$';
+    for ($i = 0; $i < 22; $i++) {
+        $salt .= substr($seed, mt_rand(0, 63), 1);
+    }
+    return $algo . $strength . $salt;
+}
+
+/**
+ * Blowfish encrypt user's password.
+ * @param string $password
+ * @return string
+ * @version 02/20/12
+ */
+function makeHash($password) {
+    return crypt($password, makeSalt());
+}
+
+/**
+ * Verify the hash encryption is valid.
+ * @param string $password
+ * @param string $hash
+ * @return boolean
+ * @version 02/20/12
+ */
+function verifyHash($password, $hash) {
+    return $hash == crypt($password, $hash);
 }
 
 /**

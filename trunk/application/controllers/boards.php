@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/15/2012
+ * @version 02/20/2012
 */
 
 /**
@@ -88,7 +88,7 @@ class Boards extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
 		  'LANG_USERNAME' => $this->lang->line('username'),
 		  'LANG_REGISTER' => $this->lang->line('register'),
 		  'LANG_PASSWORD' => $this->lang->line('pass'),
@@ -238,7 +238,7 @@ class Boards extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
 		  'LANG_USERNAME' => $this->lang->line('username'),
 		  'LANG_REGISTER' => $this->lang->line('register'),
 		  'LANG_PASSWORD' => $this->lang->line('pass'),
@@ -434,7 +434,7 @@ class Boards extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
 		  'LANG_USERNAME' => $this->lang->line('username'),
 		  'LANG_REGISTER' => $this->lang->line('register'),
 		  'LANG_PASSWORD' => $this->lang->line('pass'),

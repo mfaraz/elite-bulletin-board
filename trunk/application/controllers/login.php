@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/12/2011
+ * @version 02/20/2012
 */
 
 
@@ -19,7 +19,7 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Output Login Form.
-	 * @version 10/11/11
+	 * @version 02/20/12
 	 */
 	private function LoginForm() {
 		
@@ -47,7 +47,8 @@ class Login extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+		  'LOGINFORM_FULL' => form_open('login/LogIn', array('name' => 'frmLogin')),
 		  'VALIDATION_USERNAME' => form_error('username'),
 		  'VALIDATION_PASSWORD' => form_error('password'),
 		  'LANG_USERNAME' => $this->lang->line('username'),
@@ -71,7 +72,7 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Outputs Password Recovery Form
-	 * @version 10/12/11
+	 * @version 02/20/12
 	 */
 	private function PwdRecoverForm() {
 		
@@ -100,7 +101,8 @@ class Login extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/PasswordRecoverySubmit'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+		  'PWDRECOVERFORM' => form_open('login/PasswordRecoverySubmit'),
 		  'VALIDATION_USERNAME' => form_error('lost_user'),
 		  'VALIDATION_EMAIL' => form_error('lost_email'),
 		  'LANG_USERNAME' => $this->lang->line('username'),
@@ -127,7 +129,7 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Registration Form.
-	 * @version 10/12/11
+	 * @version 02/20/12
 	 */
 	private function registerForm() {
 		
@@ -136,7 +138,7 @@ class Login extends EBB_Controller {
 		
 		// add breadcrumbs
 		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');		
+		$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
 		
 		//render to HTML.
 		echo $this->twig->render($this->style, 'register', array (
@@ -155,7 +157,8 @@ class Login extends EBB_Controller {
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'REGISTERFORM' => form_open('login/CreateUser'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+		  'REGISTERFORM' => form_open('login/CreateUser', array('name' => 'frmRegister')),
 		  'VALIDATION_USERNAME' => form_error('lost_user'),
 		  'VALIDATION_EMAIL' => form_error('lost_email'),
 		  'LANG_USERNAME' => $this->lang->line('username'),
@@ -232,7 +235,7 @@ class Login extends EBB_Controller {
 
     	// LOAD LIBRARIES
         $this->load->library(array('encrypt', 'form_validation'));
-        $this->load->helper('form');
+        $this->load->helper(array('form, user'));
 
         $this->form_validation->set_rules('username', $this->lang->line('nouser'), 'required');
         $this->form_validation->set_rules('password', $this->lang->line('nopass'), 'required');
@@ -240,10 +243,8 @@ class Login extends EBB_Controller {
 
 		//see if any validation rules failed.
 		if ($this->form_validation->run() == FALSE) {
-			
 			//show login form.
 			$this->LoginForm();
-			
 		} else {
 		
 			$params = array('usr' => $this->input->post('username', TRUE), 'pwd' => $this->input->post('password', TRUE));
@@ -351,7 +352,6 @@ class Login extends EBB_Controller {
 
 		// LOAD LIBRARIES
         $this->load->helper('form');
-		
 		$this->PwdRecoverForm();
 
 	}
@@ -394,9 +394,12 @@ class Login extends EBB_Controller {
 	*/
 	public function CreateUser() {
 
+		//create blowfish hash.
+		//$hash = makeHash('testing123');
+
 
 		//clears session
-		$this->ci->session->all_userdata();
+		//$this->ci->session->all_userdata();
 
 	}
 }
