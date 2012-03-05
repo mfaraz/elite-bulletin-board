@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/15/2012
+ * @version 02/29/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -99,32 +99,24 @@ class EBB_Controller extends CI_Controller {
 		$this->db->delete('ebb_online', array('time <' => $sessionTimeout));
 
 		#login setup
-		if (($this->input->cookie('ebbuser', TRUE) <> null && ($this->input->cookie('ebbpass', TRUE) <> null)) OR ($this->session->userdata('ebbuser') <> FALSE) && ($this->session->userdata('ebbpass') <> FALSE)) {
+		if (($this->input->cookie('ebbUser', TRUE) <> FALSE) OR ($this->session->userdata('ebbUser') <> FALSE)) {
 
 			//see if user is logged in via cookies.
-			if ($this->input->cookie('ebbuser', TRUE) <> null) {				
-				$ebbuser = $this->input->cookie('ebbuser', TRUE);
-				$params = array('usr' => $this->input->cookie('ebbuser', TRUE), 'pwd' => $this->input->cookie('ebbpass', TRUE));
-				$this->load->library('loginmgr', $params);
-			} elseif ($this->session->userdata('ebbuser') <> FALSE){
-				$ebbuser = $this->session->userdata('ebbuser');
-				$params = array('usr' => $this->session->userdata('ebbuser'), 'pwd' => $this->session->userdata('ebbpass'));
-				$this->load->library('loginmgr', $params);
+			if ($this->input->cookie('ebbUser', TRUE) <> FALSE) {
+				$ebbuser = $this->input->cookie('ebbUser', TRUE);
+			} elseif ($this->session->userdata('ebbUser') <> FALSE) {
+				$ebbuser = $this->session->userdata('ebbUser');
 			} else {
-				show_error('INVALID LOGIN METHOD!');
+				exit(show_error('INVALID LOGIN METHOD!', 500, $this->lang->line('error')));
 			} //END authenication check.
 
-			//validate login session
-			if ($this->loginmgr->validateLoginSession()){
-				
-				#perform session credibility check & refresh session ID.
-				$this->loginmgr->validateSession();
-				
-				//get group data.
-				//$this->load->model('Groupmodel');
+			$params = array(
+			  'user' => $ebbuser
+			);
+			$this->load->library('user', $params);
 
-				//detect group status.
-				$this->groupAccess = $this->Groupmodel->getLevel();
+			//validate login session
+			if ($this->user->validateLoginSession($this->session->userdata('ebbLoginKey'), 0)){
 
 				//load user model.
 				$this->load->model('Usermodel');
@@ -139,15 +131,25 @@ class EBB_Controller extends CI_Controller {
 				$this->lng = $this->Usermodel->getLanguage();
 				$this->suspend_length = $this->Usermodel->getSuspendLength();
 				$this->suspend_time = $this->Usermodel->getSuspendTime();
+
+				//get group data.
+				$this->Groupmodel->GetGroupData($this->gid);
+
+				#see if user is marked as banned.
+				if($this->Groupmodel->getPermissionType() == 6){
+					exit(show_error($ci->lang->line('banned')));
+				}
+
+				//detect group status.
+				$this->groupAccess = $this->Groupmodel->getLevel();
 				
 				//see if a user is either suspended or banned.
-				//TODO take this out of loginmgr library and place in user helper.
-				$this->loginmgr->checkBan();
+				checkBan();
 
 				//update user's onhline status.
 				update_whosonline_users($this->logged_user);
 			} else {
-				show_error('INVALID COOKIE OR SESSION!',500, $this->lang->line('error'));
+				exit(show_error('INVALID COOKIE OR SESSION!',500, $this->lang->line('error')));
 			}
 		} else {
 			//guest account.
