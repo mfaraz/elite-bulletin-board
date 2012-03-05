@@ -800,4 +800,42 @@ function GetWarningLevel($user) {
 	return $Warn_R->warning_level;
 	
 }
+
+/**
+ * Checks to see if the user is banned or suspended.
+ * @version 03/04/12
+*/
+function checkBan(){
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+
+	#see if user is marked as banned.
+	//TODO: this is incorrect, will need to rebuild this.
+	if($ci->groupProfile == 6){
+		exit(show_error($ci->lang->line('banned')));
+	}
+
+	#see if user is suspended.
+	if($ci->suspend_length > 0){
+		#see if user is still suspended.
+		$math = 3600 * $ci->suspend_length;
+		$suspend_date = $ci->suspend_time + $math;
+		$today = time() - $math;
+
+		if($suspend_date > $today){
+			exit(show_error($ci->lang->line('suspended')));
+		}
+	}
+	#see if the IP of the user is banned.
+	$uip = detectProxy();
+
+	$this->ci->db->distinct('ban_item')->from('ebb_banlist')->where('ban_type', 'IP')->like('ban_item', $uip)->limit(1);
+	$banChk = $this->ci->db->count_all_results();
+
+	#output an error msg.
+	if($banChk == 1){
+		exit(show_error($this->lang->line('banned')));
+	}
+}
 ?>

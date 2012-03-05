@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/20/2012
+ * @version 02/29/2012
 */
 
 
@@ -229,13 +229,13 @@ class Login extends EBB_Controller {
 	
 	/**
 	  * Processes login form and logs user in.
-	 *  @version 10/11/11
+	 *  @version 02/29/12
 	 */
 	public function LogIn() {
 
     	// LOAD LIBRARIES
         $this->load->library(array('encrypt', 'form_validation'));
-        $this->load->helper(array('form, user'));
+        $this->load->helper(array('form', 'user'));
 
         $this->form_validation->set_rules('username', $this->lang->line('nouser'), 'required');
         $this->form_validation->set_rules('password', $this->lang->line('nopass'), 'required');
@@ -246,9 +246,13 @@ class Login extends EBB_Controller {
 			//show login form.
 			$this->LoginForm();
 		} else {
-		
-			$params = array('usr' => $this->input->post('username', TRUE), 'pwd' => $this->input->post('password', TRUE));
-			$this->load->library('loginmgr', $params, 'auth');
+
+            //setup login object.
+            $params = array(
+				  'usr' => $this->input->post('username', TRUE),
+				  'pwd' => $this->input->post('password', TRUE)
+				  );
+			$this->load->library('auth', $params);
 
             //see if we want to keep user logged in on next visit.
             $remember = $this->input->post('auto_login', TRUE);
@@ -265,12 +269,17 @@ class Login extends EBB_Controller {
 				} else {
 				
 					#see if board is disabled.
-					if($this->preference->getPreferenceValue("board_status")->pref_value == 0){
+					if($this->preference->getPreferenceValue("board_status") == 0){
 						#see if user has proper rights to access under this limited operational status.
-      					$params[0] = $this->input->post('username', TRUE);
-						$this->load->library('grouppolicy', $params, 'alc');
+                        $this->load->model('Groupmodel', 'alc');
+                        $this->load->model('Usermodel', 'usr');
 
-						if($this->alc->groupAccessLevel() == 1){
+                        //get group data.
+                        $this->usr->getUser($this->input->post('username', TRUE));
+                        $this->alc->GetGroupData($this->usr->getGid());
+
+
+						if($this->alc->getLevel() == 1){
 							#clear any failed login attempts from their record.
 							$this->auth->clearFailedLogin();
 
@@ -285,7 +294,7 @@ class Login extends EBB_Controller {
                             $this->session->set_flashdata('NotifyMsg', $this->lang->line('offlinemsg'));
 
 							#direct user.
-       						redirect('/login/', 'location');
+       						redirect('/', 'location');
 						}
 					}else{
 						#clear any failed login attempts from their record.

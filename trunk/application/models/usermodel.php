@@ -868,39 +868,46 @@ class Usermodel extends CI_Model {
 		$query = $this->db->get();
 		$userData = $query->row();
 
-		//populate properties with values.
-		$this->setId($userData->id);
-		$this->setUserName($userData->Username);
-		$this->setPassword($userData->Password);
-		$this->setSalt($userData->salt);
-		$this->setEmail($userData->Email);
-		$this->setCustomTitle($userData->Custom_Title);
-		$this->setLastVisit($userData->last_visit);
-		$this->setPmNotify($userData->PM_Notify);
-		$this->setHideEmail($userData->Hide_Email);
-		$this->setMSn($userData->MSN);
-		$this->setAol($userData->AOL);
-		$this->setYahoo($userData->Yahoo);
-		$this->setIcq($userData->ICQ);
-		$this->setWww($userData->WWW);
-		$this->setLocation($userData->Location);
-		$this->setAvatar($userData->Avatar);
-		$this->setSig($userData->Sig);
-		$this->setTimeFormat($userData->Time_format);
-		$this->setTimeZone($userData->Time_Zone);
-		$this->setDateJoined($userData->Date_Joined);
-		$this->setIp($userData->IP);
-		$this->setStyle($userData->Style);
-		$this->setLanguage($userData->Language);
-		$this->setPostCount($userData->Post_Count);
-		$this->setLastPost($userData->last_post);
-		$this->setLastSearch($userData->last_search);
-		$this->setFailedAttempts($userData->failed_attempts);
-		$this->setActive($userData->active);
-		$this->setActKey($userData->act_key);
-		$this->setWarningLevel($userData->warning_level);
-		$this->setSuspendLength($userData->suspend_length);
-		$this->setSuspendTime($userData->suspend_time);
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			//populate properties with values.
+			$this->setId($userData->id);
+			$this->setUserName($userData->Username);
+			$this->setPassword($userData->Password);
+			$this->setSalt($userData->salt);
+			$this->setEmail($userData->Email);
+			$this->setCustomTitle($userData->Custom_Title);
+			$this->setLastVisit($userData->last_visit);
+			$this->setPmNotify($userData->PM_Notify);
+			$this->setHideEmail($userData->Hide_Email);
+			$this->setMSn($userData->MSN);
+			$this->setAol($userData->AOL);
+			$this->setYahoo($userData->Yahoo);
+			$this->setIcq($userData->ICQ);
+			$this->setWww($userData->WWW);
+			$this->setLocation($userData->Location);
+			$this->setAvatar($userData->Avatar);
+			$this->setSig($userData->Sig);
+			$this->setTimeFormat($userData->Time_format);
+			$this->setTimeZone($userData->Time_Zone);
+			$this->setDateJoined($userData->Date_Joined);
+			$this->setIp($userData->IP);
+			$this->setStyle($userData->Style);
+			$this->setLanguage($userData->Language);
+			$this->setPostCount($userData->Post_Count);
+			$this->setLastPost($userData->last_post);
+			$this->setLastSearch($userData->last_search);
+			$this->setFailedAttempts($userData->failed_attempts);
+			$this->setActive($userData->active);
+			$this->setActKey($userData->act_key);
+			$this->setWarningLevel($userData->warning_level);
+			$this->setSuspendLength($userData->suspend_length);
+			$this->setSuspendTime($userData->suspend_time);
+		} else {
+			//no record was found, throw an error.
+			show_error($this->lang->line('invaliduser').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			log_message('error', 'invalid username was provided.'.$user); //log error in error log.
+		}
 	}
 
 	/**
