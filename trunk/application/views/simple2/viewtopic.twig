@@ -346,17 +346,17 @@ _________________<br />
 {# setup quick reply #}
 {% if LOGGEDUSER != "guest" and CANPOST_REPLY == TRUE %}
 
-<script type="text/javascript" src="includes/js/jPanels.js"></script>
-<script type="text/javascript" src="includes/js/jquery.jUploader.js"></script>
-<script type="text/javascript" src="includes/js/jquery.spellchecker.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jPanels.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
-<script type="text/javascript" src="includes/js/jquery.markitup.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
 <!-- markItUp! toolbar settings -->
-<script type="text/javascript" src="includes/js/set.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/set.js"></script>
 <!-- API detection -->
-<script type="text/javascript" src="includes/js/validateAPI.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
 <!-- Rich text editor file -->
-<script type="text/javascript" src="includes/js/pEditor.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/pEditor.js"></script>
 <!-- call our collapsible panel -->
 <script type="text/javascript">
 $(function(){
@@ -400,17 +400,17 @@ $(function(){
 <form method="post" action="Process.php?mode=reply&amp;bid={BID}&amp;tid={TID}&amp;pg={PAGE}">
 <div align="center">
 	<div id="emoticons" style="width:500px;" align="center">
-		{SMILES}
+		{{SMILES|raw}}
 	</div>
 	<textarea id="replyBody" name="reply_post" cols="80" rows="20"></textarea>
-	<br /><input type="submit" value="{LANG-REPLY}" class="submit" />
+	<br /><input type="submit" value="{{LANG_REPLY}}" class="submit" />
 
-	<div id="replybox" title="{LANG-OPTIONS}" style="width:400px;text-align:left;">
+	<div id="replybox" title="{{LANG_OPTIONS}}" style="width:400px;text-align:left;">
 		<div class="pContent">
-			<a href="#editor" class="toggle"><span>{LANG-DISABLERTF}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{LANG-SMILES}</a><br />
-			<input type="checkbox" name="subscribe" value="1" />{LANG-NOTIFY}<br />
-			<input type="checkbox" name="no_smile" value="1" />{LANG-DISABLESMILES}<br />
-			<input type="checkbox" name="no_bbcode" value="1" />{LANG-DISABLEBBCODE}<br />
+			<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a><br />
+			<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+			<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+			<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}<br />
 			<input type="hidden" name="page" value="{PAGE}" />
 		</div>
 	</div>

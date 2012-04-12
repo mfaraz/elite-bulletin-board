@@ -22,13 +22,13 @@
 <td colspan="2" class="ui-widget-header" align="center">::{{LANG_LOGIN}}::</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_USERNAME}}<br />[{{URL_TAG("login/register", LANG_REGISTER)|raw}}]</td>
-<td class="ui-widget-content" width="50%"><input type="text" name="username" class="text" size="30" id="usr" onblur="validateAlphaNumeric('usr', 'usrerr');" />
+<td class="ui-widget-content" width="50%"><input type="text" name="username" class="text" size="30" tabindex="1" id="usr" onblur="validateAlphaNumeric('usr', 'usrerr');" />
 <div id="usrerr"></div>
 {{VALIDATION_USERNAME|raw}}
 </td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_PASSWORD}}<br />[{{URL_TAG("login/PasswordRecovery", LANG_FORGOT)|raw}}]</td>
-<td class="ui-widget-content" width="50%"><input type="password" name="password" class="text" size="30" id="pwd" onblur="validateAlphaNumeric('pwd', 'pwderr');" />
+<td class="ui-widget-content" width="50%"><input type="password" name="password" class="text" size="30" tabindex="2" id="pwd" onblur="validateAlphaNumeric('pwd', 'pwderr');" />
 <div id="pwderr"></div>
 {{VALIDATION_PASSWORD|raw}}
 </td>
@@ -41,6 +41,7 @@
 </table>
 </form>
 <script type="text/javascript">
+$('#usr').focus();
 
 new FormValidator('frmLogin', [{
 	name: 'username',

@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
   * @author Elite Bulletin Board Team <http://elite-board.us>
   * @copyright  (c) 2006-2011
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 1/15/2012
+  * @version 04/11/2012
 */
 
 #Common language tags.
@@ -32,11 +32,12 @@ $lang['next'] = 'Next';
 $lang['prev'] = 'Previous';
 $lang['spamwarn'] = 'SPAMMING ATTEMPT!';
 $lang['nullspam'] = 'spam check is null.';
+$lang['deadsession'] = 'Your session has expired. Please re-login.';
+$lang['invalidlogin'] = 'INVALID LOGIN METHOD!';
 
 //TODO this may be considered as obsolete.
 $lang['closewindow'] = 'Close this Window';
 
-$lang['btnreload'] = 'Reload';
 $lang['close'] = 'Close';
 $lang['error'] = 'Error';
 $lang['info'] = 'Information';

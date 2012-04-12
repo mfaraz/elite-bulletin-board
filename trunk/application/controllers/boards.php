@@ -324,7 +324,7 @@ class Boards extends EBB_Controller {
 		#see if user can vote.
 		if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBVote())) {
 			//see if we got any group-based permission overwritting the board-level permission.
-			if($groupAccess->ValidateAccess(1, 36)) {
+			if($this->Groupmodel->ValidateAccess(1, 36)) {
 				$CanVote = TRUE;
 			} else {
 				$CanVote = FALSE;
@@ -507,7 +507,15 @@ class Boards extends EBB_Controller {
 		  'LANG_POST' => $this->lang->line('posts'),
 		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
 		  'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby')
+		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'SMILES' => form_smiles(),
+		  'LANG_REPLY' => $this->lang->line('btnreply'),
+		  'LANG_OPTIONS' => $this->lang->line('options'),
+		  'LANG_DISABLERTF' => $this->lang->line('disablertf'),
+		  'LANG_SMILES' => $this->lang->line('moresmiles'),
+		  'LANG_NOTIFY' => $this->lang->line('notify'),
+		  'LANG_DISABLESMILES' => $this->lang->line('disablesmiles'),
+		  'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode')
 		));
 	}
 	

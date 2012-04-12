@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/15/2012
+ * @version 04/11/2012
 */
 
 /**
@@ -333,6 +333,23 @@ class Groupmodel extends CI_Model {
 		}else{
 		    #invalid operation, return an automatic false.
 		    return(false);
+		}
+	}
+	
+	/**
+	 * Validates the entered group is valid.
+	 * @return boolean
+	 * @version 04/11/12
+	 */
+	private function validateGroup(){
+
+		$this->db->select('id')->from('ebb_groups')->where('id', $this->gid)->limit(1);
+        $validateGroup = $this->db->count_all_results();
+
+		if($validateGroup == 1){
+			return (true);
+		}else{
+			return(false);
 		}
 	}
 

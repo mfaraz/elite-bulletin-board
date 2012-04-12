@@ -6,10 +6,10 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/20/2012
+ * @version 03/04/2012
 */
 
-class loginmgr{
+class auth {
 
     #declare data members
     
@@ -20,7 +20,7 @@ class loginmgr{
     private $user;
     
     /**
-	 * Password In Session
+	 * Password in Session.
 	 * @var string
 	*/
     private $pass;
@@ -33,12 +33,11 @@ class loginmgr{
 
     /**
 	 * Setup common value.
-	 * @version 10/5/11
-	 * @param string $usr - username under request.
-	 * @param string $pwd - password under request.
+	 * @version 03/04/12
+	 * @param array $param - parameter array.
 	 * @access public
 	*/
-	public functon __construct($params){
+	public function __construct($params){
 	
 		//get CodeIgniter objects.
 		$this->ci =& get_instance();	
@@ -46,17 +45,20 @@ class loginmgr{
 		#define data member values.
 		$this->user = $params['usr'];
 		$this->pass = $params['pwd'];
+
 	}
 
     /**
 	 * Clean-up class after we're done.
-	 * @version 8/10/09
+	 * @version 02/26/12
 	 * @access public
 	 */
 	public function __destruct(){
-
 		unset($this->user);
-		unset($this->pass);
+		unset($this->lastActive);
+		unset($this->loginKey);
+		unset($this->adminActivity);
+		unset($this->adminKey);
 	}
 
     /**
@@ -80,7 +82,7 @@ class loginmgr{
 	
     /**
 	 * Performs a check through the database to ensure the requested password is valid.
-	 * @version 02/20/12
+	 * @version 04/09/12
 	 * @return bool
 	 * @access private
 	*/
@@ -88,56 +90,20 @@ class loginmgr{
 
 		#check against the database to see if the username and password match.
 		$this->ci->db->select('Password')->from('ebb_users')->where('Username', $this->user)->limit(1);
-		$query = $this->db->get();
+		$query = $this->ci->db->get();
 		$pwdFetch = $query->row();
 
 		//see if that username is in the database, if not fail immediately!
-		if($query->num_rows() > 0) {
+		if($query->num_rows() == 0) {
 			return (false);
 		} else {
 			//validate hash matches 100%.
 			if (verifyHash($this->pass, $pwdFetch->Password) === true) {
-				return(false);
-			}else{
 				return(true);
+			}else{
+				return(false);
 			}
 		}
-	}
-
-	/**
-	 * Validates current login password.
-	 * @access Private
-	 * @version 10/27/11
-	 * @deprecated may not be needed.
-	*/
-	private function validatePwdEncrypted() {
-
-	    #check against the database to see if the username and password match.
-		$this->ci->db->select('id')->from('ebb_users')->where('Password', $this->pass)->limit(1);
-		$validatePwd = $this->ci->db->count_all_results();
-
-		#setup boolean return.
-		if($validatePwd == 0){
-		    return(false);
-		}else{
-		    return(true);
-		}
-	}
-	
-    /**
-	 * Get password salt for requested user.
-	 * @version 10/27/11
-	 * @return string $pwdSlt
-	 * @access private
-	 * @deprecated may not be needed.
-    */
-	private function getPwdSalt(){
-
-	    #check against the database to see if the username and password match.
-		$this->ci->db->select('salt')->from('ebb_users')->where('Username', $this->user)->limit(1);
-		$query = $this->ci->db->get();
-		$pwdSlt = $query->row();
-		return($pwdSlt->salt);
 	}
 
     /**
@@ -154,28 +120,6 @@ class loginmgr{
 		}else{
 			#see if user entered the correct information.
 			if(($this->validateUser()) AND ($this->validatePwd())){
-			    return(true);
-			}else{
-			    return(false);
-			}
-		}
-	}
-	
-	/**
-	 * Validates current login session.
-	 * @access Public
-	 * @version 7/24/2011
-	*/
-	public function validateLoginSession(){
-
-		//@todo rebuild this to use new blowfish setup.
-
-		#See if this is a guest account.
-		if(($this->user == "guest") OR ($this->pass == "guest")){
-		    return(false);
-		}else{
-			#see if user entered the correct information.
-			if(($this->validateUser()) AND ($this->validatePwdEncrypted())){
 			    return(true);
 			}else{
 			    return(false);
@@ -327,30 +271,28 @@ class loginmgr{
 
     /**
 	 * Performs login process, creating any sessions or cookies needed for the system.
-	 * @version 10/27/11
+	 * @version 03/04/12
 	 * @access public
 	*/
 	public function logOn($remember){
-
-        #encrypt password.
-	    $encryptPwd = sha1($this->pass.$this->getPwdSalt());
 	    
 		#set session to a secure status.
 		//ini_get('session.cookie_secure',true);
+
+		#setup variables.
+		$loginKey = sha1(makeRandomPassword());
+		$lastActive = time() + 300;
 		
 		#see if user wants to remain logged on.
-		if($remember == ""){
+		if($remember == FALSE) {
 			#create a session.
-			$this->ci->session->set_userdata('ebbuser', $this->user);
-			$this->ci->session->set_userdata('ebbpass', $encryptPwd);
-			
-			
-			//$_SESSION['ebbuser'] = $this->user;
-			//$_SESSION['ebbpass'] = $encryptPwd;
-		}else{
+			$this->ci->session->set_userdata('ebbUser', $this->user);
+			$this->ci->session->set_userdata('ebbLastActive', $lastActive);
+			$this->ci->session->set_userdata('ebbLoginKey', $loginKey);
+		} else {
 			#create cookie.
             $ebbuser = array(
-                'name'   => 'ebbuser',
+                'name'   => 'ebbUser',
                 'value'  => $this->user,
                 'expire' => '2592000',
                 'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
@@ -359,22 +301,30 @@ class loginmgr{
             );
             $this->ci->input->set_cookie($ebbuser);
             
-            $ebbpass = array(
-                'name'   => 'ebbpass',
-                'value'  => $encryptPwd,
+            $ebbActive = array(
+                'name'   => 'ebbLastActive',
+                'value'  => $lastActive,
                 'expire' => '2592000',
                 'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
                 'path'   => $this->ci->preference->getPreferenceValue("cookie_path"),
                 'secure' => $this->ci->preference->getPreferenceValue("cookie_secure")
             );
-            $this->ci->input->set_cookie($ebbpass);			
+            $this->ci->input->set_cookie($ebbActive);
+
+			$this->ci->session->set_userdata('ebbLoginKey', $loginKey); //login key should be in session as it will always be changing,
 		}
-		
-		#generate session-based validation.
-		$this->regenerateSession(true);
-		
+				
 		#remove user's IP from who's online list.
         $this->ci->db->delete('ebb_online', array('ip' => detectProxy()));
+
+		#add login session in db.
+		$data = array(
+		  'username' => $this->user,
+		  'last_active' => $lastActive,
+		  'login_key' => $loginKey
+		);
+		$this->ci->db->insert('ebb_login_session', $data);
+
 	}
 	
     /**
@@ -388,11 +338,11 @@ class loginmgr{
 		//ini_get('session.cookie_secure',true);
 
 		#see if user is using cookies or sessions.
-		if($this->input->cookie('ebbuser', TRUE) == null){	
+		if($this->input->cookie('ebbUser', TRUE) <> FALSE){	
             
             #delete cookies.
             $ebbuser = array(
-                'name'   => 'ebbuser',
+                'name'   => 'ebbUser',
                 'value'  => $this->user,
                 'expire' => '',
                 'domain' => '.'.$this->ci->preference->getPreferenceValue("cookie_domain"),
@@ -438,8 +388,7 @@ class loginmgr{
 			}
 			
 			#clear session data.
-			session_destroy();
-			$this->ci->session->all_userdata();
+			$this->ci->session->sess_destroy();
             
 		}else{
 			#remove user from who's online list.
@@ -469,54 +418,8 @@ class loginmgr{
 			}
 
 			#clear session data.
-			session_destroy();
-			$this->ci->session->all_userdata();
+			$this->ci->session->sess_destroy();
 		}
-	}
-
-    /**
-	 * Performs a check to ensure the session value is valid and not hijacked.
-	 * @param $destroy bool - true will detroy old session data; false will not.
-	 * @version 12/28/10
-	 * @access public
-	*/
-    public function validateSession($destroy = false){
-
-		try{
-            #validate User Agent and make sure it didn't just 'magically' change.
-	        if($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']){
-	        	$error = new notifySys("USER AGENT VALIDATE ERROR, SESSION HIJACKING DETECTED!", false);
-				$error->genericError();
-			}else{
-				#regenerate Session ID.
-				#NOTE: We should only be clearing the old session IDs when performing important tasks
-				#such as loging in or anything within the ACP.
-	            $this->regenerateSession($destroy);
-            }
-    	}catch(Exception $e){
-	        $error = new notifySys($e, true, true, __FILE__, __LINE__);
-			$error->genericError();
-    	}
-	}
-
-    /**
-	 * creates a new session id and destroys the old session id(if any exists).
-	 * @param $destroy bool - true will detroy old session data; false will not.
-	 * @version 12/28/10
-	 * @access public
-	*/
-    public function regenerateSession($destroy = false){
-
-	    if(!isset($_SESSION['userAgent'])){
-	        $_SESSION['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
-		}
-
-	    #Create new session & destroy the old one.
-		if($destroy == true){
-	    	session_regenerate_id(true);
-	    }else{
-	    	session_regenerate_id();
-	    }
 	}
 
     /**
@@ -606,39 +509,5 @@ class loginmgr{
         
 	}
 
-    /**
-	 *Checks to see if the user is banned or suspended.
-	 * @version 10/27/11
-	 *  @access public
-	*/
-	public function checkBan(){
-
-		#see if user is marked as banned.
-		if($this->ci->groupProfile == 6){
-			exit(show_error($this->ci->lang->line('banned')));
-		}
-
-		#see if user is suspended.
-		if($this->ci->suspend_length > 0){
-			#see if user is still suspended.
-			$math = 3600 * $this->ci->suspend_length;
-			$suspend_date = $this->ci->suspend_time + $math;
-			$today = time() - $math;
-			
-			if($suspend_date > $today){
-				exit(show_error($this->lang->line('suspended')));
-			}
-		}
-		#see if the IP of the user is banned.
-        $uip = detectProxy();
-
-		$this->ci->db->distinct('ban_item')->from('ebb_banlist')->where('ban_type', 'IP')->like('ban_item', $uip)->limit(1);
-		$banChk = $this->ci->db->count_all_results();
-		
-		#output an error msg.
-		if($banChk == 1){
-			exit(show_error($this->lang->line('banned')));
-		}
-	}
 }//END CLASS
 ?>

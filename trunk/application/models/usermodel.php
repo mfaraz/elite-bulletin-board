@@ -864,7 +864,7 @@ class Usermodel extends CI_Model {
 	public function getUser($user) {
 
 		//SQL grabbing count of all topics for this board.
-		$this->db->select('id, Username, Password, salt, Email, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, warning_level, suspend_length, suspend_time')->from('ebb_users')->where('Username', $user);
+		$this->db->select('id, Username, Password, salt, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, warning_level, suspend_length, suspend_time')->from('ebb_users')->where('Username', $user);
 		$query = $this->db->get();
 		$userData = $query->row();
 
@@ -876,6 +876,7 @@ class Usermodel extends CI_Model {
 			$this->setPassword($userData->Password);
 			$this->setSalt($userData->salt);
 			$this->setEmail($userData->Email);
+			$this->setGid($userData->gid);
 			$this->setCustomTitle($userData->Custom_Title);
 			$this->setLastVisit($userData->last_visit);
 			$this->setPmNotify($userData->PM_Notify);
