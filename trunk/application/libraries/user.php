@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 03/04/2012
+ * @version 04/11/2012
 */
 
 class user{
@@ -82,11 +82,11 @@ class user{
 	 */
 	private function ValidateLoginKey($key, $type) {
 		#see what type of keyt we're validating.
-		if ($key == 0) {
+		if ($type == 0) {
 			#check against the database to see if the username match.
 			$this->ci->db->select('login_key')->from('ebb_login_session')->where('username', $this->user)->where('login_key', $key)->limit(1);
 			$validateKey = $this->ci->db->count_all_results();
-		} elseif ($key == 1) {
+		} elseif ($type == 1) {
 			#check against the database to see if the username match.
 			$this->ci->db->select('admin_key')->from('ebb_login_session')->where('username', $this->user)->where('admin_key', $key)->limit(1);
 			$validateKey = $this->ci->db->count_all_results();
@@ -105,7 +105,7 @@ class user{
 	/**
 	 * Validates current login session.
 	 * @access Public
-	 * @version 03/04/12
+	 * @version 04/11/12
 	 * @return bool
 	*/
 	public function validateLoginSession($lastActive, $loginKey, $keyType) {

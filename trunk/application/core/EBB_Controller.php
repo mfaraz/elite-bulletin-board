@@ -92,12 +92,9 @@ class EBB_Controller extends CI_Controller {
 		
 		$this->load->helper('user');
 		
-		//update online data.
-		$sessionTimeout = time() - 300;
-
 		//delete any online data from the last 3 minutes.
-		$this->db->delete('ebb_online', array('time <' => $sessionTimeout));
-
+		$this->db->delete('ebb_online', array('time <' => SESSION_TIMEOUT));
+		
 		#login setup
 		if (($this->input->cookie('ebbUser', TRUE) <> FALSE) OR ($this->session->userdata('ebbUser') <> FALSE)) {
 
@@ -107,7 +104,7 @@ class EBB_Controller extends CI_Controller {
 			} elseif ($this->session->userdata('ebbUser') <> FALSE) {
 				$ebbuser = $this->session->userdata('ebbUser');
 			} else {
-				exit(show_error('INVALID LOGIN METHOD!', 500, $this->lang->line('error')));
+				exit(show_error($this->lang->line('invalidlogin'), 500, $this->lang->line('error')));
 			} //END authenication check.
 
 			$params = array(
@@ -116,7 +113,7 @@ class EBB_Controller extends CI_Controller {
 			$this->load->library('user', $params);
 
 			//validate login session
-			if ($this->user->validateLoginSession($this->session->userdata('ebbLoginKey'), 0)){
+			if ($this->user->validateLoginSession($this->session->userdata('ebbLastActive'), $this->session->userdata('ebbLoginKey'), 0)){
 
 				//load user model.
 				$this->load->model('Usermodel');
@@ -149,7 +146,13 @@ class EBB_Controller extends CI_Controller {
 				//update user's onhline status.
 				update_whosonline_users($this->logged_user);
 			} else {
-				exit(show_error('INVALID COOKIE OR SESSION!',500, $this->lang->line('error')));
+				//session is invalid, log user out and clear session data.
+				$this->session->set_flashdata('NotifyType', 'error');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('deadsession'));
+				$this->db->where('username',$this->logged_user);
+				$this->db->delete('ebb_login_session');
+				$this->session->sess_destroy(); #clear session data.
+				redirect('/login/', 'location'); //session expired.
 			}
 		} else {
 			//guest account.

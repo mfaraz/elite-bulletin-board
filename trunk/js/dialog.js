@@ -1,6 +1,6 @@
 /**
 Filename: dialog.js
-Last Modified: 6/5/2011
+Last Modified: 04/11/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ $(document).ready(function(){
 		draggable: false,
 		open: function(event, ui) {
 			//focus on form.
-			$("#user").focus();
+			$("#username").focus();
 		},
 		close: function(event, ui) {
 			//clear form.

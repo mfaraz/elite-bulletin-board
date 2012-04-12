@@ -6,13 +6,13 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/20/2012
+ * @version 04/11/2012
 */
 
 /**
  * Displays a list of users & guest currently online.
  * @return string
- * @version 11/1/11
+ * @version 04/11/12
 */
 function whosonline() {
 
@@ -25,14 +25,15 @@ function whosonline() {
 	$onlineLogged = $ci->db->get();
 	foreach ($onlineLogged->result() as $row) {
 	    #gain status of users.
-		$params[0] = $row->Username;
-		$ci->load->library('grouppolicy', $params, 'groupsonline');
+		
+		$ci->load->model('Groupmodel', 'groupsonline');
+		$ci->groupsonline->GetGroupData($ci->gid);
 
-		if ($ci->groupsonline->groupAccessLevel() == 1){
+		if ($ci->groupsonline->getLevel() == 1){
 			$online .= '<b><a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a></b>&nbsp;';
-		}elseif ($ci->groupsonline->groupAccessLevel() == 2){
+		}elseif ($ci->groupsonline->getLevel() == 2){
 			$online .= '<i><a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a></i>&nbsp;';
-		}elseif($ci->groupsonline->groupAccessLevel() == 3){
+		}elseif($ci->groupsonline->getLevel() == 3){
 			$online .= '<a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a>&nbsp;';
 		}else{
 			$online .= '&nbsp;';
@@ -812,7 +813,7 @@ function checkBan(){
 
 	#see if user is marked as banned.
 	//TODO: this is incorrect, will need to rebuild this.
-	if($ci->groupProfile == 6){
+	if($ci->gid == 6){
 		exit(show_error($ci->lang->line('banned')));
 	}
 
@@ -830,12 +831,12 @@ function checkBan(){
 	#see if the IP of the user is banned.
 	$uip = detectProxy();
 
-	$this->ci->db->distinct('ban_item')->from('ebb_banlist')->where('ban_type', 'IP')->like('ban_item', $uip)->limit(1);
-	$banChk = $this->ci->db->count_all_results();
+	$ci->db->distinct('ban_item')->from('ebb_banlist')->where('ban_type', 'IP')->like('ban_item', $uip)->limit(1);
+	$banChk = $ci->db->count_all_results();
 
 	#output an error msg.
 	if($banChk == 1){
-		exit(show_error($this->lang->line('banned')));
+		exit(show_error($ci->lang->line('banned')));
 	}
 }
 ?>

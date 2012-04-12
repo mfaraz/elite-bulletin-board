@@ -305,7 +305,7 @@ class Login extends EBB_Controller {
 						
 						//show success message.
 						$this->session->set_flashdata('NotifyType', 'success');
-						$this->session->set_flashdata('NotifyMsg', "Logged In As: ". $this->session->userdata('ebbuser')); //$this->input->post('username', TRUE)
+						$this->session->set_flashdata('NotifyMsg', "Logged In As: ". $this->session->userdata('ebbUser')); //$this->input->post('username', TRUE)
 
 						#direct user to their previous location.
 	     				redirect('/', 'location');
