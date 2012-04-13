@@ -32,7 +32,7 @@ $lang['next'] = 'Next';
 $lang['prev'] = 'Previous';
 $lang['spamwarn'] = 'SPAMMING ATTEMPT!';
 $lang['nullspam'] = 'spam check is null.';
-$lang['deadsession'] = 'Your session has expired. Please re-login.';
+$lang['expiredsess'] = 'Your session has expired. Please re-login.';
 $lang['invalidlogin'] = 'INVALID LOGIN METHOD!';
 
 //TODO this may be considered as obsolete.

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/02/2012
+ * @version 04/12/2012
 */
 
 /**
@@ -109,17 +109,18 @@ class Preferencemodel extends CI_Model {
 	/**
 	 * Load the preference properties based on defined value.
 	 * @param string $pref Preference defined by object.
-	 * @version 1/15/12
+	 * @version 04/12/12
 	 */
 	public function GetPreferenceData($pref) {
 
 		//fetch topic data.
 		$this->db->select('pref_name, pref_value, pref_type')->from('ebb_preference')->where('pref_name', $pref)->limit(1);
 		$query = $this->db->get();
-		$PrefData = $query->row();
 
 		//see if we have any records to show.
 		if($query->num_rows() > 0) {
+			$PrefData = $query->row();
+			
 			//populate properties with values.
 			$this->setPrefName($PrefData->pref_name);
 			$this->setPrefValue($PrefData->pref_value);

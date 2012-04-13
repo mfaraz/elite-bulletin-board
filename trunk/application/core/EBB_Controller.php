@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/29/2012
+ * @version 04/12/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -134,7 +134,7 @@ class EBB_Controller extends CI_Controller {
 
 				#see if user is marked as banned.
 				if($this->Groupmodel->getPermissionType() == 6){
-					exit(show_error($ci->lang->line('banned')));
+					exit(show_error($this->lang->line('banned')));
 				}
 
 				//detect group status.
@@ -147,11 +147,11 @@ class EBB_Controller extends CI_Controller {
 				update_whosonline_users($this->logged_user);
 			} else {
 				//session is invalid, log user out and clear session data.
-				$this->session->set_flashdata('NotifyType', 'error');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('deadsession'));
-				$this->db->where('username',$this->logged_user);
+				$this->db->where('username', $ebbuser);
 				$this->db->delete('ebb_login_session');
 				$this->session->sess_destroy(); #clear session data.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', "Your session has expired. Please re-login."); //$this->lang->line('expiredsess')
 				redirect('/login/', 'location'); //session expired.
 			}
 		} else {

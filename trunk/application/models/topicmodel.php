@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/02/2012
+ * @version 04/12/2012
 */
 
 /**
@@ -695,7 +695,7 @@ class Topicmodel extends CI_Model {
 	/**
 	 * Grab topic data.
 	 * @param int $tid TopicID
-	 * @version 1/11/12
+	 * @version 04/12/12
 	 * @access public
 	 */
 	public function GetTopicData($tid) {
@@ -707,33 +707,38 @@ class Topicmodel extends CI_Model {
 		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
 		$this->db->where('tid', $tid);
 		$query = $this->db->get();
-		$TopicData = $query->row();
 
-		//populate properties with values.
-		$this->setAuthor($TopicData->author);
-		$this->setBid($TopicData->bid);
-		$this->setBody($TopicData->Body);
-		$this->setDisableBbCode($TopicData->disable_bbcode);
-		$this->setDisableSmiles($TopicData->disable_smiles);
-		$this->setImportant($TopicData->important);
-		$this->setIp($TopicData->IP);
-		$this->setLastUpdate($TopicData->last_update);
-		$this->setLocked($TopicData->Locked);
-		$this->setOriginalDate($TopicData->Original_Date);
-		$this->setPostLink($TopicData->Post_Link);
-		$this->setPostedUser($TopicData->Posted_User);
-		$this->setQuestion($TopicData->Question);
-		$this->setTiD($TopicData->tid);
-		$this->setTopic($TopicData->Topic);
-		$this->setType($TopicData->Type);
-		$this->setViews($TopicData->Views);
-		$this->setAvatar($TopicData->Avatar);
-		$this->setPostCount($TopicData->Post_Count);
-		$this->setSig($TopicData->Sig);
-		$this->setWarningLevel($TopicData->warning_level);
-		$this->setCustomTitle($TopicData->Custom_Title);
-		$this->setGroupAccess($TopicData->access_level);
-		$this->setGroupProfile($TopicData->profile);
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+		
+			$TopicData = $query->row();
+
+			//populate properties with values.
+			$this->setAuthor($TopicData->author);
+			$this->setBid($TopicData->bid);
+			$this->setBody($TopicData->Body);
+			$this->setDisableBbCode($TopicData->disable_bbcode);
+			$this->setDisableSmiles($TopicData->disable_smiles);
+			$this->setImportant($TopicData->important);
+			$this->setIp($TopicData->IP);
+			$this->setLastUpdate($TopicData->last_update);
+			$this->setLocked($TopicData->Locked);
+			$this->setOriginalDate($TopicData->Original_Date);
+			$this->setPostLink($TopicData->Post_Link);
+			$this->setPostedUser($TopicData->Posted_User);
+			$this->setQuestion($TopicData->Question);
+			$this->setTiD($TopicData->tid);
+			$this->setTopic($TopicData->Topic);
+			$this->setType($TopicData->Type);
+			$this->setViews($TopicData->Views);
+			$this->setAvatar($TopicData->Avatar);
+			$this->setPostCount($TopicData->Post_Count);
+			$this->setSig($TopicData->Sig);
+			$this->setWarningLevel($TopicData->warning_level);
+			$this->setCustomTitle($TopicData->Custom_Title);
+			$this->setGroupAccess($TopicData->access_level);
+			$this->setGroupProfile($TopicData->profile);
+		}
 	}
 
 	/**
