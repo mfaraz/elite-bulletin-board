@@ -451,7 +451,7 @@ class Boards extends EBB_Controller {
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'groupAccess' => $this->groupAccess,
-		  'LANG_PRINT' => $this->lang->line('ptitle'),
+		  'LANG_PRINT' =>  $this->lang->line('ptitle'),
 		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
 		  'TOPICID' => $id,
 		  'DISABLE_SMILES' => $disable_smiles,

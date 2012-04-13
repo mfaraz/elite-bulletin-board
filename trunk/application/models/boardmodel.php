@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/03/2012
+ * @version 04/12/2012
 */
 
 /**
@@ -436,7 +436,7 @@ class Boardmodel extends CI_Model {
     /**
      * Load Entity with values from our database.
      * @param integer $bid
-     * @version 2/3/12
+     * @version 04/12/12
      */
 	public function GetBoardSettings($bid) {
 
@@ -444,25 +444,33 @@ class Boardmodel extends CI_Model {
 		$this->db->select('id, Board, Description, last_update, Posted_User, tid, pid, last_page, type, Category, Smiles, BBCode, Post_Increment, Image, B_Order');
 		$this->db->from('ebb_boards');
 		$this->db->where('id', $bid);
-		$query = $this->db->get();
-		$BoardData = $query->row();
+		$query = $this->db->get();		
 
-        //setup property values.
-        $this->setId($BoardData->id);
-        $this->setBoard($BoardData->Board);
-        $this->setDescription($BoardData->Description);
-        $this->setLastUpdate($BoardData->last_update);
-        $this->setPostedUser($BoardData->Posted_User);
-        $this->setTiD($BoardData->tid);
-        $this->setPiD($BoardData->pid);
-        $this->setLastPage($BoardData->last_page);
-        $this->setType($BoardData->type);
-        $this->setCategory($BoardData->Category);
-        $this->setSmiles($BoardData->Smiles);
-        $this->setBbCode($BoardData->BBCode);
-        $this->setPostIncrement($BoardData->Post_Increment);
-        $this->setImage($BoardData->Image);
-        $this->setBOrder($BoardData->B_Order);
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			$BoardData = $query->row();
+			
+			//setup property values.
+			$this->setId($BoardData->id);
+			$this->setBoard($BoardData->Board);
+			$this->setDescription($BoardData->Description);
+			$this->setLastUpdate($BoardData->last_update);
+			$this->setPostedUser($BoardData->Posted_User);
+			$this->setTiD($BoardData->tid);
+			$this->setPiD($BoardData->pid);
+			$this->setLastPage($BoardData->last_page);
+			$this->setType($BoardData->type);
+			$this->setCategory($BoardData->Category);
+			$this->setSmiles($BoardData->Smiles);
+			$this->setBbCode($BoardData->BBCode);
+			$this->setPostIncrement($BoardData->Post_Increment);
+			$this->setImage($BoardData->Image);
+			$this->setBOrder($BoardData->B_Order);
+		} else {
+			//no record was found, throw an error.
+			show_error($this->lang->line('doesntexist').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			log_message('error', 'invalid BoardID was provided.'); //log error in error log.
+		}
 	}
 
 	/**

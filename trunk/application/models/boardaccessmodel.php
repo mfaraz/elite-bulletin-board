@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @verson 02/03/2012
+ * @verson 04/12/2012
 */
 
 /**
@@ -210,7 +210,7 @@ class Boardaccessmodel extends CI_Model {
 	/**
 	 * Loads Entity weith data from database.
 	 * @param int $bid BoardID
-	 * @version 2/3/12
+	 * @version 04/12/12
 	 */
 	public function GetBoardAccess($bid) {
 
@@ -219,16 +219,24 @@ class Boardaccessmodel extends CI_Model {
 		$this->db->from('ebb_board_access');
 		$this->db->where('B_id', $bid);
 		$query = $this->db->get();
-		$BoardAccessData = $query->row();
 
-		//setup property values.
-		$this->setBId($BoardAccessData->B_id);
-		$this->setBRead($BoardAccessData->B_Read);
-		$this->setBPost($BoardAccessData->B_Post);
-		$this->setBReply($BoardAccessData->B_Reply);
-		$this->setBVote($BoardAccessData->B_Vote);
-		$this->setBPoll($BoardAccessData->B_Poll);
-		$this->setBAttachment($BoardAccessData->B_Attachment);
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			$BoardAccessData = $query->row();
+			
+			//setup property values.
+			$this->setBId($BoardAccessData->B_id);
+			$this->setBRead($BoardAccessData->B_Read);
+			$this->setBPost($BoardAccessData->B_Post);
+			$this->setBReply($BoardAccessData->B_Reply);
+			$this->setBVote($BoardAccessData->B_Vote);
+			$this->setBPoll($BoardAccessData->B_Poll);
+			$this->setBAttachment($BoardAccessData->B_Attachment);
+		} else {
+			//no record was found, throw an error.
+			show_error($this->lang->line('doesntexist').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			log_message('error', 'invalid BoardID was provided.'); //log error in error log.
+		}
 	}
 
 }

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/11/2012
+ * @version 04/12/2012
 */
 
 /**
@@ -185,7 +185,7 @@ class Groupmodel extends CI_Model {
 	/**
 	 * Populate properties with data.
 	 * @param integer $gid defined GroupID assigned to logged in user.
-	 * @version 1/13/12
+	 * @version 04/12/12
 	 */
 	public function GetGroupData($gid) {
 
@@ -194,11 +194,11 @@ class Groupmodel extends CI_Model {
 		$this->db->from('ebb_groups');
 		$this->db->where('id', $gid);
 		$query = $this->db->get();
-		$GroupData = $query->row();
-
 
 		//see if we have any records to show.
 		if($query->num_rows() > 0) {
+			$GroupData = $query->row();
+			
 			$this->setId($GroupData->id);
 			$this->setName($GroupData->Name);
 			$this->setDescription($GroupData->Description);
