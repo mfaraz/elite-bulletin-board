@@ -525,8 +525,142 @@ class Boards extends EBB_Controller {
 	 * Maps to the following URL
 	 * 		http://example.com/index.php/boards/newtopic/5
 	*/
-	public function newtopic() {
+	public function newtopic($bid) {
+		// LOAD LIBRARIES
+        $this->load->library(array('encrypt', 'form_validation'));
+        $this->load->helper(array('form', 'user'));
+		
+		$this->FORM_newtopic($bid, false);
+	}
+	
+	/**
+	 * Posts new topic to DB.
+	 * @version 04/17/12
+	 * @access public
+	*/
+	public function POST_newtopic() {
+		
+	}
+	
+	/**
+	 * New Topics form.
+	 * @version 05/02/12
+	 * @access private
+	*/
+	private function FORM_newtopic($bid, $pollTopic) {
+		//load breadcrumb library
+		$this->load->library('breadcrumb');
+		
+		//get board settings.
+		$this->Boardmodel->GetBoardSettings($bid);
+		
+		// add breadcrumbs
+		$this->breadcrumb->append_crumb($this->title, '/boards/');
+		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$bid);
+		$this->breadcrumb->append_crumb($this->lang->line("posttopic"), '/boards/newtopic');
 
+		//grab board preferences.
+		$boardpref_bbcode = $this->Boardmodel->getBbCode();
+		$boardpref_smiles = $this->Boardmodel->getSmiles();
+		$boardpref_image = $this->Boardmodel->getImage();
+		
+		#see if user can mark topicsd as important.
+		if ($this->Groupmodel->ValidateAccess(1, 39)){
+			$CanImportant = TRUE;
+		} else {
+			$CanImportant = FALSE;
+		}
+		
+		#see if poll topic is enabled and user can post a poll topic.
+		if (($pollTopic) AND ($this->Groupmodel->ValidateAccess(1, 35))){
+			$CanPoll = TRUE;
+		} else {
+			$CanPoll = FALSE;
+		}
+		
+		#see if user can upload
+		if ($this->Groupmodel->ValidateAccess(1, 26)) {
+			$uploadLimit = $this->preference->getPreferenceValue("upload_limit");	
+		} else {
+			$uploadLimit = 0;
+		}
+		
+		//render to HTML.
+		echo $this->twig->render($this->style, 'newtopic', array (
+		  'boardName' => $this->title,
+		  'BOARD_URL' => $this->boardUrl,
+		  'APP_URL' => $this->boardUrl.APPPATH,
+		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'LANG' => $this->lng,
+		  'TimeFormat' => $this->timeFormat,
+		  'TimeZone' => $this->timeZone,
+		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+		  'LOGGEDUSER' => $this->logged_user,
+		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+		  'LANG_INFO' => $this->lang->line('info'),
+		  'LANG_LOGIN' => $this->lang->line('login'),
+		  'LANG_LOGOUT' => $this->lang->line('logout'),
+		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+		  'NEWTOPICFORM' => form_open('boards/POST_newtopic', array('name' => 'frmNewTopic')),
+		  'VALIDATION_USERNAME' => form_error('username'),
+		  'VALIDATION_PASSWORD' => form_error('password'),
+		  'LANG_USERNAME' => $this->lang->line('username'),
+		  'LANG_REGISTER' => $this->lang->line('register'),
+		  'LANG_PASSWORD' => $this->lang->line('pass'),
+		  'LANG_FORGOT' => $this->lang->line('forgot'),
+		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+		  'LANG_SEARCH' => $this->lang->line('search'),
+		  'LANG_CP' => $this->lang->line('admincp'),
+		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+		  'LANG_HOME' => $this->lang->line('home'),
+		  'LANG_HELP' => $this->lang->line('help'),
+		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
+		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_POWERED' => $this->lang->line('poweredby'),
+		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'BREADCRUMB' =>$this->breadcrumb->output(),
+		  "LANG_POSTINGRULES" => $this->lang->line("postingrules"),
+		  "LANG_ALLOWSMILES" => $this->lang->line("smiles"),
+		  "ALLOWSMILES" => $boardpref_smiles,
+		  "LANG_ALLOWBBCODE" => $this->lang->line("bbcode"),
+		  "ALLOWBBCODE" => $boardpref_bbcode,
+		  "LANG_ALLOWIMG" => $this->lang->line("img"),
+		  "ALLOWIMG" => $boardpref_image,
+		  "BID" => $bid,
+		  "POLLOPTION" => $pollTopic,
+		  "LANG_SMILES" => $this->lang->line("moresmiles"),
+		  "SMILES" => form_smiles(),
+		  "LANG_TOPIC" => $this->lang->line("topic"),
+		  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
+		  "LANG_CLEAR" => $this->lang->line("clearfile"),
+		  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+		  "ATTACHMENTLIMIT" => $uploadLimit,
+		  "LANG_DISABLERTF" => $this->lang->line("disablertf"),
+		  "LANG_OPTIONS" => $this->lang->line("options"),
+		  "LANG_POSTTYPE" => $this->lang->line("type"),
+		  "GAC_IMPORTANT" => $CanImportant,
+		  "LANG_IMPORTANT" => $this->lang->line("important"),
+		  "LANG_NORMAL" => $this->lang->line("normal"),
+		  "LANG_NOTIFY" => $this->lang->line("notify"),
+		  "LANG_DISABLESMILES" => $this->lang->line("disablesmiles"),
+		  "LANG_DISABLEBBCODE" => $this->lang->line("disablebbcode"),
+		  "LANG_POLL" => $this->lang->line("polltext"),
+		  "LANG_QUESTION" => $this->lang->line("question"),
+		  "LANG_OPTION1" => $this->lang->line("pollopt1"),
+		  "LANG_OPTION2" => $this->lang->line("pollopt2"),
+		  "LANG_OPTION3" => $this->lang->line("pollopt3"),
+		  "LANG_OPTION4" => $this->lang->line("pollopt4"),
+		  "LANG_OPTION5" => $this->lang->line("pollopt5"),
+		  "LANG_OPTION6" => $this->lang->line("pollopt6"),
+		  "LANG_OPTION7" => $this->lang->line("pollopt7"),
+		  "LANG-OPTION8" => $this->lang->line("pollopt8"),
+		  "LANG_OPTION9" => $this->lang->line("pollopt9"),
+		  "LANG_OPTION10" => $this->lang->line("pollopt10"),
+		  "LANG_POSTTOPIC" => $this->lang->line("posttopic")
+		));
 	}
 	
 	/**
@@ -536,7 +670,25 @@ class Boards extends EBB_Controller {
 	 * 		http://example.com/index.php/boards/reply/5
 	*/
 	public function reply($id) {
-
+		$this->FORM_reply();
+	}
+	
+	/**
+	 * Posts reply to DB.
+	 * @version 04/17/12
+	 * @access public
+	*/
+	public function POST_reply() {
+		
+	}
+	
+	/**
+	 * Reply Form.
+	 * @version 04/17/12
+	 * @access private
+	*/
+	private function FORM_reply() {
+		
 	}
 	
 	/**
@@ -550,13 +702,32 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
+	 * Cast vote to DB.
+	 * @version 04/17/12
+	 * @access public
+	*/
+	public function POST_vote() {
+		
+	}
+	
+	/**
 	 * report a topic.
 	 *
 	 * Maps to the following URL
 	 * 		http://example.com/index.php/boards/reporttopic/5
 	*/
 	public function reporttopic($id) {
-
+		$this->FORM_reporttopic($id);
+	}
+	
+	/**
+	 * Report Topic Form.
+	 * @param integer $id
+	 * @version 04/17/12
+	 * @access private
+	*/
+	private function FORM_reporttopic($id) {
+		
 	}
 	
 	/**

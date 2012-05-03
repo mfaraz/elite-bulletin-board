@@ -41,10 +41,12 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 <body>
 <!-- No javascript? let user know its required. -->
 <noscript>
-<div class="ui-widget-content">
-<p style="font-weight:bold">{{LANG_INFO}}</p>
-<p>{{LANG_JSDISABLED}}</p>
-</div>
+	<div id="loadingBackGround_nojs">
+		<div id="loadingMessage_nojs">
+			<strong>{{LANG_INFO}}</strong><br />
+			<strong>{{LANG_JSDISABLED}}</strong>
+		</div>
+	</div>
 </noscript>
 
 <!-- Used for our notification system -->

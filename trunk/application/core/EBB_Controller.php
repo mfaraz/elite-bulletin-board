@@ -149,7 +149,13 @@ class EBB_Controller extends CI_Controller {
 				//session is invalid, log user out and clear session data.
 				$this->db->where('username', $ebbuser);
 				$this->db->delete('ebb_login_session');
-				$this->session->sess_destroy(); #clear session data.
+				
+				#clear session data.				
+				$this->session->unset_userdata('ebbUser');
+				$this->session->unset_userdata('ebbLastActive');
+				$this->session->unset_userdata('ebbLoginKey');
+				
+				#set message to output to user.
 				$this->session->set_flashdata('NotifyType', 'warning');
 				$this->session->set_flashdata('NotifyMsg', "Your session has expired. Please re-login."); //$this->lang->line('expiredsess')
 				redirect('/login/', 'location'); //session expired.

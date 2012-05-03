@@ -56,5 +56,10 @@ define('SESSION_TIMEOUT', time() - 300);
  */
 define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
+/**
+ * Define PSPELL module check. 
+ */
+define('PSPELL_CHECK', (function_exists('pspell_check') ? true : false));
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
