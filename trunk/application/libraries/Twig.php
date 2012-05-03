@@ -75,7 +75,7 @@ class Twig {
 
 		#do a check to see if the styleID used is valid.
 		if($this->StyleCheck($styleID) == 0){
-			show_error('Invalid Style Selected.<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $ci->lang->line('error'));
+			show_error('Invalid Style Selected.<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->ci->lang->line('error'));
 		}else{
 			#get the style template path from the db.
 			$this->ci->db->select('Temp_Path')->from('ebb_style')->where('id', $styleID);

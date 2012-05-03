@@ -1,0 +1,185 @@
+{% extends "/simple2/master.twig" %}
+
+{% block title %}{{boardName}} - {{pageTitle}}{% endblock %}
+
+{% block bodyRender %}
+
+<script type="text/javascript" src="{{BOARD_URL}}js/jPanels.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="{{BOARD_URL}}js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="{{BOARD_URL}}js/tEditor.js"></script>
+<!-- call our collapsible panel -->
+<script type="text/javascript">
+$(function(){
+	$("#optionBox").jPanels();
+	$("#pollBox").jPanels();
+});
+</script>
+
+{{BREADCRUMB|raw}}<br />
+
+<!-- validation box. -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsgLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p id="validateRes"></p>
+		</div>
+	</div>
+</div>
+
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+<td class="ui-widget-header" align="center">{{LANG-POSTINGRULES}}</td>
+</tr><tr>
+<td class="ui-widget-content" align="center">{{LANG_ALLOWSMILES}}: <b>{{ALLOWSMILES}}</b> &nbsp;|&nbsp;{{LANG_ALLOWBBCODE}}: <b>{{ALLOWBBCODE}}</b> &nbsp;|&nbsp;{{LANG_ALLOWIMG}}: <b>{{ALLOWIMG}}</b></td>
+</tr>
+</table><br />
+
+<!-- Similar Topic results. -->
+<div style="display:none;" id="div_notice">
+	<div class="ui-widget">
+		<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_notice').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+            <div id="smloading"><img src="./template/simple2/images/smloader.gif" /></div>
+			<p><span class="ui-icon ui-icon-search" style="float: left; margin-right: .3em;"></span>
+		    <div id="similar"></div>
+		</div>
+	</div>
+</div>
+<br />
+
+<!-- warning container -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+
+<div id="moreSmiles"></div>
+<div id="DLG_upload">
+	{% if ATTACHMENTLIMIT > 0 %}
+	<form action="upload.php" method="post" enctype="multipart/form-data">
+		<input id="attach" name="attachment" type="file" /><br />
+		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
+		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
+		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
+	</form>
+	<div id="filelist"></div>
+
+	<script type="text/javascript">
+
+		$(function(){
+			$('#attach').jUploader({LoadingGfx: "template/simple2/images/loading.gif",
+				LoadingMsg: lang.attachLoading, PendingMsg: lang.attachPending,
+				SuccessMsg: lang.attachSuccess, FailureMsg: lang.attachFailed,
+				uploadLimitMsg: lang.attachLimit, uploadLimit: "{{ATTACHMENTLIMIT}}"});
+		});
+	</script>
+	{% endif %}
+</div>
+
+{{NEWTOPICFORM|raw}}
+<div align="center">
+
+<div id="emoticons" style="width:500px;" align="center">
+{{SMILES}}
+</div>
+<div class="ui-widget-header" style="width:400px;text-align:left;">
+{{LANG-TOPIC}}:&nbsp;<input type="text" name="topic" class="text" size="30" id="topic" />
+</div>
+<textarea id="body" name="post" cols="80" rows="20"></textarea>
+<br /><input type="submit" value="{{LANG_POSTTOPIC}}" class="submit" />
+
+{% if POLLOPTION == TRUE %}
+<div id="pollBox" title="{{LANG_POLL}}" style="width:400px;text-align:left;">
+	<div class="pContent">
+	{{LANG_QUESTION}}<br />
+	<input type="text" name="question" id="question" class="text" size="30" />
+	<br />
+	{{LANG_OPTION1}}<br />
+	<input type="text" name="poll_otp1" id="opt1" class="text" size="30" />
+	<br />
+	{{LANG_OPTION2}}<br />
+	<input type="text" name="poll_otp2" id="opt2" class="text" size="30" />
+	<br />
+	{{LANG_OPTION3}}<br />
+	<input type="text" name="poll_otp3" id="opt3" class="text" size="30" />
+	<br />
+	{{LANG_OPTION4}}<br />
+	<input type="text" name="poll_otp4" id="opt4" class="text" size="30" />
+	<br />
+	{{LANG_OPTION5}}<br />
+	<input type="text" name="poll_otp5" id="opt5" class="text" size="30" />
+	<br />
+	{{LANG_OPTION6}}<br />
+	<input type="text" name="poll_otp6" id="opt6" class="text" size="30" />
+	<br />
+	{{LANG_OPTION7}}<br />
+	<input type="text" name="poll_otp7" id="opt7" class="text" size="30" />
+	<br />
+	{{LANG_OPTION8}}<br />
+	<input type="text" name="poll_otp8" id="opt8" class="text" size="30" />
+	<br />
+	{{LANG_OPTION9}}<br />
+	<input type="text" name="poll_otp9" id="opt9" class="text" size="30" />
+	<br />
+	{{LANG_OPTION10}}<br />
+	<input type="text" name="poll_otp10" id="opt10" class="text" size="30" />
+	</div>
+</div><br />
+{% endif%}
+
+<div id="optionBox" title="{{LANG_OPTIONS}}" style="width:400px;text-align:left;">
+	<div class="pContent">
+	<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a><br />
+	{% if GAC_IMPORTANT == TRUE %}
+	{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" />{{LANG_NORMAL}}<br />
+	{% else %}
+	<input type="hidden" name="post_type" value="0" />
+	{% endif %}	
+	<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+	<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}<br />
+	</div>
+</div>
+<input type="hidden" name="PollTopic" value="{{POLLOPTION}}" />
+<input type="hidden" name="bid" value="{{BID}}" />
+</form><br />
+</div>
+<script type="text/javascript">
+$('#topic').focus();
+
+new FormValidator('frmNewTopic', [{
+	name: 'username',
+	display: '{{LANG_USERNAME}}',
+	rules: 'required'
+}, {
+	name: 'password',
+	display: '{{LANG_PASSWORD}}',
+	rules: 'required'
+}], function(errors, event) {
+
+	if (errors.length > 0) {
+		$('#validateRes').empty();
+		$('#validateRes').append(errors.join('<br />'));
+		$('#div_ErrMsg').show();
+	} else {
+		event.returnValue = true; //allow form to process.
+	}
+
+});
+</script>
+
+{% endblock %}

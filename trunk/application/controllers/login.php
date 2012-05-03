@@ -1,7 +1,7 @@
 <?php
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
- *  login.php
+ * login.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
