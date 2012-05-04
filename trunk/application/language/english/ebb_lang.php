@@ -15,7 +15,7 @@ $lang['login'] = 'Login';
 $lang['register'] = 'Register';
 $lang['logout'] = 'Logout';
 $lang['404'] = 'File does not exists.';
-$lang['welcome'] = 'Logged In As'; #think about renaming array to loggedinas
+$lang['loggedinas'] = 'Logged In As: ';
 $lang['welcomeguest'] = 'Welcome Guest';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
@@ -34,6 +34,7 @@ $lang['spamwarn'] = 'SPAMMING ATTEMPT!';
 $lang['nullspam'] = 'spam check is null.';
 $lang['expiredsess'] = 'Your session has expired. Please re-login.';
 $lang['invalidlogin'] = 'INVALID LOGIN METHOD!';
+$lang['alreadyloggedin'] = 'You are already logged in.';
 
 //TODO this may be considered as obsolete.
 $lang['closewindow'] = 'Close this Window';

@@ -37,9 +37,32 @@ $(function(){
 
 <table border="0" class="table" cellpadding="1" cellspacing="1">
 <tr>
-<td class="ui-widget-header" align="center">{{LANG-POSTINGRULES}}</td>
+	<td class="ui-widget-header" align="center">
+		{{LANG_POSTINGRULES}}
+	</td>
 </tr><tr>
-<td class="ui-widget-content" align="center">{{LANG_ALLOWSMILES}}: <b>{{ALLOWSMILES}}</b> &nbsp;|&nbsp;{{LANG_ALLOWBBCODE}}: <b>{{ALLOWBBCODE}}</b> &nbsp;|&nbsp;{{LANG_ALLOWIMG}}: <b>{{ALLOWIMG}}</b></td>
+	<td class="ui-widget-content" align="center">
+		{{LANG_ALLOWSMILES}}: 
+		{% if ALLOWSMILES == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+		&nbsp;|&nbsp;
+		{{LANG_ALLOWBBCODE}}:
+		{% if ALLOWBBCODE == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+		&nbsp;|&nbsp;
+		{{LANG_ALLOWIMG}}: 
+		{% if ALLOWIMG == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+	</td>
 </tr>
 </table><br />
 
@@ -94,15 +117,16 @@ $(function(){
 <div align="center">
 
 <div id="emoticons" style="width:500px;" align="center">
-{{SMILES}}
+{{SMILES|raw}}
 </div>
 <div class="ui-widget-header" style="width:400px;text-align:left;">
-{{LANG-TOPIC}}:&nbsp;<input type="text" name="topic" class="text" size="30" id="topic" />
+{{LANG_TOPIC}}:&nbsp;<input type="text" name="topic" class="text" size="30" id="topic" />
 </div>
 <textarea id="body" name="post" cols="80" rows="20"></textarea>
 <br /><input type="submit" value="{{LANG_POSTTOPIC}}" class="submit" />
 
 {% if POLLOPTION == TRUE %}
+<br /><br />
 <div id="pollBox" title="{{LANG_POLL}}" style="width:400px;text-align:left;">
 	<div class="pContent">
 	{{LANG_QUESTION}}<br />
@@ -138,14 +162,15 @@ $(function(){
 	{{LANG_OPTION10}}<br />
 	<input type="text" name="poll_otp10" id="opt10" class="text" size="30" />
 	</div>
-</div><br />
+</div>
 {% endif%}
 
+<br /><br />
 <div id="optionBox" title="{{LANG_OPTIONS}}" style="width:400px;text-align:left;">
 	<div class="pContent">
 	<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a><br />
 	{% if GAC_IMPORTANT == TRUE %}
-	{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" />{{LANG_NORMAL}}<br />
+	{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" checked=checked />{{LANG_NORMAL}}<br />
 	{% else %}
 	<input type="hidden" name="post_type" value="0" />
 	{% endif %}	
