@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/29/2012
+ * @version 05/03/2012
 */
 
 
@@ -19,192 +19,225 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Output Login Form.
-	 * @version 02/20/12
+	 * @version 05/03/12
 	 */
 	private function LoginForm() {
-		
-		//load breadcrumb library
-		$this->load->library('breadcrumb');
-		
-		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
-		
-		//render to HTML.
-		echo $this->twig->render($this->style, 'login', array (
-		  'boardName' => $this->title,
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'LOGINFORM_FULL' => form_open('login/LogIn', array('name' => 'frmLogin')),
-		  'VALIDATION_USERNAME' => form_error('username'),
-		  'VALIDATION_PASSWORD' => form_error('password'),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'BREADCRUMB' =>$this->breadcrumb->output()
-		));
+		#if Group Access property is not 0, redirect user.
+		if ($this->groupAccess <> 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+
+			#direct user to their previous location.
+			redirect('/', 'location');
+			exit();
+		} else {
+			//load breadcrumb library
+			$this->load->library('breadcrumb');
+
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+
+			//render to HTML.
+			echo $this->twig->render($this->style, 'login', array (
+			'boardName' => $this->title,
+			'BOARD_URL' => $this->boardUrl,
+			'APP_URL' => $this->boardUrl.APPPATH,
+			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+			'LANG' => $this->lng,
+			'TimeFormat' => $this->timeFormat,
+			'TimeZone' => $this->timeZone,
+			'groupAccess' => $this->groupAccess,
+			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			'LOGGEDUSER' => $this->logged_user,
+			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			'LANG_INFO' => $this->lang->line('info'),
+			'LANG_LOGIN' => $this->lang->line('login'),
+			'LANG_LOGOUT' => $this->lang->line('logout'),
+			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			'LOGINFORM_FULL' => form_open('login/LogIn', array('name' => 'frmLogin')),
+			'VALIDATION_USERNAME' => form_error('username'),
+			'VALIDATION_PASSWORD' => form_error('password'),
+			'LANG_USERNAME' => $this->lang->line('username'),
+			'LANG_REGISTER' => $this->lang->line('register'),
+			'LANG_PASSWORD' => $this->lang->line('pass'),
+			'LANG_FORGOT' => $this->lang->line('forgot'),
+			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			'LANG_SEARCH' => $this->lang->line('search'),
+			'LANG_CP' => $this->lang->line('admincp'),
+			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			'LANG_HOME' => $this->lang->line('home'),
+			'LANG_HELP' => $this->lang->line('help'),
+			'LANG_MEMBERLIST' => $this->lang->line('profile'),
+			'LANG_PROFILE' => $this->lang->line('logout'),
+			'LANG_POWERED' => $this->lang->line('poweredby'),
+			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			'BREADCRUMB' =>$this->breadcrumb->output()
+			));
+		}
 	}
 	
 	/**
 	 * Outputs Password Recovery Form
-	 * @version 02/20/12
+	 * @version 05/03/12
 	 */
 	private function PwdRecoverForm() {
-		
-		//load breadcrumb library
-		$this->load->library('breadcrumb');
-		
-		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
-		$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
-		
-		//render to HTML.
-		echo $this->twig->render($this->style, 'lostpassword', array (
-		  'boardName' => $this->title,
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'PWDRECOVERFORM' => form_open('login/PasswordRecoverySubmit'),
-		  'VALIDATION_USERNAME' => form_error('lost_user'),
-		  'VALIDATION_EMAIL' => form_error('lost_email'),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'BREADCRUMB' =>$this->breadcrumb->output(),
-		  'LANG_EMAIL' => $this->lang->line('email'),
-		  'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
-		  'LANG_GETPASS' => $this->lang->line('getpassword')
-		));
+		#if Group Access property is not 0, redirect user.
+		if ($this->groupAccess <> 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+
+			#direct user to their previous location.
+			redirect('/', 'location');
+			exit();
+		} else {
+			//load breadcrumb library
+			$this->load->library('breadcrumb');
+
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+			$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
+
+			//render to HTML.
+			echo $this->twig->render($this->style, 'lostpassword', array (
+			'boardName' => $this->title,
+			'BOARD_URL' => $this->boardUrl,
+			'APP_URL' => $this->boardUrl.APPPATH,
+			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+			'LANG' => $this->lng,
+			'TimeFormat' => $this->timeFormat,
+			'TimeZone' => $this->timeZone,
+			'groupAccess' => $this->groupAccess,
+			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			'LOGGEDUSER' => $this->logged_user,
+			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			'LANG_INFO' => $this->lang->line('info'),
+			'LANG_LOGIN' => $this->lang->line('login'),
+			'LANG_LOGOUT' => $this->lang->line('logout'),
+			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			'PWDRECOVERFORM' => form_open('login/PasswordRecoverySubmit'),
+			'VALIDATION_USERNAME' => form_error('lost_user'),
+			'VALIDATION_EMAIL' => form_error('lost_email'),
+			'LANG_USERNAME' => $this->lang->line('username'),
+			'LANG_REGISTER' => $this->lang->line('register'),
+			'LANG_PASSWORD' => $this->lang->line('pass'),
+			'LANG_FORGOT' => $this->lang->line('forgot'),
+			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			'LANG_SEARCH' => $this->lang->line('search'),
+			'LANG_CP' => $this->lang->line('admincp'),
+			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			'LANG_HOME' => $this->lang->line('home'),
+			'LANG_HELP' => $this->lang->line('help'),
+			'LANG_MEMBERLIST' => $this->lang->line('profile'),
+			'LANG_PROFILE' => $this->lang->line('logout'),
+			'LANG_POWERED' => $this->lang->line('poweredby'),
+			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			'BREADCRUMB' =>$this->breadcrumb->output(),
+			'LANG_EMAIL' => $this->lang->line('email'),
+			'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
+			'LANG_GETPASS' => $this->lang->line('getpassword')
+			));
+		}
 	}
 	
 	/**
 	 * Registration Form.
-	 * @version 02/20/12
+	 * @version 05/03/12
 	 */
 	private function registerForm() {
-		
-		//load breadcrumb library
-		$this->load->library('breadcrumb');
-		
-		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
-		
-		//render to HTML.
-		echo $this->twig->render($this->style, 'register', array (
-		  'boardName' => $this->title,
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'REGISTERFORM' => form_open('login/CreateUser', array('name' => 'frmRegister')),
-		  'VALIDATION_USERNAME' => form_error('lost_user'),
-		  'VALIDATION_EMAIL' => form_error('lost_email'),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'BREADCRUMB' =>$this->breadcrumb->output(),
-		  'LANG_EMAIL' => $this->lang->line('email'),
-		  'LANG_RULE' => $this->lang->line('nospecialchar'),
-		  'LANG_CONFIRMPWD' => $this->lang->line('confirmpass'),
-		  'LANG_TIME' => $this->lang->line('timezone'),
-		  'LANG_TIMEFORMAT' => $this->lang->line('timeformat'),
-		  'TIMEFORMAT' => $this->timeFormat,
-		  'LANG_TIMEINFO' => $this->lang->line('timeinfo'),
-		  'LANG_PMNOTIFY' => $this->lang->line('pm_notify'),
-		  'LANG_SHOWEMAIL' => $this->lang->line('showemail'),
-		  'LANG_YES' => $this->lang->line('yes'),
-		  'LANG_NO' => $this->lang->line('no'),
-		  'LANG_STYLE' => $this->lang->line('style'),
-		  'STYLE' => ThemeList($this->style),
-		  'LANG_LANGUAGE' => $this->lang->line('defaultlang'),
-		  'LANGUAGE' => LanguageList($this->lng),
-		  'LANG_CAPTCHA' => $this->lang->line('captcha'),
-		  'LANG_CAPTCHAHELP' => $this->lang->line('securitynotice'),
-		  'LANG_RELOAD' => $this->lang->line('reloadimg'),
-		  'LANG_AGREE' => $this->lang->line('agree'),
-		  'PREF_RULES' => $this->preference->getPreferenceValue('rules_status'),
-		  'RULES' => $this->preference->getPreferenceValue('rules'),
-		  'COPPA' => $this->preference->getPreferenceValue("coppa"),
-		  'COPPA_13' => $this->lang->line('coppa13'),
-		  'COPPA_16' => $this->lang->line('coppa16'),
-		  'COPPA_18' => $this->lang->line('coppa18'),
-		  'COPPA_21' => $this->lang->line('coppa21'),
-		  'CAPTCHA' => GenerateCaptchaQuestion()
-		));
+		#if Group Access property is not 0, redirect user.
+		if ($this->groupAccess <> 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+
+			#direct user to their previous location.
+			redirect('/', 'location');
+			exit();
+		} else {
+			//load breadcrumb library
+			$this->load->library('breadcrumb');
+
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
+
+			//render to HTML.
+			echo $this->twig->render($this->style, 'register', array (
+			'boardName' => $this->title,
+			'BOARD_URL' => $this->boardUrl,
+			'APP_URL' => $this->boardUrl.APPPATH,
+			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+			'LANG' => $this->lng,
+			'TimeFormat' => $this->timeFormat,
+			'TimeZone' => $this->timeZone,
+			'groupAccess' => $this->groupAccess,
+			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			'LOGGEDUSER' => $this->logged_user,
+			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			'LANG_INFO' => $this->lang->line('info'),
+			'LANG_LOGIN' => $this->lang->line('login'),
+			'LANG_LOGOUT' => $this->lang->line('logout'),
+			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			'REGISTERFORM' => form_open('login/CreateUser', array('name' => 'frmRegister')),
+			'VALIDATION_USERNAME' => form_error('lost_user'),
+			'VALIDATION_EMAIL' => form_error('lost_email'),
+			'LANG_USERNAME' => $this->lang->line('username'),
+			'LANG_REGISTER' => $this->lang->line('register'),
+			'LANG_PASSWORD' => $this->lang->line('pass'),
+			'LANG_FORGOT' => $this->lang->line('forgot'),
+			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			'LANG_SEARCH' => $this->lang->line('search'),
+			'LANG_CP' => $this->lang->line('admincp'),
+			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			'LANG_HOME' => $this->lang->line('home'),
+			'LANG_HELP' => $this->lang->line('help'),
+			'LANG_MEMBERLIST' => $this->lang->line('profile'),
+			'LANG_PROFILE' => $this->lang->line('logout'),
+			'LANG_POWERED' => $this->lang->line('poweredby'),
+			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			'BREADCRUMB' =>$this->breadcrumb->output(),
+			'LANG_EMAIL' => $this->lang->line('email'),
+			'LANG_RULE' => $this->lang->line('nospecialchar'),
+			'LANG_CONFIRMPWD' => $this->lang->line('confirmpass'),
+			'LANG_TIME' => $this->lang->line('timezone'),
+			'LANG_TIMEFORMAT' => $this->lang->line('timeformat'),
+			'TIMEFORMAT' => $this->timeFormat,
+			'LANG_TIMEINFO' => $this->lang->line('timeinfo'),
+			'LANG_PMNOTIFY' => $this->lang->line('pm_notify'),
+			'LANG_SHOWEMAIL' => $this->lang->line('showemail'),
+			'LANG_YES' => $this->lang->line('yes'),
+			'LANG_NO' => $this->lang->line('no'),
+			'LANG_STYLE' => $this->lang->line('style'),
+			'STYLE' => ThemeList($this->style),
+			'LANG_LANGUAGE' => $this->lang->line('defaultlang'),
+			'LANGUAGE' => LanguageList($this->lng),
+			'LANG_CAPTCHA' => $this->lang->line('captcha'),
+			'LANG_CAPTCHAHELP' => $this->lang->line('securitynotice'),
+			'LANG_RELOAD' => $this->lang->line('reloadimg'),
+			'LANG_AGREE' => $this->lang->line('agree'),
+			'PREF_RULES' => $this->preference->getPreferenceValue('rules_status'),
+			'RULES' => $this->preference->getPreferenceValue('rules'),
+			'COPPA' => $this->preference->getPreferenceValue("coppa"),
+			'COPPA_13' => $this->lang->line('coppa13'),
+			'COPPA_16' => $this->lang->line('coppa16'),
+			'COPPA_18' => $this->lang->line('coppa18'),
+			'COPPA_21' => $this->lang->line('coppa21'),
+			'CAPTCHA' => GenerateCaptchaQuestion()
+			));
+		}
 	}
 
 
@@ -305,7 +338,7 @@ class Login extends EBB_Controller {
 						
 						//show success message.
 						$this->session->set_flashdata('NotifyType', 'success');
-						$this->session->set_flashdata('NotifyMsg', "Logged In As: ". $this->session->userdata('ebbUser')); //$this->input->post('username', TRUE)
+						$this->session->set_flashdata('NotifyMsg', $this->lang->line('loggedinas'). $this->session->userdata('ebbUser'));
 
 						#direct user to their previous location.
 	     				redirect('/', 'location');

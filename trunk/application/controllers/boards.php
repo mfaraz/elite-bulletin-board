@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/20/2012
+ * @version 05/03/2012
 */
 
 /**
@@ -81,7 +81,7 @@ class Boards extends EBB_Controller {
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
@@ -231,7 +231,7 @@ class Boards extends EBB_Controller {
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
@@ -427,7 +427,7 @@ class Boards extends EBB_Controller {
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
@@ -534,6 +534,20 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
+	 * post new topic poll on board.
+	 *
+	 * Maps to the following URL
+	 * 		http://example.com/index.php/boards/newpoll/5
+	*/
+	public function newpoll($bid) {
+		// LOAD LIBRARIES
+        $this->load->library(array('encrypt', 'form_validation'));
+        $this->load->helper(array('form', 'user'));
+		
+		$this->FORM_newtopic($bid, true);
+	}
+	
+	/**
 	 * Posts new topic to DB.
 	 * @version 04/17/12
 	 * @access public
@@ -544,7 +558,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * New Topics form.
-	 * @version 05/02/12
+	 * @version 05/03/12
 	 * @access private
 	*/
 	private function FORM_newtopic($bid, $pollTopic) {
@@ -595,7 +609,8 @@ class Boards extends EBB_Controller {
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('welcome'),
+		  'groupAccess' => $this->groupAccess,
+		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
@@ -623,6 +638,8 @@ class Boards extends EBB_Controller {
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'BREADCRUMB' =>$this->breadcrumb->output(),
 		  "LANG_POSTINGRULES" => $this->lang->line("postingrules"),
+		  "LANG_YES" => $this->lang->line("yes"),
+		  "LANG_NO" => $this->lang->line("no"),
 		  "LANG_ALLOWSMILES" => $this->lang->line("smiles"),
 		  "ALLOWSMILES" => $boardpref_smiles,
 		  "LANG_ALLOWBBCODE" => $this->lang->line("bbcode"),
@@ -656,7 +673,7 @@ class Boards extends EBB_Controller {
 		  "LANG_OPTION5" => $this->lang->line("pollopt5"),
 		  "LANG_OPTION6" => $this->lang->line("pollopt6"),
 		  "LANG_OPTION7" => $this->lang->line("pollopt7"),
-		  "LANG-OPTION8" => $this->lang->line("pollopt8"),
+		  "LANG_OPTION8" => $this->lang->line("pollopt8"),
 		  "LANG_OPTION9" => $this->lang->line("pollopt9"),
 		  "LANG_OPTION10" => $this->lang->line("pollopt10"),
 		  "LANG_POSTTOPIC" => $this->lang->line("posttopic")
