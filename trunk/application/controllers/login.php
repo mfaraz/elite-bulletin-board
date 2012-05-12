@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/03/2012
+ * @version 05/11/2012
 */
 
 
@@ -16,76 +16,13 @@ class Login extends EBB_Controller {
  		parent::__construct();
 		$this->load->helper(array('common', 'posting'));
 	}
-	
-	/**
-	 * Output Login Form.
-	 * @version 05/03/12
-	 */
-	private function LoginForm() {
-		#if Group Access property is not 0, redirect user.
-		if ($this->groupAccess <> 0) {
-			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
 
-			#direct user to their previous location.
-			redirect('/', 'location');
-			exit();
-		} else {
-			//load breadcrumb library
-			$this->load->library('breadcrumb');
-
-			// add breadcrumbs
-			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
-
-			//render to HTML.
-			echo $this->twig->render($this->style, 'login', array (
-			'boardName' => $this->title,
-			'BOARD_URL' => $this->boardUrl,
-			'APP_URL' => $this->boardUrl.APPPATH,
-			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-			'LANG' => $this->lng,
-			'TimeFormat' => $this->timeFormat,
-			'TimeZone' => $this->timeZone,
-			'groupAccess' => $this->groupAccess,
-			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-			'LOGGEDUSER' => $this->logged_user,
-			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-			'LANG_INFO' => $this->lang->line('info'),
-			'LANG_LOGIN' => $this->lang->line('login'),
-			'LANG_LOGOUT' => $this->lang->line('logout'),
-			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-			'LOGINFORM_FULL' => form_open('login/LogIn', array('name' => 'frmLogin')),
-			'VALIDATION_USERNAME' => form_error('username'),
-			'VALIDATION_PASSWORD' => form_error('password'),
-			'LANG_USERNAME' => $this->lang->line('username'),
-			'LANG_REGISTER' => $this->lang->line('register'),
-			'LANG_PASSWORD' => $this->lang->line('pass'),
-			'LANG_FORGOT' => $this->lang->line('forgot'),
-			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-			'LANG_SEARCH' => $this->lang->line('search'),
-			'LANG_CP' => $this->lang->line('admincp'),
-			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-			'LANG_HOME' => $this->lang->line('home'),
-			'LANG_HELP' => $this->lang->line('help'),
-			'LANG_MEMBERLIST' => $this->lang->line('profile'),
-			'LANG_PROFILE' => $this->lang->line('logout'),
-			'LANG_POWERED' => $this->lang->line('poweredby'),
-			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-			'BREADCRUMB' =>$this->breadcrumb->output()
-			));
-		}
-	}
-	
 	/**
 	 * Outputs Password Recovery Form
-	 * @version 05/03/12
+	 * @version 05/10/12
+	 * @access private
 	 */
-	private function PwdRecoverForm() {
+	private function _PwdRecoverForm() {
 		#if Group Access property is not 0, redirect user.
 		if ($this->groupAccess <> 0) {
 			//show success message.
@@ -137,8 +74,8 @@ class Login extends EBB_Controller {
 			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
 			'LANG_HOME' => $this->lang->line('home'),
 			'LANG_HELP' => $this->lang->line('help'),
-			'LANG_MEMBERLIST' => $this->lang->line('profile'),
-			'LANG_PROFILE' => $this->lang->line('logout'),
+			'LANG_MEMBERLIST' => $this->lang->line('members'),
+			'LANG_PROFILE' => $this->lang->line('profile'),
 			'LANG_POWERED' => $this->lang->line('poweredby'),
 			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 			'BREADCRUMB' =>$this->breadcrumb->output(),
@@ -150,98 +87,6 @@ class Login extends EBB_Controller {
 	}
 	
 	/**
-	 * Registration Form.
-	 * @version 05/03/12
-	 */
-	private function registerForm() {
-		#if Group Access property is not 0, redirect user.
-		if ($this->groupAccess <> 0) {
-			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
-
-			#direct user to their previous location.
-			redirect('/', 'location');
-			exit();
-		} else {
-			//load breadcrumb library
-			$this->load->library('breadcrumb');
-
-			// add breadcrumbs
-			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
-
-			//render to HTML.
-			echo $this->twig->render($this->style, 'register', array (
-			'boardName' => $this->title,
-			'BOARD_URL' => $this->boardUrl,
-			'APP_URL' => $this->boardUrl.APPPATH,
-			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-			'LANG' => $this->lng,
-			'TimeFormat' => $this->timeFormat,
-			'TimeZone' => $this->timeZone,
-			'groupAccess' => $this->groupAccess,
-			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-			'LOGGEDUSER' => $this->logged_user,
-			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-			'LANG_INFO' => $this->lang->line('info'),
-			'LANG_LOGIN' => $this->lang->line('login'),
-			'LANG_LOGOUT' => $this->lang->line('logout'),
-			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-			'REGISTERFORM' => form_open('login/CreateUser', array('name' => 'frmRegister')),
-			'VALIDATION_USERNAME' => form_error('lost_user'),
-			'VALIDATION_EMAIL' => form_error('lost_email'),
-			'LANG_USERNAME' => $this->lang->line('username'),
-			'LANG_REGISTER' => $this->lang->line('register'),
-			'LANG_PASSWORD' => $this->lang->line('pass'),
-			'LANG_FORGOT' => $this->lang->line('forgot'),
-			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-			'LANG_SEARCH' => $this->lang->line('search'),
-			'LANG_CP' => $this->lang->line('admincp'),
-			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-			'LANG_HOME' => $this->lang->line('home'),
-			'LANG_HELP' => $this->lang->line('help'),
-			'LANG_MEMBERLIST' => $this->lang->line('profile'),
-			'LANG_PROFILE' => $this->lang->line('logout'),
-			'LANG_POWERED' => $this->lang->line('poweredby'),
-			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-			'BREADCRUMB' =>$this->breadcrumb->output(),
-			'LANG_EMAIL' => $this->lang->line('email'),
-			'LANG_RULE' => $this->lang->line('nospecialchar'),
-			'LANG_CONFIRMPWD' => $this->lang->line('confirmpass'),
-			'LANG_TIME' => $this->lang->line('timezone'),
-			'LANG_TIMEFORMAT' => $this->lang->line('timeformat'),
-			'TIMEFORMAT' => $this->timeFormat,
-			'LANG_TIMEINFO' => $this->lang->line('timeinfo'),
-			'LANG_PMNOTIFY' => $this->lang->line('pm_notify'),
-			'LANG_SHOWEMAIL' => $this->lang->line('showemail'),
-			'LANG_YES' => $this->lang->line('yes'),
-			'LANG_NO' => $this->lang->line('no'),
-			'LANG_STYLE' => $this->lang->line('style'),
-			'STYLE' => ThemeList($this->style),
-			'LANG_LANGUAGE' => $this->lang->line('defaultlang'),
-			'LANGUAGE' => LanguageList($this->lng),
-			'LANG_CAPTCHA' => $this->lang->line('captcha'),
-			'LANG_CAPTCHAHELP' => $this->lang->line('securitynotice'),
-			'LANG_RELOAD' => $this->lang->line('reloadimg'),
-			'LANG_AGREE' => $this->lang->line('agree'),
-			'PREF_RULES' => $this->preference->getPreferenceValue('rules_status'),
-			'RULES' => $this->preference->getPreferenceValue('rules'),
-			'COPPA' => $this->preference->getPreferenceValue("coppa"),
-			'COPPA_13' => $this->lang->line('coppa13'),
-			'COPPA_16' => $this->lang->line('coppa16'),
-			'COPPA_18' => $this->lang->line('coppa18'),
-			'COPPA_21' => $this->lang->line('coppa21'),
-			'CAPTCHA' => GenerateCaptchaQuestion()
-			));
-		}
-	}
-
-
-	/**
 	  * Index Page for this controller.
 	  * @version 10/11/11
 	  * Maps to the following URL
@@ -251,19 +96,14 @@ class Login extends EBB_Controller {
 	  * @see http://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index() {
-
-		// LOAD LIBRARIES
-        $this->load->helper('form');		
-		
-		//show login form.
-		$this->LoginForm();
-		
+		redirect('/login/Login', 'location'); //redirect user to login form.
 	}
 	
 	/**
-	  * Processes login form and logs user in.
-	 *  @version 02/29/12
-	 */
+	 * Processes login form and logs user in.
+	 * @version 05/07/12
+	 * @access public
+	*/
 	public function LogIn() {
 
     	// LOAD LIBRARIES
@@ -272,12 +112,66 @@ class Login extends EBB_Controller {
 
         $this->form_validation->set_rules('username', $this->lang->line('nouser'), 'required');
         $this->form_validation->set_rules('password', $this->lang->line('nopass'), 'required');
-        $this->form_validation->set_error_delimiters('<div class="ui-state-error">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
 
 		//see if any validation rules failed.
 		if ($this->form_validation->run() == FALSE) {
-			//show login form.
-			$this->LoginForm();
+			#if Group Access property is not 0, redirect user.
+			if ($this->groupAccess <> 0) {
+				//show success message.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+
+				#direct user to their previous location.
+				redirect('/', 'location');
+				exit();
+			} else {
+				//load breadcrumb library
+				$this->load->library('breadcrumb');
+
+				// add breadcrumbs
+				$this->breadcrumb->append_crumb($this->title, '/boards/');
+				$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'login', array (
+				'boardName' => $this->title,
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->notifyType,
+				'NOTIFY_MSG' =>  $this->notifyMsg,
+				'LANG' => $this->lng,
+				'TimeFormat' => $this->timeFormat,
+				'TimeZone' => $this->timeZone,
+				'groupAccess' => $this->groupAccess,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'LOGINFORM_FULL' => form_open('login/LogIn', array('name' => 'frmLogin')),
+				'VALIDATION_USERNAME' => form_error('username'),
+				'VALIDATION_PASSWORD' => form_error('password'),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'BREADCRUMB' =>$this->breadcrumb->output()
+				));
+			}
 		} else {
 
             //setup login object.
@@ -298,7 +192,7 @@ class Login extends EBB_Controller {
 				    $this->session->set_flashdata('NotifyType', 'error');
 					$this->session->set_flashdata('NotifyMsg', $this->lang->line('inactiveuser'));
 
-					redirect('/login/', 'location');
+					redirect('/login/LogIn', 'location');
 				} else {
 				
 					#see if board is disabled.
@@ -358,7 +252,7 @@ class Login extends EBB_Controller {
      				$this->session->set_flashdata('NotifyMsg', $this->lang->line('lockeduser'));
 
 					#direct user.
-     				redirect('/login/', 'location');
+     				redirect('/login/LogIn', 'location');
 				}else{
 				    #add to failed login count.
 					$this->auth->setFailedLogin();
@@ -368,7 +262,7 @@ class Login extends EBB_Controller {
                     $this->session->set_flashdata('NotifyMsg', $this->lang->line('invalidlogin'));
 
 					#direct user.
-     				redirect('/login/', 'location');
+     				redirect('/login/LogIn', 'location');
 				}
 			} //END login validation.
 			
@@ -384,7 +278,7 @@ class Login extends EBB_Controller {
 	}
 	
 	/**
-	 * Password recovery View.
+	 * Password recovery View. Also validate & process lost password request.
 	 * @version 10/12/11
 	 * Maps to the following URL
 	 * http://example.com/index.php/login/PasswordRecovery
@@ -394,55 +288,395 @@ class Login extends EBB_Controller {
 
 		// LOAD LIBRARIES
         $this->load->helper('form');
-		$this->PwdRecoverForm();
-
-	}
-	
-	/**
-	 * Validate & process lost password request.
-	 * @version 10/11/11
-	*/
-	public function PasswordRecoverySubmit() {
-
+		$this->_PwdRecoverForm();
 
 	}
 
     /**
 	 * Logs user out and clears all active login sessions.
-	 * @version 10/11/11
+	 * @version 05/11/12
 	*/
 	public function LogOut() {
 
+		//session is invalid, log user out and clear session data.
+		$this->db->where('username', $this->logged_user);
+		$this->db->delete('ebb_login_session');
+		
+		//clear online status session.
+		$this->db->delete('ebb_online', array('Username' => $this->logged_user));
+
+		#clear session data.				
+		$this->session->unset_userdata('ebbUser');
+		$this->session->unset_userdata('ebbLastActive');
+		$this->session->unset_userdata('ebbLoginKey');
+		
+		#direct user.
+		redirect('/', 'location');
 
 	}
-	
+
 	/**
-	 * Create New User View.
-	 * @version 10/11/11
+	 * Create New User form submit action.
+	 * @version 05/11/12
+	 * @access public
 	 * Maps to the following URL
 	 * http://example.com/index.php/login/register	 
 	 * @see http://codeigniter.com/user_guide/general/urls.html
 	*/
 	public function register() {
-		// LOAD LIBRARIES
-        $this->load->helper('form');
+
+		//LOAD LIBRARIES
+        $this->load->library(array('encrypt', 'email', 'form_validation'));
+        $this->load->helper(array('form', 'user'));
+
+		//setup validation rules.
+        $this->form_validation->set_rules('username', $this->lang->line('username'), 'required|alpha_numeric|callback_ValidateUserName|xss_clean');
+        $this->form_validation->set_rules('password', $this->lang->line('password'), 'required|xss_clean');
+		$this->form_validation->set_rules('password_confirm', $this->lang->line('confirmpass'), 'required|matches[password]|xss_clean');
+		$this->form_validation->set_rules('email', $this->lang->line('email'), 'required|valid_email|xss_clean'); //callback_ValidateEmail|
+		$this->form_validation->set_rules('time_format', $this->lang->line('timeformat'), 'required|xss_clean');
+		$this->form_validation->set_rules('time_zone', $this->lang->line('timezone'), 'required|xss_clean');
+		$this->form_validation->set_rules('language', $this->lang->line('nolang'), 'required|xss_clean');
+		$this->form_validation->set_rules('style', $this->lang->line('style'), 'required|numeric|xss_clean');
+		$this->form_validation->set_rules('captcha', $this->lang->line('captcha'), 'required|numeric|callback_ValidateCaptcha|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			#if Group Access property is not 0, redirect user.
+			if ($this->groupAccess <> 0) {
+				//show success message.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyreg'));
+
+				#direct user to their previous location.
+				redirect('/', 'location');
+				exit();
+			} else {
+				//load breadcrumb library
+				$this->load->library('breadcrumb');
+				$this->load->helper('user');
+
+				// add breadcrumbs
+				$this->breadcrumb->append_crumb($this->title, '/boards/');
+				$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'register', array (
+				'boardName' => $this->title,
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->notifyType,
+				'NOTIFY_MSG' =>  $this->notifyMsg,
+				'LANG' => $this->lng,
+				'TimeFormat' => $this->timeFormat,
+				'TimeZone' => TimeZoneList($this->timeZone),
+				'groupAccess' => $this->groupAccess,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'REGISTERFORM' => form_open('login/register', array('name' => 'frmRegister')),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'VALIDATION_USERNAME' => form_error('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'VALIDATION_PASSWORD' => form_error('password'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'BREADCRUMB' =>$this->breadcrumb->output(),
+				'LANG_EMAIL' => $this->lang->line('email'),
+				'VALIDATION_EMAIL' => form_error('email'),
+				'LANG_RULE' => $this->lang->line('nospecialchar'),
+				'LANG_CONFIRMPWD' => $this->lang->line('confirmpass'),
+				'VALIDATION_VPASSWORD' => form_error('password_confirm'),
+				'LANG_TIME' => $this->lang->line('timezone'),
+				'VALIDATION_TIMEZONE' => form_error('time_zone'),
+				'LANG_TIMEFORMAT' => $this->lang->line('timeformat'),
+				'TIMEFORMAT' => $this->timeFormat,
+				'VALIDATION_TIMEFORMAT' => form_error('time_format'),
+				'LANG_TIMEINFO' => $this->lang->line('timeinfo'),
+				'LANG_PMNOTIFY' => $this->lang->line('pm_notify'),
+				'LANG_SHOWEMAIL' => $this->lang->line('showemail'),
+				'LANG_YES' => $this->lang->line('yes'),
+				'LANG_NO' => $this->lang->line('no'),
+				'LANG_STYLE' => $this->lang->line('style'),
+				'STYLE' => ThemeList($this->style),
+				'VALIDATION_STYLE' => form_error('style'),
+				'LANG_LANGUAGE' => $this->lang->line('defaultlang'),
+				'LANGUAGE' => LanguageList($this->lng),
+				'VALIDATION_LANGUAGE' => form_error('language'),
+				'LANG_CAPTCHA' => $this->lang->line('captcha'),
+				'LANG_CAPTCHAHELP' => $this->lang->line('securitynotice'),
+				'VALIDATION_CAPTCHA' => form_error('captcha'),
+				'LANG_AGREE' => $this->lang->line('agree'),
+				'PREF_RULES' => $this->preference->getPreferenceValue('rules_status'),
+				'RULES' => $this->preference->getPreferenceValue('rules'),
+				'PREF_COPPA' => $this->preference->getPreferenceValue("coppa"),
+				'COPPA_13' => $this->lang->line('coppa13'),
+				'COPPA_16' => $this->lang->line('coppa16'),
+				'COPPA_18' => $this->lang->line('coppa18'),
+				'COPPA_21' => $this->lang->line('coppa21'),
+				'LANG_COPPA' => $this->lang->line('coppavalidate'),
+				'PREF_CAPTCHA' => $this->preference->getPreferenceValue("captcha"),
+				'CAPTCHA' => GenerateCaptchaQuestion()
+				));
+			}
+		} else {
+			//get values from form.
+			$email = $this->input->post('email', TRUE);
+			$username = $this->input->post('username', TRUE);
+			$password = $this->input->post('password', TRUE);
+			$time_zone = $this->input->post('time_zone', TRUE);
+			$time_format = $this->input->post('time_format', TRUE);
+			$pm_notice = $this->input->post('pm_notice', TRUE);
+			$show_email = $this->input->post('show_email', TRUE);
+			$ustyle = $this->input->post('style', TRUE);
+			$default_lang = $this->input->post('language', TRUE);
 		
-		$this->registerForm();
+			#clear session data.
+			$this->session->unset_userdata('CAPTCHA_Ans');
+			
+			//see if activation is set to either User or Admin.
+			if($this->preference->getPreferenceValue("activation") == "User"){
+				$active_stat = 0;
+				$act_key = md5(makeRandomPassword());
+			}elseif($this->preference->getPreferenceValue("activation") == "Admin"){
+				$active_stat = 0;
+				$act_key = '';
+			}else{
+				$active_stat = 1;
+				$act_key = '';
+			}
+			
+			//see if user is assigned to a special group.
+			$newuser_gid = $this->preference->getPreferenceValue("userstat");
+			
+			//create blowfish hash.
+			$hash = makeHash($password);
+			
+			//load user model.
+			$this->load->model('Usermodel');
+			
+			//populate model.
+			$this->Usermodel->setUserName($username);
+			$this->Usermodel->setPassword($hash);
+			$this->Usermodel->setEmail($email);
+			$this->Usermodel->setGid($newuser_gid); //this will be dynamic soon!
+			$this->Usermodel->setCustomTitle(null);
+			$this->Usermodel->setLastVisit(null);
+			$this->Usermodel->setPmNotify($pm_notice);
+			$this->Usermodel->setHideEmail($show_email);
+			$this->Usermodel->setMSn(null);
+			$this->Usermodel->setAol(null);
+			$this->Usermodel->setYahoo(null);
+			$this->Usermodel->setIcq(null);
+			$this->Usermodel->setWww(null);
+			$this->Usermodel->setLocation(null);
+			$this->Usermodel->setAvatar(null);
+			$this->Usermodel->setSig(null);
+			$this->Usermodel->setTimeFormat($time_format);
+			$this->Usermodel->setTimeZone($time_zone);
+			$this->Usermodel->setDateJoined(time());
+			$this->Usermodel->setIp(detectProxy());
+			$this->Usermodel->setStyle($ustyle);
+			$this->Usermodel->setLanguage($default_lang);
+			$this->Usermodel->setPostCount(0);
+			$this->Usermodel->setLastPost(null);
+			$this->Usermodel->setLastSearch(null);
+			$this->Usermodel->setFailedAttempts(0);
+			$this->Usermodel->setActive($active_stat);
+			$this->Usermodel->setActKey($act_key);
+			$this->Usermodel->setWarningLevel(0);
+			$this->Usermodel->setSuspendLength(0);
+			$this->Usermodel->setSuspendTime(null);
+			
+			#insert user to DB.
+			$this->Usermodel->CreateUser();
+			
+			#email user.
+			$config = array();
+			if ($this->preference->getPreferenceValue("mail_type") == 2) {
+				$config['protocol'] = 'sendmail';
+				$config['mailpath'] = $this->preference->getPreferenceValue("sendmail_path");
+				$this->email->initialize($config);
+			} elseif ($this->preference->getPreferenceValue("mail_type") == 0) {
+				$config['protocol'] = 'smtp';
+				$config['smtp_host'] = $this->preference->getPreferenceValue("smtp_host");
+				$config['smtp_user'] = $this->preference->getPreferenceValue("smtp_user");
+				$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
+				$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
+				$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
+			}
+			
+			if ($this->preference->getPreferenceValue("activation") == "None") {
+				//send out email.        	
+				$this->email->to($email);
+				$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+				$this->email->subject($this->lang->line('nonesubject').' '.$this->title);
+				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_none_confirm.twig', array(
+				  'USERNAME' => $username,
+				  'TITLE' => $this->title,
+				  'BOARDADDR' => $this->boardUrl
+				)));
+				
+				//send out email.
+				$this->email->send();
+				
+				#let user know their account is created.
+				$this->session->set_flashdata('NotifyType', 'success');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctmade'));
+				
+				#auto log user in.
+				$params = array(
+					'usr' => $username,
+					'pwd' => $password
+					);
+				$this->load->library('auth', $params);
+				
+				#setup cookie or session(based on user's preference.
+				$this->auth->logOn(FALSE);
+
+				#direct user.
+				redirect('/', 'location');
+			} elseif ($this->preference->getPreferenceValue("activation") == "User") {
+				//send out email.        	
+				$this->email->to($email);
+				$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+				$this->email->subject($this->lang->line('nonesubject'));
+				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_user_confirm.twig', array(
+				  'USERNAME' => $username,
+				  'TITLE' => $this->title,
+				  'BOARDADDR' => $this->boardUrl,
+				  'KEY' => $act_key
+				)));
+				
+				//send out email.
+				$this->email->send();
+				
+				#let user know their account is created.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctuser'));
+
+				#direct user.
+				redirect('/login/LogIn', 'location');
+			} elseif ($this->preference->getPreferenceValue("activation") == "Admin") {
+				//send out email.        	
+				$this->email->to($email);
+				$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+				$this->email->subject($this->lang->line('nonesubject'));
+				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_admin_confirm.twig', array(
+				  'USERNAME' => $username,
+				  'TITLE' => $this->title
+				)));
+				
+				//send out email.
+				$this->email->send();
+				
+				#let user know their account is created.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctadmin'));
+
+				#direct user.
+				redirect('/login/LogIn', 'location');
+			}
+			
+		}
 	}
 	
+	#
+	# CI FORM VALIDATION METHODS.
+	#
+	
 	/**
-	 * Create New User form submit action.
-	 * @version 10/11/11
+	 * Validates CAPTCHA.
+	 * @param string $str the value we're validating.
+	 * @return boolean
+	 * @version 05/04/12
+	 * @access public
 	*/
-	public function CreateUser() {
+	public function ValidateCaptcha($str) {
 
-		//create blowfish hash.
-		//$hash = makeHash('testing123');
-
-
-		//clears session
-		//$this->ci->session->all_userdata();
-
+		if (sha1($str) <> $this->session->userdata("CAPTCHA_Ans")) {
+			$this->form_validation->set_message('ValidateCaptcha', $this->lang->line('captchanomatch'));
+			return FALSE;
+		} else {
+			return TRUE;
+		}
 	}
+
+	/**
+	 * Validate Email.
+	 * @param string $str the form value under validation.
+	 * @return boolean
+	 * @version 05/07/12
+	 * @access public 
+	 */
+	public function ValidateEmail($str) {
+		
+		#Level 1 - see if the MX record is valid.
+		if(checkdnsrr(array_pop(explode("@",$str)),"MX")) {
+			#Level 2 - validate email isn't blacklisted.
+			$checkDomain = explode("@", $str);
+			$this->db->select('ban_email')->from('ebb_banlist_email')->where('ban_wildcard', 1)->like('ban_email', $checkDomain)->or_where('ban_email', $str);
+			if ($this->db->count_all_results() == 0) {
+				#Level 3 - ensure this email isn't already in use.
+				$this->db->select('Email')->from('ebb_users')->where('Email', $str);
+				if ($this->db->count_all_results() == 0) {
+					return TRUE;
+				} else {
+					$this->form_validation->set_message('ValidateEmail', $this->lang->line('emailexist'));
+					return FALSE;
+				}
+			} else {
+				$this->form_validation->set_message('ValidateEmail', $this->lang->line('emailban'));
+				return FALSE;	
+			}
+		} else {
+			$this->form_validation->set_message('ValidateEmail', $this->lang->line('invalidemail'));
+			return FALSE;
+		}
+		
+	}
+
+	/**
+	 * Validates the username is not banned or in use.
+	 * @param string $str the value we're validating
+	 * @return boolean 
+	 * @access public
+	 * @version 05/07/12
+	 */
+	public function ValidateUserName($str) {
+		#Level 1 - Validiate username isn't banned.
+		$this->db->select('ban_user')->from('ebb_banlist_user')->where('ban_wildcard', 1)->like('ban_user', $str)->or_where('ban_user', $str);
+		if ($this->db->count_all_results() == 0) {
+			#Level 2 - validate the usename isn't already in use.
+			$this->db->select('Username')->from('ebb_users')->where('Username', $str);
+			if ($this->db->count_all_results() == 0) {
+				return TRUE;
+			} else {
+				$this->form_validation->set_message('ValidateUserName', $this->lang->line('usernameexist'));
+			return FALSE;
+			}
+		} else {
+			$this->form_validation->set_message('ValidateUserName', $this->lang->line('usernameblacklisted'));
+			return FALSE;
+		}
+	}
+	
 }
 ?>

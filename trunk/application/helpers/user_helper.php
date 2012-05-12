@@ -6,13 +6,13 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/11/2012
+ * @version 05/03/2012
 */
 
 /**
  * Displays a list of users & guest currently online.
  * @return string
- * @version 04/11/12
+ * @version 05/11/12
 */
 function whosonline() {
 
@@ -25,16 +25,17 @@ function whosonline() {
 	$onlineLogged = $ci->db->get();
 	foreach ($onlineLogged->result() as $row) {
 	    #gain status of users.
-		
 		$ci->load->model('Groupmodel', 'groupsonline');
-		$ci->groupsonline->GetGroupData($ci->gid);
+		$ci->load->model('Usermodel', 'usersonline');
+		$ci->usersonline->getUser($row->Username);
+		$ci->groupsonline->GetGroupData($ci->usersonline->getGid());
 
 		if ($ci->groupsonline->getLevel() == 1){
-			$online .= '<b><a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a></b>&nbsp;';
+			$online .=  '<strong>'.anchor('/users/view/'.$row->Username, $row->Username).'</strong>&nbsp;';
 		}elseif ($ci->groupsonline->getLevel() == 2){
-			$online .= '<i><a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a></i>&nbsp;';
+			$online .=  '<em>'.anchor('/users/view/'.$row->Username, $row->Username).'</em>&nbsp;';
 		}elseif($ci->groupsonline->getLevel() == 3){
-			$online .= '<a href="index.php/profile/view/'.$row->Username.'">'.$row->Username.'</a>&nbsp;';
+			$online .=  anchor('/users/view/'.$row->Username, $row->Username).'&nbsp;';
 		}else{
 			$online .= '&nbsp;';
 		}
@@ -636,7 +637,7 @@ function TimeZoneList($tzone){
 	);
 	
 	//setup form based on user's selection.
-	echo form_dropdown('time_zone', $TimeZones, $tzone, 'class="text"');
+	return form_dropdown('time_zone', $TimeZones, $tzone, 'class="text"');
 }
 
 /**
@@ -657,11 +658,8 @@ function ThemeList($theme){
 	$styleList = $ci->db->get();
 	
 	//build an array list for drop-down.
-	$styles = $styleList->result_array();
-
-	//go through array list and convert it to an assocative array.
-	foreach($styles as $value) {
-		$StyleArray[] = $value;
+	foreach($styleList->result_array() as $value) {
+		$StyleArray[$value['id']] = $value['Name'];
 	}
 	
 	//setup form based on user's selection.
@@ -804,18 +802,12 @@ function GetWarningLevel($user) {
 
 /**
  * Checks to see if the user is banned or suspended.
- * @version 03/04/12
+ * @version 05/10/12
 */
 function checkBan(){
 
 	#obtain codeigniter object.
 	$ci =& get_instance();
-
-	#see if user is marked as banned.
-	//TODO: this is incorrect, will need to rebuild this.
-	if($ci->gid == 6){
-		exit(show_error($ci->lang->line('banned')));
-	}
 
 	#see if user is suspended.
 	if($ci->suspend_length > 0){

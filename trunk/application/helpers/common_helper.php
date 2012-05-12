@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 10/9/2011 
+ * @version 05/04/2012
 */
 
 
@@ -69,6 +69,7 @@ function redirectToHttps(){
 /**
  * Generates Captcha Question and saves it to session for validation.
  * @return string
+ * @version 05/04/12
  */
 function GenerateCaptchaQuestion() {
 
@@ -81,7 +82,7 @@ function GenerateCaptchaQuestion() {
 
 	//do some basic math.
 	$question = "%d + %d = ?";
-	$answer = md5($math1 + $math2);
+	$answer = sha1($math1 + $math2);
 
 	//save encrypted answer in session.
 	$ci->session->set_userdata('CAPTCHA_Ans', $answer);

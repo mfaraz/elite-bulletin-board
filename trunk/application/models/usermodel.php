@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/12/2012
+ * @version 05/07/2012
 */
 
 /**
@@ -21,7 +21,6 @@ class Usermodel extends CI_Model {
 	private $id;
 	private $userName;
 	private $password;
-	private $salt;
 	private $gid;
 	private $email;
 	private $customTitle;
@@ -130,30 +129,6 @@ class Usermodel extends CI_Model {
 	 */
 	public function getPassword() {
 		return $this->password;
-	}
-
-	/**
-	 * set value for salt
-	 *
-	 * type:VARCHAR,size:8,default:null
-	 *
-	 * @param mixed $salt
-	 * @return Usermodel
-	 */
-	public function &setSalt($salt) {
-		$this->salt=$salt;
-		return $this;
-	}
-
-	/**
-	 * get value for salt
-	 *
-	 * type:VARCHAR,size:8,default:null
-	 *
-	 * @return mixed
-	 */
-	public function getSalt() {
-		return $this->salt;
 	}
 
 	/**
@@ -858,13 +833,15 @@ class Usermodel extends CI_Model {
 
 	/**
 	 * Assign values from hash where the indexes match the tables field names
-	 * @version 04/12/12
+	 * @version 05/04/12
 	 * @param array $result
 	 */
 	public function getUser($user) {
 
 		//SQL grabbing count of all topics for this board.
-		$this->db->select('id, Username, Password, salt, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, warning_level, suspend_length, suspend_time')->from('ebb_users')->where('Username', $user);
+		$this->db->select('id, Username, Password, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, warning_level, suspend_length, suspend_time')
+		  ->from('ebb_users')
+		  ->where('Username', $user);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -875,7 +852,6 @@ class Usermodel extends CI_Model {
 			$this->setId($userData->id);
 			$this->setUserName($userData->Username);
 			$this->setPassword($userData->Password);
-			$this->setSalt($userData->salt);
 			$this->setEmail($userData->Email);
 			$this->setGid($userData->gid);
 			$this->setCustomTitle($userData->Custom_Title);
@@ -915,14 +891,13 @@ class Usermodel extends CI_Model {
 	/**
 	 * Creates a new user.
 	 * @access Public
-	 * @version 1/31/2012
+	 * @version 05/07/2012
 	*/
 	public function CreateUser() {
 		#setup values.
 		$data = array(
 		  'Username' => $this->getUserName(),
 		  'Password' => $this->getPassword(),
-		  'salt' => $this->getSalt(),
 		  'gid' => $this->getGid(),
 		  'Email' => $this->getEmail(),
 		  'Custom_Title' => $this->getCustomTitle(),
@@ -953,20 +928,19 @@ class Usermodel extends CI_Model {
         );
 
 		#add new preference.
-		$this->ci->db->insert('ebb_preference', $data);
+		$this->db->insert('ebb_users', $data);
 	}
 
 	/**
 	 * Update a current user.
 	 * @access Public
-	 * @version 1/31/2012
+	 * @version 05/04/2012
 	*/
 	public function UpdateUser() {
 		#update user.
 		$data = array(
 		  'Username' => $this->getUserName(),
 		  'Password' => $this->getPassword(),
-		  'salt' => $this->getSalt(),
 		  'gid' => $this->getGid(),
 		  'Email' => $this->getEmail(),
 		  'Custom_Title' => $this->getCustomTitle(),
@@ -995,7 +969,7 @@ class Usermodel extends CI_Model {
         );
 
 		$this->db->where('Username', $this->getUserName());
-		$this->db->update('ebb_preference', $data);
+		$this->db->update('ebb_users', $data);
 	}
 }
 ?>

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/12/2012
+ * @version 05/11/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -80,6 +80,18 @@ class EBB_Controller extends CI_Controller {
 	 * @var integer
 	 */
 	public $suspend_time;
+	
+	/**
+	 * The type of notification being thrown.
+	 * @var string
+	 */
+	public $notifyType;
+	
+	/**
+	 * The notification message to output to user.
+	 * @var string
+	 */
+	public $notifyMsg;
 
 	/**
 	 * Loads global data.
@@ -90,13 +102,18 @@ class EBB_Controller extends CI_Controller {
 
 		parent::__construct();
 		
+		#grab any notification messages.
+		$this->notifyType = $this->session->flashdata('NotifyType');
+		$this->notifyMsg = $this->session->flashdata('NotifyMsg');
+		
+		#load user helper.
 		$this->load->helper('user');
 		
 		//delete any online data from the last 3 minutes.
 		$this->db->delete('ebb_online', array('time <' => SESSION_TIMEOUT));
 		
 		#login setup
-		if (($this->input->cookie('ebbUser', TRUE) <> FALSE) OR ($this->session->userdata('ebbUser') <> FALSE)) {
+		if ($this->session->userdata('ebbUser') <> FALSE) {
 
 			//see if user is logged in via cookies.
 			if ($this->input->cookie('ebbUser', TRUE) <> FALSE) {
@@ -113,7 +130,7 @@ class EBB_Controller extends CI_Controller {
 			$this->load->library('user', $params);
 
 			//validate login session
-			if ($this->user->validateLoginSession($this->session->userdata('ebbLastActive'), $this->session->userdata('ebbLoginKey'), 0)){
+			if ($this->user->validateLoginSession($this->session->userdata('ebbLastActive'), $this->session->userdata('ebbLoginKey'), 0)) {
 
 				//load user model.
 				$this->load->model('Usermodel');
@@ -141,7 +158,7 @@ class EBB_Controller extends CI_Controller {
 				$this->groupAccess = $this->Groupmodel->getLevel();
 				
 				//see if a user is either suspended or banned.
-				checkBan();
+				//checkBan();
 
 				//update user's onhline status.
 				update_whosonline_users($this->logged_user);
@@ -149,6 +166,9 @@ class EBB_Controller extends CI_Controller {
 				//session is invalid, log user out and clear session data.
 				$this->db->where('username', $ebbuser);
 				$this->db->delete('ebb_login_session');
+				
+				//clear online status session.
+				$this->db->delete('ebb_online', array('Username' => $this->logged_user));
 				
 				#clear session data.				
 				$this->session->unset_userdata('ebbUser');
@@ -158,7 +178,7 @@ class EBB_Controller extends CI_Controller {
 				#set message to output to user.
 				$this->session->set_flashdata('NotifyType', 'warning');
 				$this->session->set_flashdata('NotifyMsg', "Your session has expired. Please re-login."); //$this->lang->line('expiredsess')
-				redirect('/login/', 'location'); //session expired.
+				redirect('/login/Login', 'location'); //session expired.
 			}
 		} else {
 			//guest account.
