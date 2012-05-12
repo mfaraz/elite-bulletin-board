@@ -271,6 +271,7 @@ class auth {
 
     /**
 	 * Performs login process, creating any sessions or cookies needed for the system.
+	 * @param boolean $remember keep user login info in tact?
 	 * @version 03/04/12
 	 * @access public
 	*/

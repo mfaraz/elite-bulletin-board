@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/12/2012
+ * @version 05/10/2012
 */
 
 /**
@@ -232,7 +232,7 @@ class Groupmodel extends CI_Model {
 
 	/**
 	 * validate user's privileges.
-	 * @version 02/15/12
+	 * @version 05/10/12
 	 * @param string $permissionAction action code being validated.
 	 * @return integer $permissionValue automatic deny return for guest account.
 	 * @return string filtered string to use in SQL query.
@@ -242,7 +242,7 @@ class Groupmodel extends CI_Model {
 
 		#see if user is guest, if so, deny any requests.
 		if ($this->IsGuest == TRUE) {
-			return (false);
+			return FALSE;
 		} else {
 			#see if user ID is incorrect or Null.
 			if ($this->validateGroup()) {
@@ -255,16 +255,21 @@ class Groupmodel extends CI_Model {
                     show_error($this->lang->line('invalidaction').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__,500, $this->lang->line('error'));
                 } else {
                   	#see if user has correct permission to access requested permission.
-                    $this->db->select('set_value')->from('ebb_permission_data')->where('profile', $this->gid)->where('permission', $permissionAction);
+                    $this->db->select('set_value')->from('ebb_permission_data')->where('profile', $this->permissionType)->where('permission', $permissionAction);
                     $Query = $this->db->get();
                     $validatePermission = $Query->row();
 
                     #output value in script.
-                    if($validatePermission->set_value == 1){
-                        return(true);
-                    }else{
-                        return(false);
-                    }
+					if($Query->num_rows() > 0) {
+						if($validatePermission->set_value == 1){
+							return TRUE;
+						}else{
+							return FALSE;
+						}	
+					} else {
+						//show_error($this->lang->line('invaliduser').'-'.$permissionAction.'-'.$this->gid.'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+						return FALSE;
+					}
                 }
             } else {
                 show_error($this->lang->line('invalidprofile').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__,500, $this->lang->line('error'));

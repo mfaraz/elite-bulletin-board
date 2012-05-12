@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/03/2012
+ * @version 05/11/2012
 */
 
 /**
@@ -76,8 +76,8 @@ class Boards extends EBB_Controller {
 		  'pageTitle'=> $this->lang->line('index'),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'NOTIFY_TYPE' => $this->notifyType,
+		  'NOTIFY_MSG' =>  $this->notifyMsg,
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
@@ -100,8 +100,8 @@ class Boards extends EBB_Controller {
 		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
 		  'LANG_HOME' => $this->lang->line('home'),
 		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_MEMBERLIST' => $this->lang->line('members'),
+		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'groupAccess' => $this->groupAccess,
@@ -160,8 +160,7 @@ class Boards extends EBB_Controller {
 			//
 
 			#see if user can view this topic.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
-				//show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == FALSE){
 				$CanRead = FALSE;
 			} else {
 				$CanRead = TRUE;
@@ -169,18 +168,18 @@ class Boards extends EBB_Controller {
 
 
 			#see if user can post a topic or not.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost()) == false){
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost()) == FALSE){
 				$CanPost = FALSE;
-			}elseif($this->Groupmodel->validateAccess(1, 37) == false){
+			}elseif($this->Groupmodel->validateAccess(1, 37) == FALSE){
 				$CanPost = FALSE;
 			} else {
 				$CanPost = TRUE;
 			}
 
 			#see if user can post a topic poll or not.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll()) == false){
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll()) == FALSE){
 				$CanPostPoll = FALSE;
-			}elseif($this->Groupmodel->validateAccess(1, 35) == false){
+			}elseif($this->Groupmodel->validateAccess(1, 35) == FALSE){
 				$CanPostPoll = FALSE;
 			} else {
 				$CanPostPoll = TRUE;
@@ -226,8 +225,8 @@ class Boards extends EBB_Controller {
 		  'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'NOTIFY_TYPE' => $this->notifyType,
+		  'NOTIFY_MSG' =>  $this->notifyMsg,
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
@@ -250,8 +249,8 @@ class Boards extends EBB_Controller {
 		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
 		  'LANG_HOME' => $this->lang->line('home'),
 		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_MEMBERLIST' => $this->lang->line('members'),
+		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'groupAccess' => $this->groupAccess,
@@ -422,8 +421,8 @@ class Boards extends EBB_Controller {
 		  'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'NOTIFY_TYPE' => $this->notifyType,
+		  'NOTIFY_MSG' =>  $this->notifyMsg,
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
@@ -446,13 +445,15 @@ class Boards extends EBB_Controller {
 		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
 		  'LANG_HOME' => $this->lang->line('home'),
 		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_MEMBERLIST' => $this->lang->line('members'),
+		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'groupAccess' => $this->groupAccess,
 		  'LANG_PRINT' =>  $this->lang->line('ptitle'),
 		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
+		  'LANG_DELPROMPT' => $this->lang->line('topiccon'),
+		  'LANG_DELPROMPT2' => $this->lang->line('postcon'),
 		  'TOPICID' => $id,
 		  'DISABLE_SMILES' => $disable_smiles,
 		  'BOARDPREF_SMILES' => $boardpref_smiles,
@@ -548,17 +549,8 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
-	 * Posts new topic to DB.
-	 * @version 04/17/12
-	 * @access public
-	*/
-	public function POST_newtopic() {
-		
-	}
-	
-	/**
 	 * New Topics form.
-	 * @version 05/03/12
+	 * @version 05/10/12
 	 * @access private
 	*/
 	private function FORM_newtopic($bid, $pollTopic) {
@@ -602,10 +594,11 @@ class Boards extends EBB_Controller {
 		//render to HTML.
 		echo $this->twig->render($this->style, 'newtopic', array (
 		  'boardName' => $this->title,
+		  'pageTitle'=> $this->lang->line("newtopic"),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-		  'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+		  'NOTIFY_TYPE' => $this->notifyType,
+		  'NOTIFY_MSG' =>  $this->notifyMsg,
 		  'LANG' => $this->lng,
 		  'TimeFormat' => $this->timeFormat,
 		  'TimeZone' => $this->timeZone,
@@ -632,8 +625,8 @@ class Boards extends EBB_Controller {
 		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
 		  'LANG_HOME' => $this->lang->line('home'),
 		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('profile'),
-		  'LANG_PROFILE' => $this->lang->line('logout'),
+		  'LANG_MEMBERLIST' => $this->lang->line('members'),
+		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 		  'BREADCRUMB' =>$this->breadcrumb->output(),
@@ -688,15 +681,6 @@ class Boards extends EBB_Controller {
 	*/
 	public function reply($id) {
 		$this->FORM_reply();
-	}
-	
-	/**
-	 * Posts reply to DB.
-	 * @version 04/17/12
-	 * @access public
-	*/
-	public function POST_reply() {
-		
 	}
 	
 	/**
