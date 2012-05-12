@@ -266,8 +266,8 @@ $config['sess_time_to_update']	= 300;
 |
 */
 $config['cookie_prefix']	= "ebb_";
-$config['cookie_domain']	= "192.168.1.74";
-$config['cookie_path']		= "/ebbv3/";
+$config['cookie_domain']	= "";
+$config['cookie_path']		= "";
 $config['cookie_secure']	= FALSE;
 
 /*
