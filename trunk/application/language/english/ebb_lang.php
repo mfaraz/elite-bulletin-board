@@ -195,7 +195,8 @@ $lang['passwordrecovery'] = 'Password Recovery';
 $lang['incorrectinfo'] = 'Sorry but either the key or the Username are invalid.';
 $lang['activationtitle'] = 'User Activation';
 $lang['noacctkey'] = 'No activation key was found.';
-$lang['correctinfo'] = "Your account has been activated. <a href=\"login.php\">Login</a>.";
+$lang['correctinfo'] = "Your account has been activated.";
+$lang['alreadyactive'] = 'This user has already been activiated.';
 #auth.php language tags.
 $lang['inactiveuser'] = 'This user has not activated their account. you may either click on the link in the email or contact the admin.';
 $lang['invalidlogin'] ='You could not be logged in! the username and/or password are invalid.';

@@ -96,7 +96,7 @@ class EBB_Controller extends CI_Controller {
 	/**
 	 * Loads global data.
 	 * @access Public
-	 * @version 02/15/12
+	 * @version 05/14/12
 	 */
 	public function __construct() {
 
