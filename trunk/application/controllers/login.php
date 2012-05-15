@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/11/2012
+ * @version 05/14/2012
 */
 
 
@@ -271,10 +271,49 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Validates inactive account.
-	 * @version 10/11/11
+	 * @version 05/14/12
 	*/
 	public function validateAccount($key, $u) {
 	
+		$this->db->select('active')
+		  ->from('ebb_users')
+		  ->where('act_key', $key)
+		  ->where('Username', $u);
+		$query = $this->db->get();
+
+		//see if we have any records to show.
+		if($query->num_rows() == 1) {
+			$userData = $query->row();
+			
+			//see if user has already been activated.
+			if ($userData->active == 1) {
+				#setup error session.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyactive'));
+				
+				#direct user.
+				redirect('/', 'location');
+			} else {
+				//set user as active.
+				$data = array('active' => 1);
+				$this->db->where('Username', $u);
+				$this->db->update('ebb_users', $data);
+
+				#setup error session.
+				$this->session->set_flashdata('NotifyType', 'success');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('correctinfo'));
+				
+				#direct user.
+				redirect('/login/LogIn', 'location');
+			}
+		} else {
+			#setup error session.
+			$this->session->set_flashdata('NotifyType', 'error');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('incorrectinfo'));
+
+			#direct user.
+			redirect('/login/LogIn', 'location');
+		}
 	}
 	
 	/**
@@ -317,7 +356,7 @@ class Login extends EBB_Controller {
 
 	/**
 	 * Create New User form submit action.
-	 * @version 05/11/12
+	 * @version 05/14/12
 	 * @access public
 	 * Maps to the following URL
 	 * http://example.com/index.php/login/register	 
@@ -557,7 +596,7 @@ class Login extends EBB_Controller {
 				//send out email.        	
 				$this->email->to($email);
 				$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
-				$this->email->subject($this->lang->line('nonesubject'));
+				$this->email->subject($this->lang->line('usersubject'));
 				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_user_confirm.twig', array(
 				  'USERNAME' => $username,
 				  'TITLE' => $this->title,
@@ -578,7 +617,7 @@ class Login extends EBB_Controller {
 				//send out email.        	
 				$this->email->to($email);
 				$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
-				$this->email->subject($this->lang->line('nonesubject'));
+				$this->email->subject($this->lang->line('adminsubject'));
 				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_admin_confirm.twig', array(
 				  'USERNAME' => $username,
 				  'TITLE' => $this->title

@@ -891,7 +891,7 @@ class Usermodel extends CI_Model {
 	/**
 	 * Creates a new user.
 	 * @access Public
-	 * @version 05/07/2012
+	 * @version 05/14/12
 	*/
 	public function CreateUser() {
 		#setup values.
@@ -922,6 +922,7 @@ class Usermodel extends CI_Model {
 		  'last_search' => $this->getLastSearch(),
 		  'failed_attempts' => $this->getFailedAttempts(),
 		  'active' => $this->getActive(),
+		  'act_key' => $this->getActKey(),
 		  'warning_level' => $this->getWarningLevel(),
 		  'suspend_length' => $this->getSuspendLength(),
 		  'suspend_time' => $this->getSuspendTime()
@@ -934,7 +935,7 @@ class Usermodel extends CI_Model {
 	/**
 	 * Update a current user.
 	 * @access Public
-	 * @version 05/04/2012
+	 * @version 05/14/12
 	*/
 	public function UpdateUser() {
 		#update user.
@@ -963,6 +964,7 @@ class Usermodel extends CI_Model {
 		  'last_search' => $this->getLastSearch(),
 		  'failed_attempts' => $this->getFailedAttempts(),
 		  'active' => $this->getActive(),
+		  'act_key' => $this->getActKey(),
 		  'warning_level' => $this->getWarningLevel(),
 		  'suspend_length' => $this->getSuspendLength(),
 		  'suspend_time' => $this->getSuspendTime()
