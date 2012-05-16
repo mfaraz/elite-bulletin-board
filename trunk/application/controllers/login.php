@@ -6,10 +6,13 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/14/2012
+ * @version 05/15/2012
 */
 
-
+/**
+ * Login Controller
+ * @abstract EBB_Controller 
+ */
 class Login extends EBB_Controller {
 
     public function __construct() {
@@ -18,83 +21,11 @@ class Login extends EBB_Controller {
 	}
 
 	/**
-	 * Outputs Password Recovery Form
-	 * @version 05/10/12
-	 * @access private
-	 */
-	private function _PwdRecoverForm() {
-		#if Group Access property is not 0, redirect user.
-		if ($this->groupAccess <> 0) {
-			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
-
-			#direct user to their previous location.
-			redirect('/', 'location');
-			exit();
-		} else {
-			//load breadcrumb library
-			$this->load->library('breadcrumb');
-
-			// add breadcrumbs
-			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
-			$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
-
-			//render to HTML.
-			echo $this->twig->render($this->style, 'lostpassword', array (
-			'boardName' => $this->title,
-			'BOARD_URL' => $this->boardUrl,
-			'APP_URL' => $this->boardUrl.APPPATH,
-			'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
-			'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
-			'LANG' => $this->lng,
-			'TimeFormat' => $this->timeFormat,
-			'TimeZone' => $this->timeZone,
-			'groupAccess' => $this->groupAccess,
-			'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-			'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-			'LOGGEDUSER' => $this->logged_user,
-			'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-			'LANG_INFO' => $this->lang->line('info'),
-			'LANG_LOGIN' => $this->lang->line('login'),
-			'LANG_LOGOUT' => $this->lang->line('logout'),
-			'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-			'PWDRECOVERFORM' => form_open('login/PasswordRecoverySubmit'),
-			'VALIDATION_USERNAME' => form_error('lost_user'),
-			'VALIDATION_EMAIL' => form_error('lost_email'),
-			'LANG_USERNAME' => $this->lang->line('username'),
-			'LANG_REGISTER' => $this->lang->line('register'),
-			'LANG_PASSWORD' => $this->lang->line('pass'),
-			'LANG_FORGOT' => $this->lang->line('forgot'),
-			'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-			'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-			'LANG_SEARCH' => $this->lang->line('search'),
-			'LANG_CP' => $this->lang->line('admincp'),
-			'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-			'LANG_HOME' => $this->lang->line('home'),
-			'LANG_HELP' => $this->lang->line('help'),
-			'LANG_MEMBERLIST' => $this->lang->line('members'),
-			'LANG_PROFILE' => $this->lang->line('profile'),
-			'LANG_POWERED' => $this->lang->line('poweredby'),
-			'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-			'BREADCRUMB' =>$this->breadcrumb->output(),
-			'LANG_EMAIL' => $this->lang->line('email'),
-			'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
-			'LANG_GETPASS' => $this->lang->line('getpassword')
-			));
-		}
-	}
-	
-	/**
-	  * Index Page for this controller.
-	  * @version 10/11/11
-	  * Maps to the following URL
-	  * http://example.com/index.php/login
-	  *	- or -
-	  * http://example.com/index.php/login/index
-	  * @see http://codeigniter.com/user_guide/general/urls.html
-	 */
+	 * Index Page for this controller.
+	 * @version 10/11/11
+	 * @access public
+	 * @example index.php/login
+	*/
 	public function index() {
 		redirect('/login/Login', 'location'); //redirect user to login form.
 	}
@@ -103,6 +34,7 @@ class Login extends EBB_Controller {
 	 * Processes login form and logs user in.
 	 * @version 05/07/12
 	 * @access public
+	 * @example index.php/login/LogIn
 	*/
 	public function LogIn() {
 
@@ -141,8 +73,6 @@ class Login extends EBB_Controller {
 				'NOTIFY_TYPE' => $this->notifyType,
 				'NOTIFY_MSG' =>  $this->notifyMsg,
 				'LANG' => $this->lng,
-				'TimeFormat' => $this->timeFormat,
-				'TimeZone' => $this->timeZone,
 				'groupAccess' => $this->groupAccess,
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
@@ -270,10 +200,12 @@ class Login extends EBB_Controller {
 	}
 	
 	/**
-	 * Validates inactive account.
-	 * @version 05/14/12
+	 * Activates inactive account.
+	 * @version 05/15/12
+	 * @access public
+	 * @example index.php/login/ActivateAccount/12345/user
 	*/
-	public function validateAccount($key, $u) {
+	public function ActivateAccount($key, $u) {
 	
 		$this->db->select('active')
 		  ->from('ebb_users')
@@ -293,6 +225,7 @@ class Login extends EBB_Controller {
 				
 				#direct user.
 				redirect('/', 'location');
+				exit();
 			} else {
 				//set user as active.
 				$data = array('active' => 1);
@@ -318,22 +251,170 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Password recovery View. Also validate & process lost password request.
-	 * @version 10/12/11
-	 * Maps to the following URL
-	 * http://example.com/index.php/login/PasswordRecovery
-	 * @see http://codeigniter.com/user_guide/general/urls.html
+	 * @version 05/15/12
+	 * @access public
+	 * @example index.php/login/PasswordRecovery
 	*/
 	public function PasswordRecovery() {
 
-		// LOAD LIBRARIES
-        $this->load->helper('form');
-		$this->_PwdRecoverForm();
+		//LOAD LIBRARIES
+        $this->load->library(array('encrypt', 'email', 'form_validation', 'user_agent', 'datetime_52'));
+        $this->load->helper(array('form', 'user'));
+		
+		//setup validation rules.
+        $this->form_validation->set_rules('recover_info', $this->lang->line('username').'/'.$this->lang->line('email'), 'required|callback_ValidateAccount|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+		
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			#if Group Access property is not 0, redirect user.
+			if ($this->groupAccess <> 0) {
+				//show success message.
+				$this->session->set_flashdata('NotifyType', 'warning');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
 
+				#direct user to their previous location.
+				redirect('/', 'location');
+				exit();
+			} else {
+				//load breadcrumb library
+				$this->load->library('breadcrumb');
+
+				// add breadcrumbs
+				$this->breadcrumb->append_crumb($this->title, '/boards/');
+				$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
+				$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'lostpassword', array (
+				'boardName' => $this->title,
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
+				'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
+				'LANG' => $this->lng,
+				'groupAccess' => $this->groupAccess,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'PWDRECOVERFORM' => form_open('login/PasswordRecovery', array('name' => 'frmPasswordRecovery')),
+				'VALIDATION_USERNAME_EMAIL' => form_error('recover_info'),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'BREADCRUMB' =>$this->breadcrumb->output(),
+				'LANG_EMAIL' => $this->lang->line('email'),
+				'LANG_PWDRECOVER' => $this->lang->line('passwordrecovery'),
+				'LANG_GETPASS' => $this->lang->line('getpassword')
+				));
+			}
+		} else {
+			#generate new activation tokin.
+			$act_key = md5(makeRandomPassword());
+			$pwdRecoveryReq = time();
+			$newPwd = makeRandomPassword();
+			
+			//create blowfish hash.
+			$hash = makeHash($newPwd);
+			
+			$data = array(
+			  'Password' => $hash,
+			  'failed_attempts' => 0,
+			  'active' => 0,
+			  'act_key' => $act_key,
+			  'password_recovery_date' => $pwdRecoveryReq
+			  );
+			
+			#get username.
+			$this->db->select('Username, Email')
+			  ->from('ebb_users')
+			  ->where('Username', $this->input->post('recover_info', TRUE))
+			  ->or_where('Email', $this->input->post('recover_info', TRUE))
+			  ->limit(1);
+			$query = $this->db->get();
+			$userData = $query->row();
+
+			//load user model.
+			$this->load->model('Usermodel');
+			
+			#set username field.
+			$this->Usermodel->setUserName($userData->Username);
+			
+			#update user.
+			$this->Usermodel->UpdateUser($data);
+			
+			#email user.
+			$config = array();
+			if ($this->preference->getPreferenceValue("mail_type") == 2) {
+				$config['protocol'] = 'sendmail';
+				$config['mailpath'] = $this->preference->getPreferenceValue("sendmail_path");
+				$this->email->initialize($config);
+			} elseif ($this->preference->getPreferenceValue("mail_type") == 0) {
+				$config['protocol'] = 'smtp';
+				$config['smtp_host'] = $this->preference->getPreferenceValue("smtp_host");
+				$config['smtp_user'] = $this->preference->getPreferenceValue("smtp_user");
+				$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
+				$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
+				$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
+				$this->email->initialize($config);
+			}
+			
+			//send out email.
+			$this->email->to($userData->Email);
+			$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+			$this->email->subject($this->lang->line('passwordrecovery'));
+			$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_pwd_reset.twig', array(
+			  'TimeFormat' => $this->timeFormat,
+			  'TimeZone' => $this->timeZone,
+			  'USERNAME' => $userData->Username,
+			  'NEW_PWD' => $newPwd,
+			  'TITLE' => $this->title,
+			  'BOARDADDR' => $this->boardUrl,
+			  'KEY' => $act_key,
+			  'IP_ADDR' => detectProxy(),
+			  'PWD_RECOVERY_REQ' => $pwdRecoveryReq,
+			  'USER_AGENT' => $this->agent->agent_string()
+			)));
+
+			//send out email.
+			//$this->email->send();
+			
+			if ($this->email->send()) {
+				#let user know their account is created.
+				$this->session->set_flashdata('NotifyType', 'success');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('newpwdsent'));
+
+				#direct user.
+				redirect('/login/LogIn', 'location');
+			} else {
+				log_message('error', $this->email->print_debugger()); //log error for debugging.
+				show_error($this->lang->line('pwdrecoveremlfail'),500, $this->lang->line('error'));
+			}
+		}
 	}
 
     /**
 	 * Logs user out and clears all active login sessions.
 	 * @version 05/11/12
+	 * @access public
+	 * @example index.php/login/LogOut
 	*/
 	public function LogOut() {
 
@@ -356,11 +437,9 @@ class Login extends EBB_Controller {
 
 	/**
 	 * Create New User form submit action.
-	 * @version 05/14/12
+	 * @version 05/15/12
 	 * @access public
-	 * Maps to the following URL
-	 * http://example.com/index.php/login/register	 
-	 * @see http://codeigniter.com/user_guide/general/urls.html
+	 * @example index.php/login/register
 	*/
 	public function register() {
 
@@ -408,7 +487,6 @@ class Login extends EBB_Controller {
 				'NOTIFY_TYPE' => $this->notifyType,
 				'NOTIFY_MSG' =>  $this->notifyMsg,
 				'LANG' => $this->lng,
-				'TimeFormat' => $this->timeFormat,
 				'TimeZone' => TimeZoneList($this->timeZone),
 				'groupAccess' => $this->groupAccess,
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
@@ -540,6 +618,7 @@ class Login extends EBB_Controller {
 			$this->Usermodel->setFailedAttempts(0);
 			$this->Usermodel->setActive($active_stat);
 			$this->Usermodel->setActKey($act_key);
+			$this->Usermodel->setPasswordRecoveryDate(null);
 			$this->Usermodel->setWarningLevel(0);
 			$this->Usermodel->setSuspendLength(0);
 			$this->Usermodel->setSuspendTime(null);
@@ -560,6 +639,7 @@ class Login extends EBB_Controller {
 				$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
 				$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
 				$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
+				$this->email->initialize($config);
 			}
 			
 			if ($this->preference->getPreferenceValue("activation") == "None") {
@@ -701,7 +781,12 @@ class Login extends EBB_Controller {
 	 */
 	public function ValidateUserName($str) {
 		#Level 1 - Validiate username isn't banned.
-		$this->db->select('ban_user')->from('ebb_banlist_user')->where('ban_wildcard', 1)->like('ban_user', $str)->or_where('ban_user', $str);
+		$this->db->select('ban_user')
+		  ->from('ebb_banlist_user')
+		  ->where('ban_wildcard', 1)
+		  ->like('ban_user', $str)
+		  ->or_where('ban_user', $str);
+		
 		if ($this->db->count_all_results() == 0) {
 			#Level 2 - validate the usename isn't already in use.
 			$this->db->select('Username')->from('ebb_users')->where('Username', $str);
@@ -715,6 +800,29 @@ class Login extends EBB_Controller {
 			$this->form_validation->set_message('ValidateUserName', $this->lang->line('usernameblacklisted'));
 			return FALSE;
 		}
+	}
+	
+	/**
+	 * Validate the info entered on the password recovery form.
+	 * @param string $str The value from the form.
+	 * @return boolean 
+	 * @version 05/15/12
+	 */
+	public function ValidateAccount($str) {
+		
+		$this->db->select('id')
+		  ->from('ebb_users')
+		  ->where('Username', $str)
+		  ->or_where('Email', $str)
+		  ->limit(1);
+		
+		if ($this->db->count_all_results() == 0) {
+			$this->form_validation->set_message('ValidateAccount', $this->lang->line('invalidrecoveryinfo'));
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+
 	}
 	
 }

@@ -1,23 +1,24 @@
-Hello,
+Hello {{USERNAME}},
 
-you are receiving this email because you requested a password reset from {{title}}.
+you are receiving this email because you requested a password reset from {{TITLE}}.
 
-If you did not request this, report this to the board administrator.
+This was placed on: {{PWD_RECOVERY_REQ|PostedDate(TimeFormat, TimeZone)}}
+IP Address that sent out the request: {{IP_ADDR}}
+User Agent Info: {{USER_AGENT}}
+
+If you did not request this, or if ANY of the logged info is NOT yours,
+report this to your board administrator IMMEDIATELY!
 
 For security Reasons, your account is disabled until you reverify yourself.
 
-{{boardAddr}}/login.php?mode=verify_acct&u={{username}}&key={{key}}
+{{BOARDADDR}}index.php/login/ActivateAccount/{{KEY}}/{{USERNAME}}
 
 a new password was made for you, below is the new password.
 
-{{new-pwd}}
+{{NEW_PWD}}
 
 to change it, Click on Profile.
 
-IP Address that sent out the request: {{IPAddr}}
-
-If this is NOT your IP, report this to your board administrator IMMEDIATELY!
-
-{{title}} staff
+{{TITLE}} staff
 ======
 This is an automated message, please do not reply to this email.
