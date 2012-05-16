@@ -6,11 +6,12 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/07/2012
+ * @version 05/15/2012
 */
 
 /**
  * User Entity
+ * @abstract CI_Model
  */
 class Usermodel extends CI_Model {
 
@@ -47,6 +48,7 @@ class Usermodel extends CI_Model {
 	private $failedAttempts;
 	private $active;
 	private $actKey;
+	private $passwordRecoveryDate;
 	private $warningLevel;
 	private $suspendLength;
 	private $suspendTime;
@@ -756,6 +758,29 @@ class Usermodel extends CI_Model {
 	}
 
 	/**
+	 * set value for password_recovery_date
+	 *
+	 * type:VARCHAR,size:14,default:
+	 *
+	 * @return mixed
+	 */
+	public function &setPasswordRecoveryDate($passwordRecoveryDate) {
+		$this->passwordRecoveryDate=$passwordRecoveryDate;
+		return $this;
+	}
+	
+	/**
+	 * get value for password_recovery_date
+	 *
+	 * type:VARCHAR,size:14,default:
+	 *
+	 * @return mixed
+	 */
+	public function getPasswordRecoveryDate() {
+		
+	}
+
+	/**
 	 * set value for warning_level
 	 *
 	 * type:BIT,size:0,default:0
@@ -833,13 +858,13 @@ class Usermodel extends CI_Model {
 
 	/**
 	 * Assign values from hash where the indexes match the tables field names
-	 * @version 05/04/12
-	 * @param array $result
+	 * @version 05/15/12
+	 * @param string $user user we want to get info on from DB.
 	 */
 	public function getUser($user) {
 
 		//SQL grabbing count of all topics for this board.
-		$this->db->select('id, Username, Password, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, warning_level, suspend_length, suspend_time')
+		$this->db->select('id, Username, Password, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, password_recovery_date, warning_level, suspend_length, suspend_time')
 		  ->from('ebb_users')
 		  ->where('Username', $user);
 		$query = $this->db->get();
@@ -878,6 +903,7 @@ class Usermodel extends CI_Model {
 			$this->setFailedAttempts($userData->failed_attempts);
 			$this->setActive($userData->active);
 			$this->setActKey($userData->act_key);
+			$this->setPasswordRecoveryDate($userData->password_recovery_date);
 			$this->setWarningLevel($userData->warning_level);
 			$this->setSuspendLength($userData->suspend_length);
 			$this->setSuspendTime($userData->suspend_time);
@@ -891,7 +917,7 @@ class Usermodel extends CI_Model {
 	/**
 	 * Creates a new user.
 	 * @access Public
-	 * @version 05/14/12
+	 * @version 05/15/12
 	*/
 	public function CreateUser() {
 		#setup values.
@@ -923,6 +949,7 @@ class Usermodel extends CI_Model {
 		  'failed_attempts' => $this->getFailedAttempts(),
 		  'active' => $this->getActive(),
 		  'act_key' => $this->getActKey(),
+		  'password_recovery_date' => $this->getPasswordRecoveryDate(),
 		  'warning_level' => $this->getWarningLevel(),
 		  'suspend_length' => $this->getSuspendLength(),
 		  'suspend_time' => $this->getSuspendTime()
@@ -934,42 +961,48 @@ class Usermodel extends CI_Model {
 
 	/**
 	 * Update a current user.
+	 * @param array $data The field(s) we want to modify. (NULL will update everything).
 	 * @access Public
-	 * @version 05/14/12
+	 * @version 05/15/12
 	*/
-	public function UpdateUser() {
-		#update user.
-		$data = array(
-		  'Username' => $this->getUserName(),
-		  'Password' => $this->getPassword(),
-		  'gid' => $this->getGid(),
-		  'Email' => $this->getEmail(),
-		  'Custom_Title' => $this->getCustomTitle(),
-		  'PM_Notify' => $this->getPmNotify(),
-		  'Hide_Email' => $this->getHideEmail(),
-		  'MSN' => $this->getMSn(),
-		  'AOL' => $this->getAol(),
-		  'Yahoo' => $this->getYahoo(),
-		  'ICQ' => $this->getIcq(),
-		  'WWW' => $this->getWww(),
-		  'Location' => $this->getLocation(),
-		  'Avatar' => $this->getAvatar(),
-		  'Sig' => $this->getSig(),
-		  'Time_format' => $this->getTimeFormat(),
-		  'Time_Zone' => $this->getTimeZone(),
-		  'Style' => $this->getStyle(),
-		  'Language' => $this->getLanguage(),
-		  'Post_Count' => $this->getPostCount(),
-		  'last_post' => $this->getLastPost(),
-		  'last_search' => $this->getLastSearch(),
-		  'failed_attempts' => $this->getFailedAttempts(),
-		  'active' => $this->getActive(),
-		  'act_key' => $this->getActKey(),
-		  'warning_level' => $this->getWarningLevel(),
-		  'suspend_length' => $this->getSuspendLength(),
-		  'suspend_time' => $this->getSuspendTime()
-        );
+	public function UpdateUser($data = NULL) {
+		
+		#see if any specific field was defined.
+		if (is_null($data)) {
+			$data = array(
+			  'Username' => $this->getUserName(),
+			  'Password' => $this->getPassword(),
+			  'gid' => $this->getGid(),
+			  'Email' => $this->getEmail(),
+			  'Custom_Title' => $this->getCustomTitle(),
+			  'PM_Notify' => $this->getPmNotify(),
+			  'Hide_Email' => $this->getHideEmail(),
+			  'MSN' => $this->getMSn(),
+			  'AOL' => $this->getAol(),
+			  'Yahoo' => $this->getYahoo(),
+			  'ICQ' => $this->getIcq(),
+			  'WWW' => $this->getWww(),
+			  'Location' => $this->getLocation(),
+			  'Avatar' => $this->getAvatar(),
+			  'Sig' => $this->getSig(),
+			  'Time_format' => $this->getTimeFormat(),
+			  'Time_Zone' => $this->getTimeZone(),
+			  'Style' => $this->getStyle(),
+			  'Language' => $this->getLanguage(),
+			  'Post_Count' => $this->getPostCount(),
+			  'last_post' => $this->getLastPost(),
+			  'last_search' => $this->getLastSearch(),
+			  'failed_attempts' => $this->getFailedAttempts(),
+			  'active' => $this->getActive(),
+			  'act_key' => $this->getActKey(),
+			  'password_recovery_date' => $this->getPasswordRecoveryDate(),
+			  'warning_level' => $this->getWarningLevel(),
+			  'suspend_length' => $this->getSuspendLength(),
+			  'suspend_time' => $this->getSuspendTime()
+			  );
+		}
 
+		#update user.
 		$this->db->where('Username', $this->getUserName());
 		$this->db->update('ebb_users', $data);
 	}
