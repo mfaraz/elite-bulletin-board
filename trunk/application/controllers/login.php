@@ -451,7 +451,7 @@ class Login extends EBB_Controller {
         $this->form_validation->set_rules('username', $this->lang->line('username'), 'required|alpha_numeric|callback_ValidateUserName|xss_clean');
         $this->form_validation->set_rules('password', $this->lang->line('password'), 'required|xss_clean');
 		$this->form_validation->set_rules('password_confirm', $this->lang->line('confirmpass'), 'required|matches[password]|xss_clean');
-		$this->form_validation->set_rules('email', $this->lang->line('email'), 'required|valid_email|xss_clean'); //callback_ValidateEmail|
+		$this->form_validation->set_rules('email', $this->lang->line('email'), 'required|valid_email|callback_ValidateEmail|xss_clean');
 		$this->form_validation->set_rules('time_format', $this->lang->line('timeformat'), 'required|xss_clean');
 		$this->form_validation->set_rules('time_zone', $this->lang->line('timezone'), 'required|xss_clean');
 		$this->form_validation->set_rules('language', $this->lang->line('nolang'), 'required|xss_clean');
@@ -748,7 +748,7 @@ class Login extends EBB_Controller {
 	public function ValidateEmail($str) {
 		
 		#Level 1 - see if the MX record is valid.
-		if(checkdnsrr(array_pop(explode("@",$str)),"MX")) {
+		if (($this->preference->getPreferenceValue('mx_check') == 1) and (checkdnsrr(array_pop(explode("@",$str)),"MX"))) {
 			#Level 2 - validate email isn't blacklisted.
 			$checkDomain = explode("@", $str);
 			$this->db->select('ban_email')->from('ebb_banlist_email')->where('ban_wildcard', 1)->like('ban_email', $checkDomain)->or_where('ban_email', $str);
