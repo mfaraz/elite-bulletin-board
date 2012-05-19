@@ -831,4 +831,3 @@ function checkBan(){
 		exit(show_error($ci->lang->line('banned')));
 	}
 }
-?>

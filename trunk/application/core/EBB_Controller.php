@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/11/2012
+ * @version 05/18/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -204,7 +204,114 @@ class EBB_Controller extends CI_Controller {
 		$this->title = $this->preference->getPreferenceValue("board_name");
 		$this->boardUrl = $this->preference->getPreferenceValue("board_url");
 
-	} //END cookie/session check
+	}
+	
+	#
+	# CI FORM VALIDATION METHODS.
+	#
+	
+	/**
+	 * Validates CAPTCHA.
+	 * @param string $str the value we're validating.
+	 * @return boolean
+	 * @version 05/04/12
+	 * @access public
+	*/
+	public function ValidateCaptcha($str) {
+
+		if (sha1($str) <> $this->session->userdata("CAPTCHA_Ans")) {
+			$this->form_validation->set_message('ValidateCaptcha', $this->lang->line('captchanomatch'));
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+	}
+
+	/**
+	 * Validate Email.
+	 * @param string $str the form value under validation.
+	 * @return boolean
+	 * @version 05/07/12
+	 * @access public 
+	 */
+	public function ValidateEmail($str) {
+		
+		#Level 1 - see if the MX record is valid.
+		if (($this->preference->getPreferenceValue('mx_check') == 1) and (checkdnsrr(array_pop(explode("@",$str)),"MX"))) {
+			#Level 2 - validate email isn't blacklisted.
+			$checkDomain = explode("@", $str);
+			$this->db->select('ban_email')->from('ebb_banlist_email')->where('ban_wildcard', 1)->like('ban_email', $checkDomain)->or_where('ban_email', $str);
+			if ($this->db->count_all_results() == 0) {
+				#Level 3 - ensure this email isn't already in use.
+				$this->db->select('Email')->from('ebb_users')->where('Email', $str);
+				if ($this->db->count_all_results() == 0) {
+					return TRUE;
+				} else {
+					$this->form_validation->set_message('ValidateEmail', $this->lang->line('emailexist'));
+					return FALSE;
+				}
+			} else {
+				$this->form_validation->set_message('ValidateEmail', $this->lang->line('emailban'));
+				return FALSE;	
+			}
+		} else {
+			$this->form_validation->set_message('ValidateEmail', $this->lang->line('invalidemail'));
+			return FALSE;
+		}
+		
+	}
+
+	/**
+	 * Validates the username is not banned or in use.
+	 * @param string $str the value we're validating
+	 * @return boolean 
+	 * @access public
+	 * @version 05/07/12
+	 */
+	public function ValidateUserName($str) {
+		#Level 1 - Validiate username isn't banned.
+		$this->db->select('ban_user')
+		  ->from('ebb_banlist_user')
+		  ->where('ban_wildcard', 1)
+		  ->like('ban_user', $str)
+		  ->or_where('ban_user', $str);
+		
+		if ($this->db->count_all_results() == 0) {
+			#Level 2 - validate the usename isn't already in use.
+			$this->db->select('Username')->from('ebb_users')->where('Username', $str);
+			if ($this->db->count_all_results() == 0) {
+				return TRUE;
+			} else {
+				$this->form_validation->set_message('ValidateUserName', $this->lang->line('usernameexist'));
+			return FALSE;
+			}
+		} else {
+			$this->form_validation->set_message('ValidateUserName', $this->lang->line('usernameblacklisted'));
+			return FALSE;
+		}
+	}
+	
+	/**
+	 * Validate the info entered on the password recovery form.
+	 * @param string $str The value from the form.
+	 * @return boolean 
+	 * @version 05/15/12
+	 */
+	public function ValidateAccount($str) {
+		
+		$this->db->select('id')
+		  ->from('ebb_users')
+		  ->where('Username', $str)
+		  ->or_where('Email', $str)
+		  ->limit(1);
+		
+		if ($this->db->count_all_results() == 0) {
+			$this->form_validation->set_message('ValidateAccount', $this->lang->line('invalidrecoveryinfo'));
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+
+	}
 
 } //END Class.
-?>

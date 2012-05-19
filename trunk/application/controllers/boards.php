@@ -6,12 +6,12 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/11/2012
+ * @version 05/18/2012
 */
 
 /**
- * @class Boards
  * Board Controller.
+ * @abstract EBB_Controller 
  */
 class Boards extends EBB_Controller {
 
@@ -24,11 +24,10 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards
-	 *	- or -
-	 * 		http://example.com/index.php/boards/index
+	 * @example index.php
+	 * @example index.php/
+	 * @example index.php/boards
+	 * @example index.php/boards/index
 	 */
 	public function index() {
 
@@ -51,13 +50,10 @@ class Boards extends EBB_Controller {
 			foreach ($query2->result() as $row2) {
 
 				#board rules sql.
-				//TODO: use entity here
-				$this->db->select('B_Read')->from('ebb_board_access')->where('B_id',$row2->id);
-				$readAccessQ = $this->db->get();
-				$readAccess = $readAccessQ->row();
+				$this->Boardaccessmodel->GetBoardAccess($row2->id);
 
 				#see if user can view the board.
-				if ($this->Groupmodel->validateAccess(0, $readAccess->B_Read)){
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead())){
 					$data2[] = $row2;
 				}
 
@@ -133,9 +129,7 @@ class Boards extends EBB_Controller {
 
 	/**
 	 * shows list of topics.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/viewboard/5
+	 * @example index.php/boards/viewboard/5
 	*/
 	public function viewboard($id){
 
@@ -201,6 +195,7 @@ class Boards extends EBB_Controller {
 		}
 		
 		//setup pagination.
+		$config = array();
 		$config['base_url'] = $this->boardUrl . 'index.php/boards/viewboard/'.$id;
 		$config['total_rows'] = GetCount($id, 'TopicCount');
 		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
@@ -253,6 +248,9 @@ class Boards extends EBB_Controller {
 		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
+		  'LANG_BTNNEWTOPIC' => $this->lang->line('newtopic'),
+		  'LANG_BTNNEWPOLL' => $this->lang->line('newpoll'),
 		  'groupAccess' => $this->groupAccess,
 		  'BOARDID' => $id,
 		  'BOARDCOUNT' => GetCount($id, 'TopicCount'),
@@ -281,9 +279,7 @@ class Boards extends EBB_Controller {
 
 	/**
 	 * shows topics & all replies tied to it.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/viewtopic/5
+	 * @example index.php/boards/viewtopic/5
 	*/
 	public function viewtopic($id) {
 
@@ -384,6 +380,7 @@ class Boards extends EBB_Controller {
 		//
 		// Setup Pagination.
 		//
+		$config = array();
 		$config['base_url'] = $this->boardUrl . 'boards/viewtopic/'.$id;
 		$config['total_rows'] = GetCount($id, 'TopicReplies');
 		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
@@ -449,6 +446,17 @@ class Boards extends EBB_Controller {
 		  'LANG_PROFILE' => $this->lang->line('profile'),
 		  'LANG_POWERED' => $this->lang->line('poweredby'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
+		  'LANG_BTNREPLY' => $this->lang->line('postreply'),
+		  'LANG_BTNMOVETOPIC' => $this->lang->line('movetopic'),
+		  'LANG_BTNDELETETOPIC' => $this->lang->line('btndeletetopic'),
+		  'LANG_BTNLOCKTOPIC' => $this->lang->line('btnlocktopic'),
+		  'LANG_BTNUNLOCKTOPIC' => $this->lang->line('btnunlocktopic'),
+		  'LANG_BTNEDITPOST' => $this->lang->line('editpost'),
+		  'LANG_BTNDELETEPOST' => $this->lang->line('btndeletemessage'),
+		  'LANG_BTNQUOTEAUTHOR' => $this->lang->line('btnquoteauthor'),
+		  'LANG_BTNPMAUTHOR' => $this->lang->line('btnpmauthor'),
+		  'LANG_BTNREPORTPOST' => $this->lang->line('report2mod'),
 		  'groupAccess' => $this->groupAccess,
 		  'LANG_PRINT' =>  $this->lang->line('ptitle'),
 		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
@@ -522,13 +530,11 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * post new topic on board.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/newtopic/5
+	 * @example index.php/boards/newtopic/5
 	*/
 	public function newtopic($bid) {
-		// LOAD LIBRARIES
-        $this->load->library(array('encrypt', 'form_validation'));
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user'));
 		
 		$this->FORM_newtopic($bid, false);
@@ -536,13 +542,11 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * post new topic poll on board.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/newpoll/5
+	 * @example index.php/boards/newpoll/5
 	*/
 	public function newpoll($bid) {
-		// LOAD LIBRARIES
-        $this->load->library(array('encrypt', 'form_validation'));
+		//LOAD LIBRARIES
+       $this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user'));
 		
 		$this->FORM_newtopic($bid, true);
@@ -675,11 +679,12 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * reply to a topic.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/reply/5
+	 * @example index.php/boards/reply/5
 	*/
 	public function reply($id) {
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt', 'email', 'form_validation'));
+		$this->load->helper(array('form', 'user'));
 		$this->FORM_reply();
 	}
 	
@@ -694,9 +699,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * vote on a poll.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/vote/5
+	 * @example index.php/boards/vote/5
 	*/
 	public function vote($id) {
 
@@ -713,9 +716,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * report a topic.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/reporttopic/5
+	 * @example index.php/boards/reporttopic/5
 	*/
 	public function reporttopic($id) {
 		$this->FORM_reporttopic($id);
@@ -733,9 +734,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * report a reply.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/reportpost/5
+	 * @example index.php/boards/reportpost/5
 	*/
 	public function reportpost($id) {
 
@@ -743,9 +742,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * edit a topic.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/edittopic/5
+	 * @example index.php/boards/edittopic/5
 	*/
 	public function edittopic($id) {
 
@@ -753,9 +750,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * delets topic and all things assocated with it.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/deletetopic/5
+	 * @example index.php/boards/deletetopic/5
 	*/
 	public function deletetopic($id) {
 
@@ -763,9 +758,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * edit a reply.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/editpost/5
+	 * @example index.php/boards/editpost/5
 	*/
 	public function editpost($id) {
 
@@ -773,9 +766,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * delete a reply and everything assoicated with it.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/deletepost/5
+	 * @example index.php/boards/deletepost/5
 	*/
 	public function deletepost($id) {
 
@@ -783,9 +774,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * Getan RSS Feed for the selected Board.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/boardFeed/5
+	 * @example index.php/boards/boardFeed/5
 	*/
 	public function boardFeed($id) {
 
@@ -793,9 +782,7 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * Getan RSS Feed for the latest posts on the board.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/boards/boardFeed/5
+	 * @example index.php/boards/latestpost/5
 	*/
 	public function latestPost() {
 
