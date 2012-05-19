@@ -28,19 +28,19 @@
 
 {# grab permissions for posting on this board. #}
 {% if LOGGEDUSER == "guest" %}
-{{IMG("application/views/simple2/images/locked.gif")|raw}}
+<button id="juiBtnLocked">{{LANG_BTNLOCKED}}</button>
 {% else %}
 
 {# can they post a new topic? #}
 {% if CANPOST_TOPIC == 1 %}
-{{URL_TAG("boards/newtopic/"~BOARDID, IMG("application/views/simple2/images/newtopic.gif"))|raw}}&nbsp;
+<button id="juiBtnNewTopic" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/newtopic/{{BOARDID}}');">{{LANG_BTNNEWTOPIC}}</button>
 {% else %}
-{{IMG("application/views/simple2/images/locked.gif")|raw}}
+<button id="juiBtnLocked">{{LANG_BTNLOCKED}}</button>
 {% endif %}
 
 {# can they post a new poll topic?. #}
 {% if CANPOST_POLL == 1 %}
-{{URL_TAG("boards/newpoll/"~BOARDID, IMG("application/views/simple2/images/newpoll.gif"))|raw}}
+<button id="juiBtnNewPoll" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/newpoll/{{BOARDID}}');">{{LANG_BTNNEWPOLL}}</button>
 {% endif %}
 
 {% endif %}
@@ -96,4 +96,24 @@
 {% endif %}
 </table><br />
 
+<script type="text/javascript">
+	$(function() {
+		$("#juiBtnNewTopic").button({
+			icons: {
+                primary: "ui-icon-comment"
+            }
+		});
+		$("#juiBtnNewPoll").button({
+			icons: {
+                primary: "ui-icon-signal"
+            }
+		});
+		$('#juiBtnLocked').button({
+			disabled: true,
+			icons: {
+                primary: "ui-icon-locked"
+            }
+		});
+	});
+</script>
 {% endblock %}

@@ -1007,4 +1007,3 @@ class Usermodel extends CI_Model {
 		$this->db->update('ebb_users', $data);
 	}
 }
-?>

@@ -36,6 +36,15 @@ $lang['expiredsess'] = 'Your session has expired. Please re-login.';
 $lang['invalidlogin'] = 'INVALID LOGIN METHOD!';
 $lang['alreadyloggedin'] = 'You are already logged in.';
 
+#buttons
+$lang['btnlocked'] = 'Locked';
+$lang['btndeletetopic'] = 'Delete Topic';
+$lang['btnlocktopic'] = 'Lock Topic';
+$lang['btnunlocktopic'] = 'Unlock Topic';
+$lang['btndeletemessage'] = 'Delete Message';
+$lang['btnquoteauthor'] = 'Quote Author';
+$lang['btnpmauthor'] = 'PM Author';
+
 //TODO this may be considered as obsolete.
 $lang['closewindow'] = 'Close this Window';
 
@@ -314,8 +323,10 @@ $lang['castvote'] = 'Cast Vote';
 $lang['novote'] = 'No vote was casted.';
 #post form language tags.
 $lang['newtopic'] = 'Post New Topic';
+$lang['newpoll'] = 'Post New Poll';
+
 $lang['posttopic'] = 'Post Topic';
-$lang['reply'] = 'Post Reply';
+$lang['postreply'] = 'Post Reply';
 $lang['nowrite'] = 'You can not post anything in this board.';
 $lang['postingrules'] = 'Posting Rules';
 $lang['img'] = '[img]';

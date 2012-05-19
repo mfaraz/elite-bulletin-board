@@ -10,20 +10,38 @@
 
 {# grab permissions for posting on this board. #}
 {% if LOGGEDUSER == "guest" %}
-{{IMG("application/views/simple2/images/locked.gif")|raw}}
+<button id="juiBtnLocked">{{LANG_BTNLOCKED}}</button>
 {% else %}
 
 {# can user post a reply?. #}
 {% if CANPOST_REPLY == TRUE %}
-{{URL_TAG("boards/reply/"~TOPICID, IMG("application/views/simple2/images/reply.gif"))|raw}}<br /><br />
+<button id="juiBtnReply" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNREPLY}}</button>
 {% endif %}
 
 {% endif %}
 
-<p class="ui-widget-content">
-	{{URL_TAG("boards/printable/"~TOPICID, LANG_PRINT)|raw}}
-</p>
+<button id="juiBtnPrint" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/printable/{{TOPICID}}');">{{LANG_PRINT}}</button>
 
+{# Show these buttons only when the user is an admin or a moderator. #}
+{% if groupAccess == 1 or groupAccess == 2 %}
+	{% if GAC_MOVEACL == TRUE %}
+		<button id="juiBtnMoveTopic" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/move/{{TOPICID}}');">{{LANG_BTNMOVETOPIC}}</button>
+	{% endif%}
+
+	{% if GAC_DELETEACL == TRUE %}
+		<button id="juiBtnDeleteTopic" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/maintenance/delete/{{TOPICID}}');return false;">{{LANG_BTNDELETETOPIC}}</button>
+	{% endif%}
+
+	{# see if user can toggle lock. #}
+	{% if GAC_TOGGLELOCKACL == TRUE %}
+		{%if TOPIC_LOCKED == 1 %}
+			<button id="juiBtnUnlock" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/unlock/{{TOPICID}}');">{{LANG_BTNUNLOCKTOPIC}}</button>
+		{%else%}
+			<button id="juiBtnLock" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/lock/{{TOPICID}}');">{{LANG_BTNLOCKTOPIC}}</button>
+		{% endif %}
+	{% endif %}
+{% endif %}
+<br /><br />
 {# display a poll if present. #}
 {% if TOPIC_TYPE == "Poll" %}
 
@@ -65,27 +83,6 @@
 <br />
 {% endif %}
 
-{# Show these buttons only when the user is an admin or a moderator. #}
-{% if groupAccess == 1 or groupAccess == 2 %}
-	{% if GAC_MOVEACL == TRUE %}
-		{{URL_TAG("maintenance/move/"~TOPICID, IMG("application/views/simple2/images/move.gif"))|raw}}
-	{% endif%}
-
-	{% if GAC_DELETEACL == TRUE %}
-		<a href="#" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/maintenance/delete/{{TOPICID}}');return false;">{{IMG("application/views/simple2/images/deletetopic.gif")|raw}}</a>
-	{% endif%}
-
-	{# see if user can toggle lock. #}
-	{% if GAC_TOGGLELOCKACL == TRUE %}
-		{%if TOPIC_LOCKED == 1 %}
-			{{URL_TAG("maintenance/lock/"~TOPICID, IMG("application/views/simple2/images/unlock.gif"))|raw}}<br />
-		{%else%}
-			{{URL_TAG("maintenance/unlock/"~TOPICID, IMG("application/views/simple2/images/lock.gif"))|raw}}<br />
-		{% endif %}
-	{% endif %}
-
-{% endif %}
-
 <table border="0" class="table" cellpadding="1" cellspacing="1">
 <tr>
 <td colspan="2" class="ui-widget-header">{{TOPIC_SUBJECT}} - {{LANG_POSTED}}: {{TOPIC_POSTEDON|PostedDate(TimeFormat, TimeZone)}}
@@ -106,28 +103,28 @@
 		{% endif%}
 
 		{% if GAC_EDITTOPIC == TRUE %}
-			{{URL_TAG("boards/edittopic/"~TOPICID, IMG("application/views/simple2/images/edit.gif"))|raw}}
+			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/edittopic/{{TOPICID}}');">{{LANG_BTNEDITPOST}}</button>
 		{% endif%}
 
 		{% if GAC_DELETETOPIC == TRUE %}
-			<a href="#" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{IMG("application/views/simple2/images/delete.gif")|raw}}</a>
+			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 		{% endif%}
 
 	{% endif%}
 {% else %}
 
 	{% if LOGGEDUSER == TOPIC_AUTHOR and GAC_EDITTOPIC == TRUE %}
-		{{URL_TAG("boards/edittopic/"~TOPICID, IMG("application/views/simple2/images/edit.gif"))|raw}}
+		<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/edittopic/{{TOPICID}}');">{{LANG_BTNEDITPOST}}</button>
 	{% endif %}
 
 	{% if LOGGEDUSER == TOPIC_AUTHOR and GAC_DELETETOPIC == TRUE %}
-		<a href="#" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{IMG("application/views/simple2/images/delete.gif")|raw}}</a>
+		<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 	{% endif %}
 
 {% endif%}
 
 {% if LOGGEDUSER != "guest" %}
-{{URL_TAG("boards/reply/"~TOPICID, IMG("application/views/simple2/images/quote.gif"))|raw}}
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNQUOTEAUTHOR}}</button>
 {% endif%}
 
 </span></td>
@@ -204,9 +201,9 @@ _________________<br />
 {% if LOGGEDUSER != "guest" %}
 <tr>
 <td colspan="2" align="right" class="ui-widget-header">
-    {{URL_TAG("profile/#/"~AUTHOR, IMG("application/views/simple2/images/profile.gif"))|raw}}&nbsp;
-    {{URL_TAG("profile/#/PM/compose/"~AUTHOR, IMG("application/views/simple2/images/pm.gif"))|raw}}&nbsp;
-    {{URL_TAG("boards/reporttopic"~TOPICID, IMG("application/views/simple2/images/report.gif"))|raw}}
+	<button class="juiBtnProfile" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/{{AUTHOR}}');">{{LANG_PROFILE}}</button>
+	<button class="juiBtnPmAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/PM/compose/{{AUTHOR}}');">{{LANG_BTNPMAUTHOR}}</button>
+	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reporttopic/{{TOPICID}}');">{{LANG_BTNREPORTPOST}}</button>
 </td>
 </tr>
 {%endif %}
@@ -236,28 +233,28 @@ _________________<br />
 		{% endif%}
 
 		{% if GAC_EDITTOPIC == TRUE %}
-			{{URL_TAG("boards/editpost/"~r.pid, IMG("application/views/simple2/images/edit.gif"))|raw}}
+			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/editpost/{{r.pid}}');">{{LANG_BTNEDITPOST}}</button>
 		{% endif%}
 
 		{% if GAC_DELETETOPIC == TRUE %}
-			<a href="#" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{IMG("application/views/simple2/images/delete.gif")|raw}}</a>
+			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 		{% endif%}
 
 	{% endif%}
 {% else %}
 
 	{% if LOGGEDUSER == r.author and GAC_EDITTOPIC == TRUE %}
-		{{URL_TAG("boards/editpost/"~r.pid, IMG("application/views/simple2/images/edit.gif"))|raw}}
+		<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/editpost/{{r.pid}}');">{{LANG_BTNEDITPOST}}</button>
 	{% endif %}
 
 	{% if LOGGEDUSER == r.author and GAC_DELETETOPIC == TRUE %}
-		<a href="#" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{IMG("application/views/simple2/images/delete.gif")|raw}}</a>
+		<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 	{% endif %}
 
 {% endif%}
 
 {% if LOGGEDUSER != "guest" %}
-{{URL_TAG("boards/reply/"~TOPICID, IMG("application/views/simple2/images/quote.gif"))|raw}}
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNQUOTEAUTHOR}}</button>
 {% endif%}
 </span></td>
 </tr><tr>
@@ -331,9 +328,9 @@ _________________<br />
 {% if LOGGEDUSER != "guest" %}
 <tr>
 <td colspan="2" align="right" class="ui-widget-header">
-    {{URL_TAG("profile/#/"~r.author, IMG("application/views/simple2/images/profile.gif"))|raw}}&nbsp;
-    {{URL_TAG("profile/#/PM/compose/"~r.author, IMG("application/views/simple2/images/pm.gif"))|raw}}&nbsp;
-    {{URL_TAG("boards/reportpost/"~r.pid, IMG("application/views/simple2/images/report.gif"))|raw}}
+	<button class="juiBtnProfile" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/{{r.author}}');">{{LANG_PROFILE}}</button>
+	<button class="juiBtnPmAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/PM/compose/{{r.author}}');">{{LANG_BTNPMAUTHOR}}</button>
+	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reportpost/{{r.pid}}');">{{LANG_BTNREPORTPOST}}</button>
 </td>
 </tr>
 {% endif %}
@@ -417,4 +414,62 @@ $(function(){
 
 {% endif %}
 
+<script type="text/javascript">
+	$(function() {
+		//"input:submit, a, button", ".demo" 
+		$("#juiBtnReply, .juiBtnQuoteAuthor, .juiBtnPmAuthor").button({
+			icons: {
+                primary: "ui-icon-comment"
+            }
+		});
+		$("#juiBtnPrint").button({
+			icons: {
+                primary: "ui-icon-print"
+            }
+		});
+		$("#juiBtnMoveTopic").button({
+			icons: {
+                primary: "ui-icon-extlink"
+            }
+		});
+		$("#juiBtnDeleteTopic, .juiBtnDeletePost").button({
+			icons: {
+                primary: "ui-icon-trash"
+            }
+		});
+		$("#juiBtnLock").button({
+			icons: {
+                primary: "ui-icon-locked"
+            }
+		});
+		$("#juiBtnUnlock").button({
+			icons: {
+                primary: "ui-icon-unlocked"
+            }
+		});
+		
+		$(".juiBtnEditPost").button({
+			icons: {
+                primary: "ui-icon-pencil"
+            }
+		});
+		$(".juiBtnProfile").button({
+			icons: {
+                primary: "ui-icon-person"
+            }
+		});
+		$(".juiBtnReportPost").button({
+			icons: {
+                primary: "ui-icon-alert"
+            }
+		});
+		
+		$('#juiBtnLocked').button({
+			disabled: true,
+			icons: {
+                primary: "ui-icon-locked"
+            }
+		});
+	});
+</script>
 {% endblock %}
