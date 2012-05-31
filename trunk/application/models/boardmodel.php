@@ -477,7 +477,7 @@ class Boardmodel extends CI_Model {
 	 * Get an array of sub-boards.
 	 * @param int $boardID
 	 * @return array
-	 * @version 1/31/12
+	 * @version 05/25/12
 	*/
 	public function GetSubBoards($boardID) {
 
@@ -485,7 +485,7 @@ class Boardmodel extends CI_Model {
 		$subboards = array();
 
 		#board sql.
-		$this->db->select('id, Board, Description, last_update, Posted_User, Post_Link')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
+		$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -516,7 +516,7 @@ class Boardmodel extends CI_Model {
 		$topics = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('bid, last_update, Topic, author, Posted_User, Post_Link, tid, Views, Type, important, Locked')->from('ebb_topics')->where('bid', $bid)->order_by('last_update', 'desc')->limit($limit, $start);
+		$this->db->select('bid, last_update, Topic, author, posted_user, last_page, pid, tid, Views, topic_type, important, Locked')->from('ebb_topics')->where('bid', $bid)->order_by('last_update', 'desc')->limit($limit, $start);
 		$query = $this->db->get();
 
 		//see if we have any records to show.

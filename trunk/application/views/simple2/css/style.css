@@ -270,56 +270,51 @@ PAGINATION CSS
 */
 
 .pagination{
-padding: 2px;
-}
-
-.pagination ul{
-margin: 0;
-padding: 0;
-text-align: left; /*Set to "right" to right align pagination interface*/
-font-size: 12px;
-}
-
-.pagination li{
-list-style-type: none;
-display: inline;
-padding-bottom: 1px;
+	padding: 2px;
+	background-color: #C3C9D5;
 }
 
 .pagination a, .pagination a:visited{
-padding: 0 5px;
-border: 1px solid #163061;
-text-decoration: none; 
-color: #C3C9D5;
+	padding: 0 5px;
+	border: 1px solid #163061;
+	text-decoration: none; 
+	color: #C3C9D5;
 }
 
 .pagination a:hover, .pagination a:active{
-border: 1px solid #163061;
-color: #CC6600;
-background-color: #8494B4;
+	padding: 0 5px;
+	border: 1px solid #163061;
+	color: #CC6600;
+	background-color: #8494B4;
 }
 
-.pagination li.currentpage{
-font-weight: bold;
-padding: 0 5px;
-border: 1px solid #163061;
-background-color: #8494B4;
-color: #000000;
+.pagination .currentpage{
+	padding: 0 5px;
+	font-weight: bold;
+	border: 1px solid #163061;
+	background-color: #8494B4;
+	color: #000000;
+	margin-left:5px;
 }
 
-.pagination li.disablepage{
-padding: 0 5px;
-border: 1px solid #163061;
-color: #929292;
+.pagination .disablepage{
+	padding: 0 5px;
+	border: 1px solid #163061;
+	color: #929292;
 }
 
-.pagination li.nextpage{
-font-weight: bold;
+.pagination .nextpage, .pagination .prevpage{
+	padding: 0 5px;
+	font-weight: bold;
 }
 
-* html .pagination li.currentpage, * html .pagination li.disablepage{ /*IE 6 and below. Adjust non linked LIs slightly to account for bugs*/
-margin-right: 5px;
-padding-right: 0;
+* html .pagination .currentpage, * html .pagination .disablepage{ /*IE 6 and below. Adjust non linked LIs slightly to account for bugs*/
+	margin-right: 5px;
+	padding-right: 0;
+}
+
+.pagination a.prevnext{
+	font-weight: bold;
 }
 
 /*

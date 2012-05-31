@@ -15,7 +15,7 @@
 
 {# can user post a reply?. #}
 {% if CANPOST_REPLY == TRUE %}
-<button id="juiBtnReply" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNREPLY}}</button>
+<button id="juiBtnReply" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}/{{FORM_PAGE}}');">{{LANG_BTNREPLY}}</button>
 {% endif %}
 
 {% endif %}
@@ -43,33 +43,34 @@
 {% endif %}
 <br /><br />
 {# display a poll if present. #}
-{% if TOPIC_TYPE == "Poll" %}
+{% if TOPIC_TYPE == 1 %}
 
 {% if VOTECHECK(LOGGEDUSER, TOPICID) == TRUE or CANVOTE == FALSE or LOGGEDUSER == "guest" %}
 <table border="0" class="table" cellpadding="1" cellspacing="1">
 <tr>
     <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
 </tr><tr>
-    <td align="center" class="ui-widget-content">
+    <td class="ui-widget-content">
 		{% for p in POLLDATA %}		
 			{% if CALC_VOTE(p.option_id, TOPICID) == 0%}
-				<strong>{{p.Poll_Option}}</strong>&nbsp;0%<br /><br />
+				<strong>{{p.option_value}}: (0%)</strong><br /><br />
 			{% else %}
-				<strong>{{p.Poll_Option}}</strong>&nbsp;<img src="{{BOARD_URL}}application/views/simple2/images/bar.gif" width="{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}" height="10" alt="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" title="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" />&nbsp;{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%<br /><br />
+				<strong>{{p.option_value}}: ({{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%)</strong><br />
+				<img src="{{BOARD_URL}}application/views/simple2/images/bar.gif" width="{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}" height="10" alt="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" title="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" /><br /><br />
 			{% endif %}
         {% endfor %}
-		<br />&nbsp;&nbsp;&nbsp;{{LANG_TOTAL}}: <b>{{TOTAL_VOTES}}</b>
+		{{LANG_TOTAL}}: <strong>{{TOTAL_VOTES}}</strong>
     </td>
 </tr>
 </table>
 {% else %}
-<table border="0" class="table" cellpadding="1" cellspacing="1">
+<table border="0" class="table" style="width: 500px;" align="center" cellpadding="1" cellspacing="1">
 <tr>
     <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
 </tr><tr>
-    <td align="center" class="ui-widget-content">
+    <td class="ui-widget-content">
 		{% for p in POLLDATA %}
-        <input type="radio" name="vote" value="{{p.option_id}}" />{{p.Poll_Option}}<br />
+        <input type="radio" name="vote" value="{{p.option_id}}" />{{p.option_value}}<br />
         {% endfor %}		
     </td>
 </tr><tr>
@@ -212,7 +213,7 @@ _________________<br />
 {# display a list of replies if present. #}
 {% for r in REPLYDATA %}
 
-<table border="0" class="table" cellspacing="1" cellpadding="1">
+<table border="0" class="table" id="post{{r.pid}}" cellspacing="1" cellpadding="1">
 <tr>
 <td colspan="2" class="ui-widget-header">{{LANG_POSTED}}: {{r.Original_Date|PostedDate(TimeFormat, TimeZone)}}
 <span class="postopt">
@@ -383,7 +384,7 @@ $(function(){
 	<script type="text/javascript">
 
 		$(function(){
-			$('#attach').jUploader({LoadingGfx: "template/simple2/images/loading.gif",
+			$('#attach').jUploader({LoadingGfx: "application/views/simple2/images/loading.gif",
 				LoadingMsg: lang.attachLoading, PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess, FailureMsg: lang.attachFailed,
 				uploadLimitMsg: lang.attachLimit, uploadLimit: "{ATTACHMENTLIMIT}"});
@@ -392,7 +393,7 @@ $(function(){
 	<!--END upload -->
 </div>
 
-<form method="post" action="Process.php?mode=reply&amp;bid={BID}&amp;tid={TID}&amp;pg={PAGE}">
+{{QREPLYFORM|raw}}
 <div align="center">
 	<div id="emoticons" style="width:500px;" align="center">
 		{{SMILES|raw}}
@@ -406,7 +407,7 @@ $(function(){
 			<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
 			<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
 			<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}<br />
-			<input type="hidden" name="page" value="{PAGE}" />
+			<input type="hidden" name="page" value="{{FORM_PAGE}}" />
 		</div>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 /**
 Filename: common.js
-Last Modified: 02/20/2012
+Last Modified: 05/21/12
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -10,25 +10,17 @@ the Free Software Foundation; either version 2 of the License, or
 */
 
 /**
- *gotoUrl
- *
  *Used to redirect a user to a location within the program's directory.
- *
  *@param addr[str] - the url to direct user to.
- *
 */
 function gotoUrl(addr){
 	window.location = addr;
 }
 
 /**
- *confirmDlg
- *
  *Used to display a confirmation dialog to the user.
- *
  *@param msg[str] - the message displayed to the user.
  *@param addr[str] - the url to direct user to.
- *
 */
 function confirmDlg(msg, addr){
 	if (confirm(msg)){
@@ -60,23 +52,13 @@ $(document).ready(function(){
     	$(this).hide();
 	});
 
-	//check for similar topics on change.
-	similarTopics();
-
 	//load up group roster
-	viewRoster();
+	//viewRoster();
 
 	//live search event.
 	liveSearch();
 
 }); //END (document).ready
-
-/**
- *
-**/
-function loadIframe(ele, src){
-	$('#'+ ele).attr('src', src);
-}
 
 /**
  * liveSearch
@@ -133,35 +115,8 @@ function viewRoster(){
 	}); //END .live
 }
 
-/**
- * similarTopics
- * AJAX call to find similar topics.
-**/
-function similarTopics(){
-    	$('#topic').change(function() {
-			//ensure we enter in data first.
-			if($(this).val() != ""){
-			
-				//show panel.
-				$('#div_notice').show();
-
-				//call .ajax to call server.
-				$.post("quicktools/relatedtopics.php", { topic: $(this).val()},function(html){
-					$("#similar").html(html).removeClass("ui-state-error");
-				}); //END $.ajax(
-
-				//error handler.
-				$("#similar").ajaxError(function(e, xhr){
-					var msg = lang.jsError + ":<br />";
-   					$(this).html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
- 				});
-			
-			}
-		}); //END .change
-}
-
 //900,000 = 15 minutes
-function updateOnline(){
+/*function updateOnline(){
 
 	$("#online").load("quicktools/online.php", function(response, status, xhr) {
 		if (status == "error") {
@@ -169,5 +124,5 @@ function updateOnline(){
 	    	$("#online").html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
 	  	}
 	}); //END $.load
-}
+}*/
 //setInterval( "updateOnline()", 300000);

@@ -284,6 +284,23 @@ class Attachmentsmodel extends CI_Model {
 	public function CreateAttachment() {
 
 	}
+	
+	/**
+	 * Assigns attachment to user and topic id.
+	 * @param string $user user who uploaded file(s)
+	 * @param integer $tid Topic ID.
+	 * @param integer $attachId Attachment ID.
+	 */
+	public function AssignAttachment($tid, $attachId) {
+		
+		$data = array(
+		  "tid" => $tid
+		);
+		
+		#update attachment.
+		$this->db->where('id', $attachId);
+		$this->db->update('ebb_attachments', $data);
+	}
 
 	public function DeleteAttachment() {
 		
