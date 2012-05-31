@@ -41,7 +41,7 @@ $(function(){
 			<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/simple2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
 			<td class="ui-widget-header" align="center">{{b.id|counter("TopicCount")}}</td>
 			<td class="ui-widget-header" align="center">{{b.id|counter("PostCount")}}</td>
-			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.Post_Link, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
+			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
 			</tr>
 		{%- endif -%}
 

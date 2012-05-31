@@ -4,7 +4,6 @@
 
 {% block bodyRender %}
 
-<script type="text/javascript" src="{{BOARD_URL}}js/jPanels.js"></script>
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
@@ -15,21 +14,16 @@
 <script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
 <!-- Rich text editor file -->
 <script type="text/javascript" src="{{BOARD_URL}}js/tEditor.js"></script>
-<!-- call our collapsible panel -->
-<script type="text/javascript">
-$(function(){
-	$("#optionBox").jPanels();
-	$("#pollBox").jPanels();
-});
-</script>
 
 {{BREADCRUMB|raw}}<br />
+
+{{VALIDATIONSUMMARY|raw}}<br />
 
 <!-- validation box. -->
 <div align="center" style="display:none;" id="div_ErrMsg">
 	<div class="ui-widget" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
-			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsgLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p id="validateRes"></p>
 		</div>
 	</div>
@@ -67,11 +61,11 @@ $(function(){
 </table><br />
 
 <!-- Similar Topic results. -->
-<div style="display:none;" id="div_notice">
+<div style="display:none;" id="div_notice"  align="center">
 	<div class="ui-widget">
-		<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+		<div class="ui-state-highlight ui-corner-all" style="text-align:left;margin-top: 20px;width:500px;padding: 0 .7em;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_notice').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
-            <div id="smloading"><img src="./template/simple2/images/smloader.gif" /></div>
+            <div id="smloading"><img src="application/views/simple2/images/smloader.gif" /></div>
 			<p><span class="ui-icon ui-icon-search" style="float: left; margin-right: .3em;"></span>
 		    <div id="similar"></div>
 		</div>
@@ -102,9 +96,8 @@ $(function(){
 	<div id="filelist"></div>
 
 	<script type="text/javascript">
-
 		$(function(){
-			$('#attach').jUploader({LoadingGfx: "template/simple2/images/loading.gif",
+			$('#attach').jUploader({LoadingGfx: "application/views/simple2/images/loading.gif",
 				LoadingMsg: lang.attachLoading, PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess, FailureMsg: lang.attachFailed,
 				uploadLimitMsg: lang.attachLimit, uploadLimit: "{{ATTACHMENTLIMIT}}"});
@@ -113,62 +106,39 @@ $(function(){
 	{% endif %}
 </div>
 
+{% if POLLOPTION == TRUE %}
+{{NEWPOLLFORM|raw}}
+{% else %}
 {{NEWTOPICFORM|raw}}
+{% endif %}
 <div align="center">
 
-<div id="emoticons" style="width:500px;" align="center">
-{{SMILES|raw}}
-</div>
-<div class="ui-widget-header" style="width:400px;text-align:left;">
-{{LANG_TOPIC}}:&nbsp;<input type="text" name="topic" class="text" size="30" id="topic" />
+<div id="emoticons" class="ui-widget-content ui-corner-all" style="width:500px;" align="center">
+	{{SMILES|raw}}
+	<hr />
+	<a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
+</div><br />
+<div class="ui-widget-content ui-corner-all" style="width:400px;text-align:left;padding: 0 .7em;">
+{{LANG_TOPIC}}:<br /><input type="text" name="topic" class="text" size="30" id="topic" />
 </div>
 <textarea id="body" name="post" cols="80" rows="20"></textarea>
 <br /><input type="submit" value="{{LANG_POSTTOPIC}}" class="submit" />
 
 {% if POLLOPTION == TRUE %}
 <br /><br />
-<div id="pollBox" title="{{LANG_POLL}}" style="width:400px;text-align:left;">
-	<div class="pContent">
+<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
 	{{LANG_QUESTION}}<br />
 	<input type="text" name="question" id="question" class="text" size="30" />
-	<br />
-	{{LANG_OPTION1}}<br />
-	<input type="text" name="poll_otp1" id="opt1" class="text" size="30" />
-	<br />
-	{{LANG_OPTION2}}<br />
-	<input type="text" name="poll_otp2" id="opt2" class="text" size="30" />
-	<br />
-	{{LANG_OPTION3}}<br />
-	<input type="text" name="poll_otp3" id="opt3" class="text" size="30" />
-	<br />
-	{{LANG_OPTION4}}<br />
-	<input type="text" name="poll_otp4" id="opt4" class="text" size="30" />
-	<br />
-	{{LANG_OPTION5}}<br />
-	<input type="text" name="poll_otp5" id="opt5" class="text" size="30" />
-	<br />
-	{{LANG_OPTION6}}<br />
-	<input type="text" name="poll_otp6" id="opt6" class="text" size="30" />
-	<br />
-	{{LANG_OPTION7}}<br />
-	<input type="text" name="poll_otp7" id="opt7" class="text" size="30" />
-	<br />
-	{{LANG_OPTION8}}<br />
-	<input type="text" name="poll_otp8" id="opt8" class="text" size="30" />
-	<br />
-	{{LANG_OPTION9}}<br />
-	<input type="text" name="poll_otp9" id="opt9" class="text" size="30" />
-	<br />
-	{{LANG_OPTION10}}<br />
-	<input type="text" name="poll_otp10" id="opt10" class="text" size="30" />
-	</div>
+	<br /><br />
+	<small>{{LANG_POLL}}</small><br />
+	<textarea name="pollOpts" id="pollOpts" rows="5" cols="50"  class="text"></textarea>
 </div>
 {% endif%}
-
-<br /><br />
-<div id="optionBox" title="{{LANG_OPTIONS}}" style="width:400px;text-align:left;">
-	<div class="pContent">
-	<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a><br />
+<br />
+<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
+	<div style="text-align:center;">
+		<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a>
+	</div>
 	{% if GAC_IMPORTANT == TRUE %}
 	{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" checked=checked />{{LANG_NORMAL}}<br />
 	{% else %}
@@ -176,9 +146,9 @@ $(function(){
 	{% endif %}	
 	<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
 	<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
-	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}<br />
-	</div>
+	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
 </div>
+
 <input type="hidden" name="PollTopic" value="{{POLLOPTION}}" />
 <input type="hidden" name="bid" value="{{BID}}" />
 </form><br />
@@ -187,13 +157,25 @@ $(function(){
 $('#topic').focus();
 
 new FormValidator('frmNewTopic', [{
-	name: 'username',
-	display: '{{LANG_USERNAME}}',
+	name: 'topic',
+	display: '{{LANG_TOPIC}}',
+	rules: 'required|max_length[50]'
+},
+{% if POLLOPTION == TRUE %}
+{
+	name: 'question',
+	display: '{{LANG_QUESTION}}',
+	rules: 'required|min_length[5]|max_length[50]'
+},{
+	name: 'pollOpts',
+	display: '{{LANG_POLLOPTIONS}}',
 	rules: 'required'
-}, {
-	name: 'password',
-	display: '{{LANG_PASSWORD}}',
-	rules: 'required'
+},
+{% endif %}
+{
+	name: 'post',
+	display: '{{LANG_TOPICBODY}}',
+	rules: 'required|min_length[10]'
 }], function(errors, event) {
 
 	if (errors.length > 0) {
@@ -205,6 +187,31 @@ new FormValidator('frmNewTopic', [{
 	}
 
 });
+
+/**
+ * similarTopics
+ * AJAX call to find similar topics.
+**/
+$('#topic').change(function() {
+	//ensure we enter in data first.
+	if ($(this).val() != "") {
+
+		//show panel.
+		$('#div_notice').show();
+
+		//call .ajax to call server.
+		$.post("{{BOARD_URL}}index.php/ajax/SimilarTopics", $('#frmNewTopic').serialize(),function(html){
+			$("#similar").html(html).removeClass("ui-state-error");
+		}); //END $.ajax(
+
+		//error handler.
+		$("#similar").ajaxError(function(e, xhr){
+			var msg = lang.jsError + ":<br />";
+			$(this).html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
+		});
+
+	}
+}); //END .change
 </script>
 
 {% endblock %}

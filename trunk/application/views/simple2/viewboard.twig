@@ -20,7 +20,7 @@
 	<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/simple2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
 	<td class="ui-widget-content" align="center">{{b.id|counter("TopicCount")}}</td>
 	<td class="ui-widget-content" align="center">{{b.id|counter("PostCount")}}</td>
-	<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.Post_Link, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
+	<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
 </tr>
 {% endfor %}
 </table><br />
@@ -74,7 +74,7 @@
 {{IMG("application/views/simple2/images/important.gif")|raw}}
 {% elseif t.Locked == 1 %}
 {{IMG("application/views/simple2/images/locked_topic.gif")|raw}}
-{% elseif t.Type == "Poll" %}
+{% elseif t.topic_type == 1 %}
 {{IMG("application/views/simple2/images/poll.gif")|raw}}
 {% elseif t.tid|counter("TopicReplies") >= 15 %}
 {# topic is popular. #}
@@ -89,7 +89,7 @@
 <td width="15%" class="ui-widget-content">{{t.author}}</td>
 <td width="10%" align="center" class="ui-widget-content">{{t.tid|counter("TopicReplies")}}</td>
 <td width="10%" align="center" class="ui-widget-content">{{t.Views|counter("TopicViews")}}</td>
-<td width="20%" class="ui-widget-content">{{t.last_update|PostedDate(TimeFormat, TimeZone)}}<br /><a href="viewtopic.php?{POSTLINK}">{{LANG_POSTEDBY}}</a>: {{t.Posted_User}}</td>
+<td width="20%" class="ui-widget-content">{{t.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~t.tid~"/"~t.last_page~"#post"~t.pid, LANG_POSTEDBY)|raw}}: {{t.posted_user}}</td>
 </tr>
 {% endfor %}
 

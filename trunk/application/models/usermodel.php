@@ -955,7 +955,7 @@ class Usermodel extends CI_Model {
 		  'suspend_time' => $this->getSuspendTime()
         );
 
-		#add new preference.
+		#add new user.
 		$this->db->insert('ebb_users', $data);
 	}
 

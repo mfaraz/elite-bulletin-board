@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 12/01/2011
+ * @version 05/29/2012
 */
 
 /**
@@ -220,12 +220,11 @@ function language_filter($string, $type) {
 /**
  * Prevent users from performing an action too soon from another action.
  * @param string $type (posting;search).
- * @param string $LastPost DB entry for last post time.
- * @param string $LastSearch DB entry for last search time.
- * @version 12/01/11
+ * @param string $LastActivity DB entry for last post time.
+ * @version 05/23/12
  * @return boolean
 */
-function flood_check($type, $LastPost, $LastSearch){
+function flood_check($type, $LastActivity){
 
 	#see what action to perform based on type.
 	switch($type){
@@ -234,10 +233,10 @@ function flood_check($type, $LastPost, $LastSearch){
 		$currtime = time() - 30;
 
 		#see if user is posting too quickly.
-		if ($LastPost > $currtime){
-			$flood = 1;
+		if ($LastActivity > $currtime){
+			$flood = TRUE;
 		}else{
-			$flood = 0;
+			$flood = FALSE;
 		}
 	break;
 	case 'search':
@@ -245,10 +244,10 @@ function flood_check($type, $LastPost, $LastSearch){
 		$currtime = time() - 20;
 
 		#see if user is posting too quickly.
-		if ($LastSearch > $currtime){
-			$flood = 1;
+		if ($LastActivity > $currtime){
+			$flood = TRUE;
 		}else{
-			$flood = 0;
+			$flood = FALSE;
 		}	
 	break;
 	}
@@ -256,76 +255,89 @@ function flood_check($type, $LastPost, $LastSearch){
 }
 
 /**
-* increments the user's post count.
-* @param string $string user to increment count.
-* @version 12/12/10
+ * increments the user's post count.
+ * @param string $user user to increment count.
+ * @version 05/29/12
 */
-function post_count($string){
+function post_count($user){
 
-	//may not be using this.
+	#obtain codeigniter object.
+	$ci =& get_instance();
+	
+	$ci->db->select('Post_Count')
+	  ->from('ebb_users')
+	  ->where('Username', $user);
+	$q = $ci->db->get();
+	$usrData = $q->row();
+	
+	$newPostCt = $usrData->Post_Count + 1;
+	
+	#update user.
+	$data = array(
+	  "Post_Count" => $newPostCt
+	);
+	$ci->db->where('Username', $user);
+	$ci->db->update('ebb_users', $data);
 
-	global $db;
-
-	//get current post count then add on to it.
-	$db->SQL = "select Post_Count from ebb_users where Username='$string'";
-	$get_num = $db->fetchResults();
-
-	$increase_count = $get_num['Post_Count'] + 1;
-	$db->SQL = "UPDATE ebb_users SET Post_Count='$increase_count' WHERE Username='$string'";
-	$db->query();
 }
 
-#error here!!! (should have explained what that was (~hindsight)
 /**
  * updates the last post field.
- * @param bid [int] - BoardID.
- * @param newlink [str] - new link to newest post.
- * @param user [str] - the nw posted by user.
- * @version 12/12/10
+ * @param integer $bid BoardID.
+ * @param string $newTid new topic id.
+ * @param string $time UNIX Timestamp
+ * @param string $postedUser the new posted by user.
+ * @param integer $page the current page to direct user to (NULL by default)
+ * @version 05/25/12
 */
-function update_board($bid, $newlink, $user){
-
-	global $db, $time; 
-	#update lasy post details for the selected board.
-	$db->SQL = "update ebb_boards SET last_update='$time' WHERE id='$bid'";
-	$db->query();
-
-	//update post link for board.
-	$db->SQL = "Update ebb_boards SET Post_Link='$newlink', Posted_User='$user' WHERE id='$bid'";
-	$db->query();
+function update_board($bid, $newTid, $time, $postedUser, $page = null) {
+	
+	#obtain codeigniter object.
+	$ci =& get_instance();
+	
+	#update board data.
+	$data = array(
+	  "last_update" => $time,
+	  "tid" => $newTid,
+	  "posted_user" => $postedUser,
+	  "last_page" => $page
+	);
+	$ci->db->where('id', $bid);
+	$ci->db->update('ebb_boards', $data);
 
 	#clear data from read table for the board selected.
-	$db->SQL = "DELETE FROM ebb_read_board WHERE Board='$bid'";
-	$db->query();
+	$ci->db->where('Board', $bid);
+	$ci->db->delete('ebb_read_board');
 
 }
 
-#error here!!! (should have explained what that was (~hindsight)
 /**
  * updates the last post field.
- * @param tid [int] - TopicID.
- * @param newlink [str] - new link to newest post.
- * @param user [str] - the nw posted by user.
- * @version 12/12/10
+ * @param integer $bid BoardID.
+ * @param string $time UNIX Timestamp.
+ * @param string $postedUser the new posted by user.
+ * @param string $newPid new post id. (NULL by default)
+ * @param integer $page the current page to direct user to. (NULL by default)
+ * @version 05/25/12
 */
-function update_topic($tid, $newlink, $user){
-
-	global $db, $time;
-	#update lasy post details for the selected topic.
-	$db->SQL = "update ebb_topics SET last_update='$time' WHERE tid='$tid'";
-	$db->query();
+function update_topic($tid, $time, $postedUser, $newPid = null, $page = null) {
+	
+	#obtain codeigniter object.
+	$ci =& get_instance();
+	
+	#update board data.
+	$data = array(
+	  "last_update" => $time,
+	  "pid" => $newPid,
+	  "posted_user" => $postedUser,
+	  "last_page" => $page
+	);
+	$ci->db->where('tid', $tid);
+	$ci->db->update('ebb_topics', $data);
 
 	#clear data from read table for the topic selected.
-	$db->SQL = "DELETE FROM ebb_read_topic WHERE Topic='$tid'";
-	$db->query();
-
-	//update post link for topic.
-	$db->SQL = "Update ebb_topics SET Post_Link='$newlink' WHERE tid='$tid'";
-	$db->query();
-
-	//update last poster for topic.
-	$db->SQL = "Update ebb_topics SET Posted_User='$user' WHERE tid='$tid'";
-	$db->query();
+	$ci->db->where('Topic', $tid);
+	$ci->db->delete('ebb_read_topic');
 
 }
 ?>

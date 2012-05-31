@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/18/2012
+ * @version 05/29/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -296,7 +296,7 @@ class EBB_Controller extends CI_Controller {
 	 * @param string $str The value from the form.
 	 * @return boolean 
 	 * @version 05/15/12
-	 */
+	*/
 	public function ValidateAccount($str) {
 		
 		$this->db->select('id')
@@ -312,6 +312,65 @@ class EBB_Controller extends CI_Controller {
 			return TRUE;
 		}
 
+	}
+	
+	/**
+	 * Validate that no spam is detected.
+	 * @param string $str The value from the form.
+	 * @return boolean 
+	 * @version 05/21/12
+	*/
+	public function SpamFilter($str) {
+		
+		#grab our banned words..
+		$this->db->select('id')->from('ebb_spam_list')->like('spam_word', $str);
+		$spamQ = $this->db->get();
+		
+		//see if anything is listed as spam.
+		if ($spamQ->num_rows() > 0) {
+			$this->form_validation->set_message('SpamFilter', $this->lang->line('spamwarn'));
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+		
+	}
+	
+	/**
+	 * Validate the poll options meet the criteria.
+	 * @param string $str The value from the form.
+	 * @return boolean 
+	 * @version 05/29/12
+	 */
+	public function PollOptionValidation($str) {
+		$pollOptions = explode("\n", $str);
+		
+		//see if at least 2 options are listed.
+		if (count($pollOptions) < 2) {
+			$this->form_validation->set_message('PollOptionValidation', $this->lang->line('moreoption'));
+			return FALSE;
+		} else {
+			for ($i = 0; $i <= count($pollOptions)-1; $i++) {
+				//make sure this exceeds the 50 character max limit.
+				if (strlen($pollOptions[$i]) > 50) {
+					$this->form_validation->set_message('PollOptionValidation', $this->lang->line('longpoll'));
+					return FALSE;
+					break;
+				} elseif (strlen($pollOptions[$i]) < 2) {
+					$this->form_validation->set_message('PollOptionValidation', $this->lang->line('shortpoll'));
+					return FALSE;
+					break;
+				}
+				
+				//only spaces, numbers, and alpha characters are allowed.
+				if(!preg_match("/^[a-zA-Z0-9 ]+$/", $pollOptions[$i])) {
+					$this->form_validation->set_message('PollOptionValidation', $this->lang->line('invalidpolloptions'));
+					return FALSE;
+					break;
+				}
+			}
+			return TRUE;
+		}
 	}
 
 } //END Class.

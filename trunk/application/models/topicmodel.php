@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/12/2012
+ * @version 05/29/2012
 */
 
 /**
@@ -23,7 +23,7 @@ class Topicmodel extends CI_Model {
 	private $bid;
 	private $topic;
 	private $body;
-	private $type;
+	private $topicType;
 	private $important;
 	private $ip;
 	private $originalDate;
@@ -173,27 +173,27 @@ class Topicmodel extends CI_Model {
 	}
 
 	/**
-	 * set value for Type
+	 * set value for topic_type
 	 *
-	 * type:VARCHAR,size:5,default:
+	 * type:BIT,size:0,default:0
 	 *
 	 * @param mixed $type
 	 * @return Topicmodel
 	*/
-	public function &setType($type) {
-		$this->type=$type;
+	public function &setTopicType($topicType) {
+		$this->topicType = $topicType;
 		return $this;
 	}
 
 	/**
-	 * get value for Type
+	 * get value for topic_type
 	 *
-	 * type:VARCHAR,size:5,default:
+	 * type:BIT,size:0,default:0
 	 *
 	 * @return mixed
 	*/
-	public function getType() {
-		return $this->type;
+	public function getTopicType() {
+		return $this->topicType;
 	}
 
 	/**
@@ -656,12 +656,57 @@ class Topicmodel extends CI_Model {
 	 * METHODS
 	*/
 	
+	/**
+	 * Creates a new topic
+	 * @access public
+	 * @version 05/23/12 
+	 * @return integer
+	 */
 	public function CreateTopic() {
+		#setup values.
+		$data = array(
+		  'author' => $this->getAuthor(),
+		  'bid' => $this->getBid(),
+		  'Topic' => $this->getTopic(),
+		  'Body' => $this->getBody(),
+		  'topic_type' => $this->getTopicType(),
+		  'important' => $this->getImportant(),
+		  'IP' => $this->getIp(),
+		  'Original_Date' => $this->getOriginalDate(),
+		  'last_update' => $this->getLastUpdate(),
+		  'Posted_User' => $this->getPostedUser(),
+		  'Locked' => $this->getLocked(),
+		  'Views' => $this->getViews(),
+		  'Question' => $this->getQuestion(),
+		  'disable_bbcode' => $this->getDisableBbCode(),
+		  'disable_smiles' => $this->getDisableSmiles()
+        );
+
+		#add new topic.
+		$this->db->insert('ebb_topics', $data);
+		
+		//get tid
+		return $this->db->insert_id();
+		
 		
 	}
 	
-	public function CreatePoll() {
-		
+	/**
+	 * Create poll option.
+	 * @param string $optionValue The poll option value.
+	 * @param integer $topicId Topic ID
+	 * @access public
+	 * @version 05/29/12
+	 */
+	public function CreatePoll($optionValue, $topicId) {
+		#setup values.
+		$data = array(
+		  'option_value' => $optionValue,
+		  'tid' => $topicId
+        );
+
+		#add new topic.
+		$this->db->insert('ebb_poll', $data);
 	}
 	
 	public function CreateReply() {
@@ -695,13 +740,13 @@ class Topicmodel extends CI_Model {
 	/**
 	 * Grab topic data.
 	 * @param int $tid TopicID
-	 * @version 04/12/12
+	 * @version 05/23/12
 	 * @access public
 	 */
 	public function GetTopicData($tid) {
 
 		//fetch topic data.
-		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.Type, t.important, t.IP, t.Original_Date, t.last_update, t.Posted_User, t.Post_Link, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
+		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.topic_type, t.important, t.IP, t.Original_Date, t.last_update, t.pid, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
 		$this->db->from('ebb_topics t');
 		$this->db->join('ebb_users u', 't.author=u.Username', 'LEFT');
 		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
@@ -724,12 +769,10 @@ class Topicmodel extends CI_Model {
 			$this->setLastUpdate($TopicData->last_update);
 			$this->setLocked($TopicData->Locked);
 			$this->setOriginalDate($TopicData->Original_Date);
-			$this->setPostLink($TopicData->Post_Link);
-			$this->setPostedUser($TopicData->Posted_User);
 			$this->setQuestion($TopicData->Question);
 			$this->setTiD($TopicData->tid);
 			$this->setTopic($TopicData->Topic);
-			$this->setType($TopicData->Type);
+			$this->setTopicType($TopicData->topic_type);
 			$this->setViews($TopicData->Views);
 			$this->setAvatar($TopicData->Avatar);
 			$this->setPostCount($TopicData->Post_Count);
@@ -782,6 +825,7 @@ class Topicmodel extends CI_Model {
      * Get Poll Options
      * @param integer $tid TopicID
      * @return array,boolean
+	 * @version 05/29/12
      */
 	public function GetPoll($tid) {
 		
@@ -789,7 +833,7 @@ class Topicmodel extends CI_Model {
 		$pollOpt = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('Poll_Option, option_id');
+		$this->db->select('option_value, option_id');
 		$this->db->from('ebb_poll');
 		$this->db->where('tid', $tid);
 		$query = $this->db->get();

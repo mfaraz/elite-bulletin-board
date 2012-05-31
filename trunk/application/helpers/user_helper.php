@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * user_helper.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/03/2012
+ * @version 05/29/2012
 */
 
 /**
@@ -140,6 +140,7 @@ function update_whosonline_guest(){
 
 	#obtain codeigniter object.
 	$ci =& get_instance();
+	
 	$ip = detectProxy();
 
 	$ci->db->select('ip')->from('ebb_online')->where('ip', $ip);
@@ -168,9 +169,12 @@ function update_whosonline_guest(){
 /**
  * Flood check.
  * @param string $user User we're updating.
- * @version 11/1/11
+ * @version 05/29/12
 */
 function update_user($user){
+	
+	#obtain codeigniter object.
+	$ci =& get_instance();
 
 	//update user's last post.
 	$data = array(
@@ -798,6 +802,39 @@ function GetWarningLevel($user) {
 
 	return $Warn_R->warning_level;
 	
+}
+
+/**
+ * Subscribe or unsubscribe from a topic.
+ * @param string $user the user we want to this to affect.
+ * @param integer $tid the Topic ID we want this to affect.
+ * @param string $mode are we subscribing or unsubscribing?
+ * @version 05/25/12
+ */
+function subscriptionManager($user, $tid, $mode) {
+
+	#obtain codeigniter object.
+	$ci =& get_instance();
+	
+	//get a check to see if they are a part the topic defined.
+	$ci->db->select('tid')
+	  ->from('ebb_topic_watch')
+	  ->where('username', $user);
+	$q = $ci->db->get();
+	
+	//see if they want to subscribe or unsubscribe to a topic.
+	if ($mode == "subscribe" && $q->num_rows() == 0) {
+		$data = array(
+		  "username" => $user,
+		  "tid" => $tid,
+		  "read" => 0
+		);
+		$ci->db->insert('ebb_topic_watch', $data);		
+	} elseif ($mode == "unsubscribe" && $query->num_rows() > 0) {
+		$ci->db->where('tid', $tid);
+		$ci->db->where('username', $user);
+		$ci->db->delete('ebb_topic_watch');
+	}
 }
 
 /**

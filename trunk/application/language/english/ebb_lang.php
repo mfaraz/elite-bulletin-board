@@ -35,6 +35,9 @@ $lang['nullspam'] = 'spam check is null.';
 $lang['expiredsess'] = 'Your session has expired. Please re-login.';
 $lang['invalidlogin'] = 'INVALID LOGIN METHOD!';
 $lang['alreadyloggedin'] = 'You are already logged in.';
+$lang['ajaxerror'] = 'You can not access this page directly';
+$lang['pagination_first'] = 'First';
+$lang['pagination_last'] = 'Last';
 
 #buttons
 $lang['btnlocked'] = 'Locked';
@@ -121,7 +124,7 @@ $lang['toolong'] = 'Your keyword is too long, please shorten it.';
 $lang['notype'] = 'You did select the type of topic you wanted to find.';
 $lang['result'] = 'Result(s)';
 $lang['postedin'] = 'Posted In';
-$lang['guesterror'] = 'You must login to use this feature.';
+$lang['guesterror'] = 'You must be logged in to use this feature.';
 $lang['quicksearch'] = 'Quick Search';
 $lang['advsearch'] = 'Advanced Search';
 $lang['flood'] = 'Please wait 20 seconds before searching again.';
@@ -336,6 +339,7 @@ $lang['moresmiles'] = 'More Smiles';
 $lang['smiletxt'] = 'Look to the right of the smile to see the bbcode for that smile.';
 $lang['disablertf'] = 'Disable Rich Text Editor';
 $lang['topic'] = 'Topic';
+$lang['topicbody'] = 'Topic Body';
 $lang['options'] = 'Options';
 $lang['type'] = 'Post Type';
 $lang['normal'] = 'Normal';
@@ -351,25 +355,18 @@ $lang['delattach'] = 'Delete File';
 $lang['cantdelete'] = 'File could not be deleted, report this issue to the board admin.';
 $lang['fdeleteok'] = 'deleted successfully.';
 $lang['nopoll'] = 'You cannot create a poll on this board.';
-$lang['polltext'] = 'Poll Options - Pick up to 10 options.';
+$lang['polltext'] = 'Poll Options (put one per line.)';
+$lang['polloptionfield'] = 'Poll Options';
 $lang['question'] = 'Question';
-$lang['pollopt1'] = 'Poll Option 1';
-$lang['pollopt2'] = 'Poll Option 2';
-$lang['pollopt3'] = 'Poll Option 3';
-$lang['pollopt4'] = 'Poll Option 4';
-$lang['pollopt5'] = 'Poll Option 5';
-$lang['pollopt6'] = 'Poll Option 6';
-$lang['pollopt7'] = 'Poll Option 7';
-$lang['pollopt8'] = 'Poll Option 8';
-$lang['pollopt9'] = 'Poll Option 9';
-$lang['pollopt10'] = 'Poll Option 10';
 $lang['topicreview'] = 'Topic Review';
 #post processing language tags.
 $lang['nosubject'] = 'You did not place a topic name for this post.';
 $lang['notopicbody'] = 'You did not add anything to this post.';
 $lang['longsubject'] = 'Your Subject is too long.';
 $lang['longpoll'] = 'Your poll option is too long.';
-$lang['flood'] = 'Flood Control has deteched that you are posting too soon. Please wait 30 seconds before posting again.';
+$lang['shortpoll'] = 'Your poll option is too short.';
+$lang['invalidpolloptions'] = 'poll options can only contain spaces, numbers, and alpha characters.';
+$lang['flood'] = 'Please wait 30 seconds before posting again.';
 $lang['cantpost'] = 'You cannot post on this board.';
 $lang['noimportant'] = 'You cannot post an important topic on this board.';
 $lang['noattach'] = 'You cannot attach this file on this topic.';
@@ -384,7 +381,7 @@ $lang['fileuploaded'] = 'uploaded successfully.';
 $lang['attachlimit'] = 'You have reached the upload limit for this topic.';
 $lang['longquestion'] = 'Your poll question is too long.';
 $lang['noquestion'] = 'You did not enter a question for the poll';
-$lang['moreoption'] = 'You do not have any options selected. please have at least 2 options.';
+$lang['moreoption'] = 'Please have at least 2 options.';
 #topic report language tags
 $lang['report2mod'] = 'Report Post to Moderator';
 $lang['topicreporttxt'] = 'Found a post or topic that seems to be off topic or against the rules? Fill out this form and the moderators will be informed about this.';
@@ -567,7 +564,7 @@ START TEMPORARY LANGUAGE TAGS
 $lang['reportbugs'] = 'Report Bugs';
 $lang['helpimprove'] = 'Help improve Elite Bulletin Board, report any bugs you encounter.';
 /*
-START TEMPORARY LANGUAGE TAGS
+END TEMPORARY LANGUAGE TAGS
 */
 $lang['admincp'] = 'Administration Panel';
 $lang['sessionlength'] = 'Session Length (In Hours)';

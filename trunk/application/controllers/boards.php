@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/18/2012
+ * @version 05/29/2012
 */
 
 /**
@@ -45,7 +45,7 @@ class Boards extends EBB_Controller {
         	$data[] = $row;
 
 			//build second query.
-			$this->db->select('id, Board, Description, last_update, Posted_User, Post_Link, Category')->from('ebb_boards')->where('type', 2)->where('Category',$row->id)->order_by("B_Order", "asc");
+			$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page, Category')->from('ebb_boards')->where('type', 2)->where('Category',$row->id)->order_by("B_Order", "asc");
 			$query2 = $this->db->get();
 			foreach ($query2->result() as $row2) {
 
@@ -200,6 +200,18 @@ class Boards extends EBB_Controller {
 		$config['total_rows'] = GetCount($id, 'TopicCount');
 		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
 		$config['uri_segment'] = 4;
+		$config['full_tag_open'] = '<div class="pagination">';
+		$config['full_tag_close'] = '</div>';
+		$config['next_tag_open'] = '<span class="nextpage">';
+		$config['next_tag_close'] = '</span>';
+		$config['prev_tag_open'] = '<span class="prevpage">';
+		$config['prev_tag_close'] = '</span>';
+		$config['cur_tag_open'] = '<span class="currentpage">';
+		$config['cur_tag_close'] = '</span>';
+		$config['next_link'] = '&raquo;';
+		$config['prev_link'] = '&laquo;';
+		$config['first_link'] = $this->lang->line('pagination_first');
+		$config['last_link'] = $this->lang->line('pagination_last');
 		$this->pagination->initialize($config);
 
 		//add breadcrumbs
@@ -254,7 +266,7 @@ class Boards extends EBB_Controller {
 		  'groupAccess' => $this->groupAccess,
 		  'BOARDID' => $id,
 		  'BOARDCOUNT' => GetCount($id, 'TopicCount'),
-		  'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], 0),
+		  'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], $this->uri->segment(4)),
 		  'SUBBOARDDATA' => $this->Boardmodel->GetSubBoards($id),
 		  'PAGINATION' => $this->pagination->create_links(),
 		  'BREADCRUMB' => $this->breadcrumb->output(),
@@ -381,11 +393,22 @@ class Boards extends EBB_Controller {
 		// Setup Pagination.
 		//
 		$config = array();
-		$config['base_url'] = $this->boardUrl . 'boards/viewtopic/'.$id;
+		$config['base_url'] = $this->boardUrl . 'index.php/boards/viewtopic/'.$id;
 		$config['total_rows'] = GetCount($id, 'TopicReplies');
 		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
 		$config['uri_segment'] = 4;
-
+		$config['full_tag_open'] = '<div class="pagination">';
+		$config['full_tag_close'] = '</div>';
+		$config['next_tag_open'] = '<span class="nextpage">';
+		$config['next_tag_close'] = '</span>';
+		$config['prev_tag_open'] = '<span class="prevpage">';
+		$config['prev_tag_close'] = '</span>';
+		$config['cur_tag_open'] = '<span class="currentpage">';
+		$config['cur_tag_close'] = '</span>';
+		$config['next_link'] = '&raquo;';
+		$config['prev_link'] = '&laquo;';
+		$config['first_link'] = $this->lang->line('pagination_first');
+		$config['last_link'] = $this->lang->line('pagination_last');
 		$this->pagination->initialize($config);
 		
 		//add breadcrumbs
@@ -470,7 +493,7 @@ class Boards extends EBB_Controller {
 		  'BOARDPREF_IMAGE' => $boardpref_image,
 		  'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
 		  'LANG_WARNLEVEL' => $this->lang->line('warnlevel'),
-		  'TOPIC_TYPE' => $this->Topicmodel->getType(),
+		  'TOPIC_TYPE' => $this->Topicmodel->getTopicType(),
 		  'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
 		  'TOPIC_BODY' => $this->Topicmodel->getBody(),
 		  'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
@@ -494,8 +517,9 @@ class Boards extends EBB_Controller {
           'LANG_VOTE' => $this->lang->line('castvote'),
 		  'LANG_TOTAL' => $this->lang->line('total'),
 		  'TOTAL_VOTES' => GetCount($id, 'PollCount'),
-		  'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], 0),
+		  'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], $this->uri->segment(4)),
 		  'PAGINATION' => $this->pagination->create_links(),
+		  'FORM_PAGE' => $this->uri->segment(4),
 		  'BREADCRUMB' => $this->breadcrumb->output(),
 		  'CANPOST_REPLY' => $CanReply,
 		  'CANVOTE' => $CanVote,
@@ -517,6 +541,7 @@ class Boards extends EBB_Controller {
 		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
 		  'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+		  'QREPLYFORM' => form_open('boards/reply', array('name' => 'frmQReply')),
 		  'SMILES' => form_smiles(),
 		  'LANG_REPLY' => $this->lang->line('btnreply'),
 		  'LANG_OPTIONS' => $this->lang->line('options'),
@@ -535,9 +560,118 @@ class Boards extends EBB_Controller {
 	public function newtopic($bid) {
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
-        $this->load->helper(array('form', 'user'));
+        $this->load->helper(array('form', 'user', 'posting'));
 		
-		$this->FORM_newtopic($bid, false);
+		//get board settings.
+		$this->Boardmodel->GetBoardSettings($bid);
+		
+		//see if user can post on this board.
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())){
+			show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+		} else {
+			if (!$this->Groupmodel->ValidateAccess(1, 37)){
+				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+			}
+		}
+		
+		#see if user can mark topics as important.
+		if ($this->Groupmodel->ValidateAccess(1, 39)){
+			$CanImportant = TRUE;
+		} else {
+			$CanImportant = FALSE;
+		}
+		
+		//setup validation rules.
+        $this->form_validation->set_rules('topic', $this->lang->line('topic'), 'required|min_length[5]|max_length[50]|callback_SpamFilter|xss_clean');
+        $this->form_validation->set_rules('post', $this->lang->line('topicbody'), 'required|min_length[10]|callback_SpamFilter|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			$this->FORM_newtopic($bid, false);
+		} else {
+			
+			//flood check,
+			if (flood_check("posting", $this->Usermodel->getLastPost())) {
+				#setup error session.
+				$this->session->set_flashdata('NotifyType', 'error');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
+
+				#direct user.
+				redirect('/boards/viewboard/'.$bid, 'location');
+				exit();
+			}
+			
+			//load topic & attachments model.
+			$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+			
+			//CREATE NEW TOPIC.
+			$no_smile = ($this->input->post('no_smile', TRUE) == FALSE) ? FALSE : TRUE;
+			$no_bbcode = ($this->input->post('no_bbcode', TRUE) == FALSE) ? FALSE : TRUE;
+			$subscribe = ($this->input->post('subscribe', TRUE) == FALSE) ? FALSE : TRUE;
+			//$page = ($this->input->post('page', TRUE) == FALSE) ? null : $this->input->post('page', TRUE);
+			$time = time();
+			
+			//create new topic.
+			$this->Topicmodel->setAuthor($this->logged_user);
+			$this->Topicmodel->setBid($bid);
+			$this->Topicmodel->setTopic($this->input->post('topic', TRUE));
+			$this->Topicmodel->setBody($this->input->post('post', TRUE));
+			$this->Topicmodel->setDisableBbCode($no_bbcode);
+			$this->Topicmodel->setDisableSmiles($no_smile);
+			$this->Topicmodel->setImportant($this->input->post('post_type', TRUE));
+			$this->Topicmodel->setIp(detectProxy());
+			$this->Topicmodel->setLastUpdate($time);
+			$this->Topicmodel->setOriginalDate($time);
+			$this->Topicmodel->setLocked(0);
+			$this->Topicmodel->setPostedUser($this->logged_user);
+			$this->Topicmodel->setQuestion(null);
+			$this->Topicmodel->setTopicType(0);
+			$this->Topicmodel->setViews(0);
+			
+			$newTopicId = $this->Topicmodel->CreateTopic(); //create topic, get Topic ID.
+			
+			//see if user wants to subscribe to this topic.
+			if ($subscribe) {
+				subscriptionManager($this->logged_user, $newTopicId, "subscribe");
+			}
+
+			#update board & topic details.
+			update_board($bid, $newTopicId, $time, $this->logged_user);
+			update_topic($newTopicId, $time, $this->logged_user);
+			
+			//update user's last post.
+			update_user($this->logged_user);
+			
+			#see if this board can allow post count increase.
+			if($this->Boardmodel->getPostIncrement() == 1){
+				//get current post count then add on to it.
+				post_count($this->logged_user);
+			}
+			
+			//validate user can attach files.
+			if($this->Groupmodel->ValidateAccess(1, 26)){ 
+				#see if user uploaded a file, if so lets assign the file to the topic.
+				$this->db->select('id')
+					->from('ebb_attachments')
+					->where('Username', $this->logged_user)
+					->where('tid', 0)
+					->where('pid', 0);
+				$query = $this->db->get();
+				
+				//see if we have anything to assign first.
+				if($query->num_rows() > 0) {
+					foreach ($query->result() as $row) {
+						#add attachment to db for listing purpose.
+						$this->Attachmentsmodel->AssignAttachment($newTopicId, $row->id);
+					}
+				}
+			}
+			
+			//direct user to topic.
+			redirect('/boards/viewtopic/'.$newTopicId, 'location');
+			
+		}
 	}
 	
 	/**
@@ -546,18 +680,138 @@ class Boards extends EBB_Controller {
 	*/
 	public function newpoll($bid) {
 		//LOAD LIBRARIES
-       $this->load->library(array('encrypt', 'email', 'form_validation'));
-        $this->load->helper(array('form', 'user'));
+		$this->load->library(array('encrypt', 'email', 'form_validation'));
+        $this->load->helper(array('form', 'user', 'posting'));
 		
-		$this->FORM_newtopic($bid, true);
+		//get board settings.
+		$this->Boardmodel->GetBoardSettings($bid);
+		
+		//see if user can post on this board.
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll())){
+			show_error($this->lang->line('nopoll'),403,$this->lang->line('error'));
+		} else {
+			if (!$this->Groupmodel->ValidateAccess(1, 35)){
+				show_error($this->lang->line('nopoll'),403,$this->lang->line('error'));
+			}
+		}
+		
+		#see if user can mark topics as important.
+		if ($this->Groupmodel->ValidateAccess(1, 39)){
+			$CanImportant = TRUE;
+		} else {
+			$CanImportant = FALSE;
+		}
+		
+		//setup validation rules.
+        $this->form_validation->set_rules('topic', $this->lang->line('topic'), 'required|min_length[5]|max_length[50]|callback_SpamFilter|xss_clean');
+        $this->form_validation->set_rules('post', $this->lang->line('topicbody'), 'required|min_length[10]|callback_SpamFilter|xss_clean');
+		$this->form_validation->set_rules('question', $this->lang->line('question'), 'required|min_length[5]|max_length[50]|xss_clean');
+		$this->form_validation->set_rules('pollOpts', $this->lang->line('polloptionfield'), 'required|callback_PollOptionValidation|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			$this->FORM_newtopic($bid, true);
+		} else {
+			
+			//flood check,
+			if (flood_check("posting", $this->Usermodel->getLastPost())) {
+				#setup error session.
+				$this->session->set_flashdata('NotifyType', 'error');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
+
+				#direct user.
+				redirect('/boards/viewboard/'.$bid, 'location');
+				exit();
+			}
+			
+			//load topic & attachments model.
+			$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+			
+			//CREATE NEW TOPIC.
+			$no_smile = ($this->input->post('no_smile', TRUE) == FALSE) ? FALSE : TRUE;
+			$no_bbcode = ($this->input->post('no_bbcode', TRUE) == FALSE) ? FALSE : TRUE;
+			$subscribe = ($this->input->post('subscribe', TRUE) == FALSE) ? FALSE : TRUE;
+			$pollOptions = explode(PHP_EOL, $this->input->post('pollOpts', TRUE));
+			$time = time();
+			
+			//create new topic.
+			$this->Topicmodel->setAuthor($this->logged_user);
+			$this->Topicmodel->setBid($bid);
+			$this->Topicmodel->setTopic($this->input->post('topic', TRUE));
+			$this->Topicmodel->setBody($this->input->post('post', TRUE));
+			$this->Topicmodel->setDisableBbCode($no_bbcode);
+			$this->Topicmodel->setDisableSmiles($no_smile);
+			$this->Topicmodel->setImportant($this->input->post('post_type', TRUE));
+			$this->Topicmodel->setIp(detectProxy());
+			$this->Topicmodel->setLastUpdate($time);
+			$this->Topicmodel->setOriginalDate($time);
+			$this->Topicmodel->setLocked(0);
+			$this->Topicmodel->setPostedUser($this->logged_user);
+			$this->Topicmodel->setQuestion($this->input->post('question', TRUE));
+			$this->Topicmodel->setTopicType(1);
+			$this->Topicmodel->setViews(0);
+			
+			$newTopicId = $this->Topicmodel->CreateTopic(); //create topic, get Topic ID.
+			
+			//loop through our poll options.
+			for ($i = 0; $i <= count($pollOptions)-1; $i++) {
+				//ensure no blank values get through.
+				if (strlen($pollOptions[$i]) > 1) {
+					$this->Topicmodel->CreatePoll($pollOptions[$i], $newTopicId); //create poll options
+				}
+			}
+			
+			//see if user wants to subscribe to this topic.
+			if ($subscribe) {
+				subscriptionManager($this->logged_user, $newTopicId, "subscribe");
+			}
+
+			#update board & topic details.
+			update_board($bid, $newTopicId, $time, $this->logged_user);
+			update_topic($newTopicId, $time, $this->logged_user);
+			
+			//update user's last post.
+			update_user($this->logged_user);
+			
+			#see if this board can allow post count increase.
+			if($this->Boardmodel->getPostIncrement() == 1){
+				//get current post count then add on to it.
+				post_count($this->logged_user);
+			}
+			
+			//validate user can attach files.
+			if($this->Groupmodel->ValidateAccess(1, 26)){ 
+				#see if user uploaded a file, if so lets assign the file to the topic.
+				$this->db->select('id')
+					->from('ebb_attachments')
+					->where('Username', $this->logged_user)
+					->where('tid', 0)
+					->where('pid', 0);
+				$query = $this->db->get();
+				
+				//see if we have anything to assign first.
+				if($query->num_rows() > 0) {
+					foreach ($query->result() as $row) {
+						#add attachment to db for listing purpose.
+						$this->Attachmentsmodel->AssignAttachment($newTopicId, $row->id);
+					}
+				}
+			}
+			
+			//direct user to topic.
+			redirect('/boards/viewtopic/'.$newTopicId, 'location');
+			
+		}
 	}
 	
 	/**
 	 * New Topics form.
-	 * @version 05/10/12
+	 * @version 05/29/12
 	 * @access private
 	*/
 	private function FORM_newtopic($bid, $pollTopic) {
+
 		//load breadcrumb library
 		$this->load->library('breadcrumb');
 		
@@ -574,7 +828,7 @@ class Boards extends EBB_Controller {
 		$boardpref_smiles = $this->Boardmodel->getSmiles();
 		$boardpref_image = $this->Boardmodel->getImage();
 		
-		#see if user can mark topicsd as important.
+		#see if user can mark topics as important.
 		if ($this->Groupmodel->ValidateAccess(1, 39)){
 			$CanImportant = TRUE;
 		} else {
@@ -615,7 +869,9 @@ class Boards extends EBB_Controller {
 		  'LANG_LOGIN' => $this->lang->line('login'),
 		  'LANG_LOGOUT' => $this->lang->line('logout'),
 		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'NEWTOPICFORM' => form_open('boards/POST_newtopic', array('name' => 'frmNewTopic')),
+		  'NEWTOPICFORM' => form_open('boards/newtopic/'.$bid, array('name' => 'frmNewTopic', 'id' => 'frmNewTopic')),
+		  'NEWPOLLFORM' => form_open('boards/newpoll/'.$bid, array('name' => 'frmNewTopic', 'id' => 'frmNewTopic')),
+		  'VALIDATIONSUMMARY' => validation_errors(),
 		  'VALIDATION_USERNAME' => form_error('username'),
 		  'VALIDATION_PASSWORD' => form_error('password'),
 		  'LANG_USERNAME' => $this->lang->line('username'),
@@ -648,6 +904,7 @@ class Boards extends EBB_Controller {
 		  "LANG_SMILES" => $this->lang->line("moresmiles"),
 		  "SMILES" => form_smiles(),
 		  "LANG_TOPIC" => $this->lang->line("topic"),
+		  "LANG_TOPICBODY" => $this->lang->line('topicbody'),
 		  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
 		  "LANG_CLEAR" => $this->lang->line("clearfile"),
 		  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
@@ -662,17 +919,8 @@ class Boards extends EBB_Controller {
 		  "LANG_DISABLESMILES" => $this->lang->line("disablesmiles"),
 		  "LANG_DISABLEBBCODE" => $this->lang->line("disablebbcode"),
 		  "LANG_POLL" => $this->lang->line("polltext"),
+		  "LANG_POLLOPTIONS" => $this->lang->line('polloptionfield'),
 		  "LANG_QUESTION" => $this->lang->line("question"),
-		  "LANG_OPTION1" => $this->lang->line("pollopt1"),
-		  "LANG_OPTION2" => $this->lang->line("pollopt2"),
-		  "LANG_OPTION3" => $this->lang->line("pollopt3"),
-		  "LANG_OPTION4" => $this->lang->line("pollopt4"),
-		  "LANG_OPTION5" => $this->lang->line("pollopt5"),
-		  "LANG_OPTION6" => $this->lang->line("pollopt6"),
-		  "LANG_OPTION7" => $this->lang->line("pollopt7"),
-		  "LANG_OPTION8" => $this->lang->line("pollopt8"),
-		  "LANG_OPTION9" => $this->lang->line("pollopt9"),
-		  "LANG_OPTION10" => $this->lang->line("pollopt10"),
 		  "LANG_POSTTOPIC" => $this->lang->line("posttopic")
 		));
 	}
@@ -681,7 +929,7 @@ class Boards extends EBB_Controller {
 	 * reply to a topic.
 	 * @example index.php/boards/reply/5
 	*/
-	public function reply($id) {
+	public function reply($id, $pg) {
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
 		$this->load->helper(array('form', 'user'));
@@ -703,15 +951,6 @@ class Boards extends EBB_Controller {
 	*/
 	public function vote($id) {
 
-	}
-	
-	/**
-	 * Cast vote to DB.
-	 * @version 04/17/12
-	 * @access public
-	*/
-	public function POST_vote() {
-		
 	}
 	
 	/**
