@@ -125,7 +125,7 @@
 {% endif%}
 
 {% if LOGGEDUSER != "guest" %}
-	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNQUOTEAUTHOR}}</button>
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/quote/{{TOPICID}}/0/1');">{{LANG_BTNQUOTEAUTHOR}}</button>
 {% endif%}
 
 </span></td>
@@ -255,7 +255,7 @@ _________________<br />
 {% endif%}
 
 {% if LOGGEDUSER != "guest" %}
-	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}');">{{LANG_BTNQUOTEAUTHOR}}</button>
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/quote/{{TOPICID}}/{{r.pid}}/2');">{{LANG_BTNQUOTEAUTHOR}}</button>
 {% endif%}
 </span></td>
 </tr><tr>

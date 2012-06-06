@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/15/2011
+ * @version 06/03/2012
 */
 
 /**
@@ -16,106 +16,106 @@ class Upload extends EBB_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->load->helper(array('form', 'url'));
+		
+		//ensure this is an AJAX call
+		if (IS_AJAX) {
+			exit(show_error($this->lang->line('ajaxerror'), 403, $this->lang->line('error')));
+		}
+		
+		$this->load->helper(array('form', 'url', 'attachment'));
 	}
 
 	/**
 	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/upload
-	 *	- or -
-	 * 		http://example.com/index.php/upload/index
+	 * @example index.php/upload/
+	 * @example index.php/upload/index/
 	*/	
 	public function index() {
-		//replace with TWIG setup.
-		//$this->load->view('admin/upload', array('error' => ''));
+		//load attachments model.
+		$this->load->model(array('Attachmentsmodel'));
+		
+		#setup filters.
+		$this->twig->_twig_env->addFunction('Byte2KB', new Twig_Function_Function('getFileSize'));
+		
+		//render to HTML.
+		echo $this->twig->render($this->style, 'attachmentmanager', array (
+		  'LANG_FILENAME' =>  $this->lang->line('filename'),
+		  'LANG_FILESIZE' => $this->lang->line('filesize'),
+		  'LANG_FILETYPE' => $this->lang->line('filetype'),
+		  'LANG_NOFILES' => $this->lang->line('noattachments'),
+		  'FILES' => $this->Attachmentsmodel->GetAttachment($this->logged_user)
+		));
 	}
 	
 	/**
 	 * Uploads file(s) to web server.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/upload/do_upload
+	 * @example index.php/upload/do_upload/
 	*/	
 	public function do_upload() {
+		
+		//load attachments model.
+		$this->load->model(array('Attachmentsmodel'));
 
-		$upload_path_url = base_url().'uploads/';
-
-		$config['upload_path'] = FCPATH.'uploads/';
-		$config['allowed_types'] = 'jpg'; //multiple extension example -> mp3|gif|jpg|txt
-		$config['max_size'] = '30000'; //max file size in kilobytes.
-		$config['encrypt_name'] = TRUE; //to prevent sniffing of files.
+		//setup uploader class.
+		$config = array();
+		$config['upload_path'] = UPLOAD_PATH;
+		$config['allowed_types'] = BuildAllowedExtensionList();
+		$config['max_size'] = $this->preference->getPreferenceValue("attachment_quota");
+		$config['max_filename'] = 100;
 		$config['remove_spaces'] = TRUE; //to make web-ready.
 
 		$this->load->library('upload', $config);
 
 		if (!$this->upload->do_upload()) {
-			$error = array('error' => $this->upload->display_errors());
-			//$this->load->view('upload', $error); replace with twig
+			echo json_encode(array('status' => 'error', 'msg' => $this->upload->display_errors()));
 		} else { 		
 			$data = $this->upload->data();
-			/*	
-					  // to re-size for thumbnail images un-comment and set path here and in json array	
-			   $config = array(
-				'source_image' => $data['full_path'],
-				'new_image' => $this->$upload_path_url '/thumbs',
-				'maintain_ration' => true,
-				'width' => 80,
-				'height' => 80
-			  );
+			$fileNameSalt = CreateAttachmentSalt();
+			$encryptedFileName = sha1($data['file_name'].$fileNameSalt); //encrypt the filename to prevent sniffing.
+			
+			//setup attachment in db.
+			$this->Attachmentsmodel->setUserName($this->logged_user);
+			$this->Attachmentsmodel->getTiD(0); //at this stage, this is not important
+			$this->Attachmentsmodel->getPiD(0); //at this stage, this is not important
+			$this->Attachmentsmodel->getFileName($data['file_name']);
+			$this->Attachmentsmodel->getEncryptedFileName($encryptedFileName);
+			$this->Attachmentsmodel->getEncryptionSalt($fileNameSalt);
+			$this->Attachmentsmodel->getFileType($data['file_type']);
+			$this->Attachmentsmodel->getFileSize($data['file_size']);
+			$this->Attachmentsmodel->getDownloadCount(0);
+			$this->Attachmentsmodel->CreateAttachment();
 
-			$this->load->library('image_lib', $config);
-			$this->image_lib->resize();
-			*/
-			//set the data for the json array	
-			$data->name = $data['file_name'];
-			$data->size = $data['file_size'];
-			$data->type = $data['file_type'];
-			$data->url = $upload_path_url .$data['file_name'];
-			$data->thumbnail_url = $upload_path_url .$data['file_name'];//I set this to original file since I did not create thumbs.  change to thumbnail directory if you do = $upload_path_url .'/thumbs' .$data['file_name']
-			$data->delete_url = base_url().'upload/deleteImage/'.$data['file_name'];
-			$data->delete_type = 'DELETE';
-
-			//ensure this is an AJAX call
-			if (IS_AJAX) {
-				echo json_encode(array($data));
-				//this has to be the only data returned or you will get an error.
-				//if you don't give this a json array it will give you a Empty file upload result error
-				//it you set this without the if(IS_AJAX)...else... you get ERROR:TRUE (my experience anyway)
-			} else {
-				//fallback if javascript is not enabled.
-				$file_data['upload_data'] = $this->upload->data();				
-				//$this->load->view('admin/upload_success', $file_data); replace with twig.
-			}
-
+			//set the data for the json array
+			echo json_encode(array('status' => 'success', 'msg' => $data['file_name'].'&nbsp;'.$this->lang->line('fileuploaded')));
 		}
 
 	}
 
 	/**
 	 * Deletes a file from the server.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/upload/delete/some_file
+	 * @example index.php/upload/delete/
 	*/	
-	public function delete($file) {
-		//gets the job done but you might want to add error checking and security 
-		$success = unlink(FCPATH.'uploads/' .$file);
-		
-		//info to see if it is doing what it is supposed to.
-		$info->sucess = $success;
-		$info->path = base_url().'uploads/' .$file;
-		$info->file = is_file(FCPATH.'uploads/' .$file);
+	public function delete() {
 
-		//ensure this is an AJAX call
-		if (IS_AJAX) {
-			echo json_encode(array($info));
+		//the filename from AJAX.
+		$file =  $this->input->post('filename', TRUE);
+
+		//load attachments model.
+		$this->load->model(array('Attachmentsmodel'));
+		
+		$success = $this->Attachmentsmodel->DeleteAttachment($file);
+		
+		//see if the file successfully deleted.
+		if ($success) {
+			//remove entry from db.
+			$this->db->where('Filename', $file);
+			$this->db->delete('ebb_attachments');
+
+			echo json_encode(array('status' => 'success', 'msg' => $this->lang->line('fdeleteok')));
 		} else {
-			//here you will need to decide what you want to show for a successful delete
-			$file_data['delete_data'] = $file;
-			//$this->load->view('admin/delete_success', $file_data); replace with twig.
-		}	
+			echo json_encode(array('status' => 'error', 'msg' => $this->lang->line('cantdelete')));
+		}
+
 	}
 } //END Class
 ?>

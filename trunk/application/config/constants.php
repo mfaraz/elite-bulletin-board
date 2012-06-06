@@ -50,6 +50,11 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
  */
 define('SESSION_TIMEOUT', time() - 300);
 
+/**
+ * For file uploading. 
+ */
+define('UPLOAD_PATH', '/home/ed/www/ebbv3/uploads/');
+
 
 /**
  * Define Ajax Request

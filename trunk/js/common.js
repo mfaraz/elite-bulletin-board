@@ -1,31 +1,39 @@
 /**
-Filename: common.js
-Last Modified: 05/21/12
-
-Term of Use:
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ * common.js
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2012
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 06/03/2012
 */
 
 /**
- *Used to redirect a user to a location within the program's directory.
- *@param addr[str] - the url to direct user to.
+ * Used to redirect a user to a location within the program's directory.
+ * @param addr[str] - the url to direct user to.
 */
 function gotoUrl(addr){
 	window.location = addr;
 }
 
 /**
- *Used to display a confirmation dialog to the user.
- *@param msg[str] - the message displayed to the user.
- *@param addr[str] - the url to direct user to.
+ * Used to display a confirmation dialog to the user.
+ * @param msg[str] - the message displayed to the user.
+ * @param addr[str] - the url to direct user to.
 */
 function confirmDlg(msg, addr){
 	if (confirm(msg)){
 		gotoUrl(addr);
 	}
+}
+
+/**
+ * Reload iframe element.
+ * @param ele[str] the iframe element to capture
+ * @param src[str] the URL to execute.
+ * @version 06/01/12
+**/
+function loadIframe(ele, src){
+	$('#'+ ele).attr('src', src);
 }
 
 $(document).ready(function(){

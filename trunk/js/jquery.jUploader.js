@@ -1,48 +1,53 @@
 /**
-Filename: jquery.jUploader.js
-Date Modified: 2/9/2011
-Version 1.0.1
-Requirements: jQuery 1.4+ & jQuery UI 1.8+
-
-Term of Use:
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ * jquery.jUploader.js
+ * @version 1.1 (06/03/2012)
+ * @Requirements: jQuery 1.7 or newer
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * CREDIT
+ * Concept based off of: http://pixelcone.com/fileuploader/
+ * 
 **/
 
 (function($) {
-	$.jUploader = {version: '1.0.1'};
+	$.jUploader = {version: '1.1'};
 	$.fn.jUploader = function(config){
 		
 		config = $.extend({}, {
-			LoadingCss: "ui-state-highlight",
-			LoadingGfx: "ajax-loader.gif",
-        	LoadingMsg: "Uploading File",
-        	PendingCss: "uploadData",
-        	PendingMsg: "Pending...",
-        	SuccessCss: "ui-widget-content",
-        	SuccessMsg: "File Uploaded.",
-        	FailureCss: "ui-state-error",
-        	FailureMsg: "Upload Failed.",
-			buttonUpload: "#fileUpload",
-			buttonClear: "#ClearList",
-			buttonFileMgr: "#AttachList",
-			uploadLimit: "5",
-			uploadLimitMsg: "You have reached your upload limit."
+			LoadingCss: "ui-state-highlight", //loading style.
+			LoadingGfx: "ajax-loader.gif", //loading animation graphic.
+        	LoadingMsg: "Uploading File", //loading text verbiage.
+        	PendingCss: "uploadData", //pending style.
+        	PendingMsg: "Pending...", //pending text verbiage.
+        	SuccessCss: "ui-widget-content", //success color.
+        	SuccessMsg: "File Uploaded.", //success text verbiage.
+        	FailureCss: "ui-state-error", //error color.
+        	FailureMsg: "Upload Failed.", //error text verbiage.
+			buttonUpload: "#fileUpload", //upload button.
+			buttonClear: "#ClearList", //clear list button.
+			buttonFileMgr: "#AttachList", //file manager button.
+			uploadLimit: "5", //limit of downloads. (0=unlimited)
+			uploadLimitMsg: "You have reached your upload limit.", //limit text verbiage.
+			deleteUrl: "delete.php", //url to delete file.
+			confirmDeletMsg: "Are you sure you want to delete this file?", //delete confirmation verbiage.
+			fileMgrUrl: "filemgr.php" //path to view attachment action.
 		}, config);
 		
+		//see if user is using recommended version of jQuery.
+		if (jQuery.fn.jquery < "1.7") {
+			alert('jUploader requires jquery 1.7 or newer. Please upgrade your copy of jQuery.');
+		}
+
 		//setup some global variables.
 		var counter = 0;
 		var inputName = "attachment";
 		
   		/**
-  		 *Adds our files to the download list.
+  		 * Adds our files to the download list.
 		**/
 		$.jUploader.AddtoQueue = function(e){
 
 			//make sure user hasn't reached their limit yet.
-			if (counter < config.uploadLimit || config.uploadLimit == ""){
+			if (counter <= config.uploadLimit || config.uploadLimit == 0){
             	var loading = '';
             
 				//make our buttons clickable.
@@ -76,9 +81,10 @@ the Free Software Foundation; either version 2 of the License, or
 		}
 		
 		/**
-		 *Performs our file upload AJAX style.
+		 * Performs our file upload AJAX style.
 		**/
-		$(config.buttonUpload).click(function(){
+		$(document).on("click", config.buttonUpload, function(){
+			var results;
 			if (counter > 1){
 				$('#frmButtons input').attr("disabled", true);
 				$("#frmUpload form").each(function(){
@@ -99,15 +105,16 @@ the Free Software Foundation; either version 2 of the License, or
 						$(id).submit();
 						$(id + "_iframe").load(function() {
 							$(id + "_msg .loader").hide();
-							results = $(this).contents().find("#output").text();
-  							if (results == "success") {
+							var json = $.parseJSON($(this).contents().text());
+  							if (json.status == "success") {
   								$(id + "_msg").addClass(config.SuccessCss);
-								results = config.SuccessMsg;
+  								results = '<div class="delete" title="delete file" id="'+json.filename+'">&nbsp;</div>';
+								results += config.SuccessMsg;
   							}else{
            						$(id + "_msg").addClass(config.FailureCss);
 								results = config.FailureMsg;
   							}
-  							results += '<br />' + $(this).contents().find("#message").text();
+  							results += '<br />' + json.msg;
 							$(id + "_msg .status").html(results);
 							$(e).remove();
 							$(config.buttonClear).removeAttr("disabled");
@@ -118,9 +125,9 @@ the Free Software Foundation; either version 2 of the License, or
 		});
 		
 		/**
-		 *Removes a file form the queue.
+		 * Removes a file form the queue.
 		**/
-		$(".close").live("click", function(){
+		$(document).on("click", '.close', function(){
 			var id = "#" + $(this).parent().attr("title");
 			$(id + "_iframe").remove();
 			$(id).remove();
@@ -131,33 +138,37 @@ the Free Software Foundation; either version 2 of the License, or
 		});
 
         /**
-		 *Removes a file form the database.
+		 * Removes a file from upload directory.
 		**/
-		$("#delete").live("click", function(){
-			//call .ajax to call server.
-			$.ajax({
-		    	method: "get", url: "quicktools/filemanager.php", data: "mode=delete&id=" + $(this).attr("title"),
-				beforeSend: function(xhr){
-					//$("#smloading").show();
-				},
-				complete: function(xhr, tStat){
-					//$("#smloading").hide();
-				},
-				success: function(html){
-					$("#filelist").show();
-					$("#filelist").html(html).removeClass("ui-state-error");
-				},
-				error: function(xhr, tStat, err){
-					var msg = lang.jsError + ": ";
-					$("#filelist").html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
-				}
-			}); //END $.ajax(
+		$(document).on("click", '.delete', function(){
+			if (confirm(config.confirmDeletMsg)) {			
+				$(this).load(config.deleteUrl, { filename: $(this).attr('id') }, function(res, status, xhr) {
+					if (status == "error") {
+						var msg = "Sorry but there was an error: ";
+						alert(msg + xhr.status + " " + xhr.statusText);
+						return false;
+					} else {
+						var id = "#" + $(this).parent().parent().attr("id");
+						$(id).remove();
+						counter = counter-1; //remove from counter.
+						
+						//see if all downloads are deleted.
+						if (counter == 1) {
+							counter = 0; //reset counter
+							jQUploader.appendForm(); //show form.
+							$('#frmButtons input').attr("disabled", true);
+							$(config.buttonFileMgr).removeAttr("disabled");
+						}
+						return false;
+					}
+				});
+			}
 		});
 
 		/**
-		 *Clears our file queue.
+		 * Clears our file queue.
 		**/
-		$(config.buttonClear).click(function(){
+		$(document).on("click", config.buttonClear, function(){
 			$("#filePendings").fadeOut("slow",function(){
 				$("#filePendings").html("");
 				$("#frmUpload").html("");
@@ -171,33 +182,25 @@ the Free Software Foundation; either version 2 of the License, or
 		});
 		
 		/**
-		 *Displays uploaded files List.
+		 * Displays uploaded files List.
 		**/
-		$(config.buttonFileMgr).click(function(){
+		$(document).on("click", config.buttonFileMgr, function(){
 			//call .ajax to call server.
 			$.ajax({
-		    	method: "get", url: "quicktools/filemanager.php", data: "",
-				beforeSend: function(xhr){
-					//$("#smloading").show();
-				},
-				complete: function(xhr, tStat){
-					//$("#smloading").hide();
-				},
+		    	method: "get", url: config.fileMgrUrl, data: "",
 				success: function(html){
 					$("#filelist").show();
 					$("#filelist").html(html).removeClass("ui-state-error");
 				},
 				error: function(xhr, tStat, err){
-					var msg = lang.jsError + ": ";
+					var msg = "error: ";
 					$("#filelist").html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
 				}
 			}); //END $.ajax(		
 		});
 
-
-		
   		/**
-		 *Create our plugin methods.
+		 * Create our plugin methods.
 		**/
 		var jQUploader = {
 			init: function(e){
@@ -214,10 +217,9 @@ the Free Software Foundation; either version 2 of the License, or
 				//add our two buttons to our div.
 				$(config.buttonUpload+','+config.buttonClear+','+config.buttonFileMgr).appendTo('#frmButtons');
 				$(config.buttonClear).attr("disabled", true);
-				$(config.buttonFileMgr).attr("disabled", true);
 
 				//see if our file input field has a name.
-				if ( $(e).attr('name') != '' ){
+				if ($(e).attr('name') != '' ){
 					inputName = $(e).attr('name');
 				}
 
@@ -243,7 +245,6 @@ the Free Software Foundation; either version 2 of the License, or
 		}
 		
 		jQUploader.init(this);
-		
 		return this;
 	}
 })(jQuery);

@@ -13,7 +13,7 @@
 <!-- API detection -->
 <script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
 <!-- Rich text editor file -->
-<script type="text/javascript" src="{{BOARD_URL}}js/tEditor.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/pEditor.js"></script>
 
 {{BREADCRUMB|raw}}<br />
 
@@ -60,19 +60,6 @@
 </tr>
 </table><br />
 
-<!-- Similar Topic results. -->
-<div style="display:none;" id="div_notice"  align="center">
-	<div class="ui-widget">
-		<div class="ui-state-highlight ui-corner-all" style="text-align:left;margin-top: 20px;width:500px;padding: 0 .7em;">
-			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_notice').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
-            <div id="smloading"><img src="application/views/simple2/images/smloader.gif" /></div>
-			<p><span class="ui-icon ui-icon-search" style="float: left; margin-right: .3em;"></span>
-		    <div id="similar"></div>
-		</div>
-	</div>
-</div>
-<br />
-
 <!-- warning container -->
 <div align="center" style="display:none;" id="div_ErrMsg">
 	<div class="ui-widget" style="width: 45%;">
@@ -114,11 +101,7 @@
 	{% endif %}
 </div>
 
-{% if POLLOPTION == TRUE %}
-{{NEWPOLLFORM|raw}}
-{% else %}
-{{NEWTOPICFORM|raw}}
-{% endif %}
+{{REPLYFORM|raw}}
 <div align="center">
 
 <div id="emoticons" class="ui-widget-content ui-corner-all" style="width:500px;" align="center">
@@ -126,59 +109,34 @@
 	<hr />
 	<a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
 </div><br />
-<div class="ui-widget-content ui-corner-all" style="width:400px;text-align:left;padding: 0 .7em;">
-{{LANG_TOPIC}}:<br /><input type="text" name="topic" class="text" size="30" id="topic" />
-</div>
-<textarea id="body" name="post" cols="80" rows="20"></textarea>
-<br /><input type="submit" value="{{LANG_POSTTOPIC}}" class="submit" />
 
-{% if POLLOPTION == TRUE %}
-<br /><br />
-<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
-	{{LANG_QUESTION}}<br />
-	<input type="text" name="question" id="question" class="text" size="30" />
-	<br /><br />
-	<small>{{LANG_POLL}}</small><br />
-	<textarea name="pollOpts" id="pollOpts" rows="5" cols="50"  class="text"></textarea>
-</div>
-{% endif%}
+<textarea id="replyBody" name="reply_post" cols="80" rows="20">{{QUOTE_BODY}}</textarea>
+<br /><input type="submit" value="{{LANG_REPLY}}" class="submit" />
 <br />
 <div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
 	<div style="text-align:center;">
 		<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a>
 	</div>
-	{% if GAC_IMPORTANT == TRUE %}
-	{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" checked=checked />{{LANG_NORMAL}}<br />
-	{% else %}
-	<input type="hidden" name="post_type" value="0" />
-	{% endif %}	
 	<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
 	<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
 	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
 </div>
 </form><br />
 </div>
-<script type="text/javascript">
-$('#topic').focus();
 
-new FormValidator('frmNewTopic', [{
-	name: 'topic',
-	display: '{{LANG_TOPIC}}',
-	rules: 'required|max_length[50]'
-},
-{% if POLLOPTION == TRUE %}
-{
-	name: 'question',
-	display: '{{LANG_QUESTION}}',
-	rules: 'required|min_length[5]|max_length[50]'
-},{
-	name: 'pollOpts',
-	display: '{{LANG_POLLOPTIONS}}',
-	rules: 'required'
-},
-{% endif %}
-{
-	name: 'post',
+
+<div class="ui-widget-content" id="replyoverview">
+	<div style="text-align:center;">
+		<strong>{{LANG_TOPICREVIEW}}</strong>&nbsp;&bull;&nbsp;[<a href="#replyoverview" onClick="loadIframe('topicreview', 'index.php/boards/topicreview/{{TID}}');"><img src="application/views/simple2/images/reload.png" alt="{{LANG_RELOAD}}" /></a>]
+	</div>
+	<iframe src="index.php/boards/topicreview/{{TID}}" width="100%" id="topicreview" style="border:0px;"></iframe>
+</div>
+
+<script type="text/javascript">
+$('#replyBody').focus();
+
+new FormValidator('frmReply', [{
+	name: 'replyBody',
 	display: '{{LANG_TOPICBODY}}',
 	rules: 'required|min_length[10]'
 }], function(errors, event) {
@@ -192,31 +150,5 @@ new FormValidator('frmNewTopic', [{
 	}
 
 });
-
-/**
- * similarTopics
- * AJAX call to find similar topics.
-**/
-$('#topic').change(function() {
-	//ensure we enter in data first.
-	if ($(this).val() != "") {
-
-		//show panel.
-		$('#div_notice').show();
-
-		//call .ajax to call server.
-		$.post("{{BOARD_URL}}index.php/ajax/SimilarTopics", $('#frmNewTopic').serialize(),function(html){
-			$("#similar").html(html).removeClass("ui-state-error");
-		}); //END $.ajax(
-
-		//error handler.
-		$("#similar").ajaxError(function(e, xhr){
-			var msg = lang.jsError + ":<br />";
-			$(this).html(msg + xhr.status + " " + xhr.statusText).addClass("ui-state-error");
-		});
-
-	}
-}); //END .change
 </script>
-
 {% endblock %}

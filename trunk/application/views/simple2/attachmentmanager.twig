@@ -1,0 +1,21 @@
+<table border="0" class="table" cellspacing="1" cellpadding="1" id="attachment">
+	<tr style="text-align:center;">
+		<td class="ui-widget-header" width="40%">{{LANG_FILENAME}}</td>
+		<td class="ui-widget-header" width="20%">{{LANG_FILESIZE}}</td>
+		<td class="ui-widget-header" width="20%">{{LANG_FILETYPE}}</td>
+	</tr>
+	{# see if any files are uploaded. #}
+	{% if FILES == FALSE %}
+	<tr>
+		<td colspan="3">{{LANG_NOFILES}}</td>
+	</tr>
+	{% else %}
+	{% for f in FILES %}
+	<tr>
+		<td class="ui-widget-content" width="40%">{{f.Filename}}</td>
+		<td class="ui-widget-content" width="20%">{{Byte2KB(f.File_Size)}} Kb</td>
+		<td class="ui-widget-content" width="20%">{{f.File_Type}}</td>
+	</tr>
+	{% endfor %}
+	{% endif %}
+</table>

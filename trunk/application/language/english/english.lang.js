@@ -1,12 +1,10 @@
 /**
-Filename: English.lang.js
-Last Modified: 02/20/2012
-
-Term of Use:
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ * english.lang.js
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2012
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 06/03/2012
 */
 
 var lang = {
@@ -21,18 +19,17 @@ var lang = {
     dlgSmilesList: "Smiles List",
     dlgUploadMgr: "Attachment Manager",
     attachDeleted: "File was deleted successfully.",
+	attachDeletePrompt: "Are you sure you want to delete this file?",
     attachSuccess: "File Uploaded.",
     attachFailed: "Upload Failed.",
-    attachPending: "Pending...",
-    attachLoading: "Uploading File...",
+    attachPending: "Pending&hellip;",
+    attachLoading: "Uploading File&hellip;",
     attachLimit: "You have reached your upload limit.",
 	confDel: "Confirm Deletion",
 	genSuccess: "Success!",
 	cfmDel: "Are you sure you wish to delete this?",
 	Yes: "Yes",
 	No: "No",
-	reloginTitle: "Re-login Notice",
-	logoffNotice: "You need to re-login to finalize the password change.",
 	Ok: 'Ok',
 	archiveConf: 'Archive message, are you sure?',
 	//VALIDATION
