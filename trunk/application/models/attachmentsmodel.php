@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 02/02/2012
+ * @version 06/03/12
 */
 
 /**
@@ -277,12 +277,60 @@ class Attachmentsmodel extends CI_Model {
 	 * METHODS
 	*/
 
-	public function GetAttachment() {
+	/**
+	 * Get a list of files uploaded by defined user.
+	 * @param string $user user who uploaded the files.
+	 * @return boolean|array
+	 * @version 06/03/12
+	 */
+	public function GetAttachment($user) {
+		
+		//setup reply data array.
+		$files = array();
 
+		//SQL grabbing count of all topics for this board.
+		$this->db->select('id, Filename, File_Size, File_Type')
+		  ->from('ebb_attachments')
+		  ->where('Username', $user)
+		  ->where('tid', 0)
+		  ->where('pid', 0);
+		$query = $this->db->get();
+
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			//loop through data and bind to an array.
+			foreach ($query->result() as $row) {
+				$files[] = $row;
+			}
+			return $files;
+		} else {
+			//no record was found, throw an error.
+			return FALSE;
+		}
+		
 	}
 
+	/**
+	 * Adds attachment to database.
+	 * @access public
+	 * @version 05/31/12 
+	 */
 	public function CreateAttachment() {
+		#setup values.
+		$data = array(
+		  'Username' => $this->getUserName(),
+		  'tid' => $this->getTiD(),
+		  'pid' => $this->getPiD(),
+		  'Filename' => $this->getFileName(),
+		  'encryptedFileName' => $this->getEncryptedFileName(),
+		  'encryptionSalt' => $this->getEncryptionSalt(),
+		  'File_Type' => $this->getFileType(),
+		  'File_Size' => $this->getFileSize(),
+		  'Download_Count' => $this->getDownloadCount()
+        );
 
+		#add new user.
+		$this->db->insert('ebb_attachments', $data);
 	}
 	
 	/**
@@ -290,11 +338,14 @@ class Attachmentsmodel extends CI_Model {
 	 * @param string $user user who uploaded file(s)
 	 * @param integer $tid Topic ID.
 	 * @param integer $attachId Attachment ID.
+	 * @access public
+	 * @version 05/29/12
 	 */
-	public function AssignAttachment($tid, $attachId) {
+	public function AssignAttachment($tid, $pid, $attachId) {
 		
 		$data = array(
-		  "tid" => $tid
+		  "tid" => $tid,
+		  "pid" => $pid
 		);
 		
 		#update attachment.
@@ -302,7 +353,30 @@ class Attachmentsmodel extends CI_Model {
 		$this->db->update('ebb_attachments', $data);
 	}
 
-	public function DeleteAttachment() {
+	/**
+	 * Delete file from DB and file system.
+	 * @param string $file filename.
+	 * @return boolean
+	 * @version 06/03/12
+	 */
+	public function DeleteAttachment($file) {
+		
+		if (is_file(UPLOAD_PATH.$file)) {
+			$success = unlink(UPLOAD_PATH.$file);
+
+			//see if the file successfully deleted.
+			if ($success) {
+				//remove entry from db.
+				$this->db->where('Filename', $file);
+				$this->db->delete('ebb_attachments');
+				
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		} else {
+			return FALSE;
+		}
 		
 	}
 

@@ -503,9 +503,10 @@ $lang['avatargallery'] = 'Avatar Gallery';
 $lang['attachments'] = 'Attachments';
 $lang['filename'] = 'Filename';
 $lang['filesize'] = 'File Size';
+$lang['filetype'] = 'File Type';
 $lang['downloadct'] = 'Number of Downloads';
 $lang['nofile'] = 'The file you wish to download is no longer on file. Report this to the board administrator immediately.';
-$lang['notfound'] = 'There is no record of an attachment for this Topic.';
+$lang['noattachments'] = 'There is no record of attachments for this Topic.';
 #viewboard language tags.
 $lang['viewboard'] = 'View Board';
 $lang['addnewtopic'] = 'Add a new topic';

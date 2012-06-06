@@ -710,7 +710,25 @@ class Topicmodel extends CI_Model {
 	}
 	
 	public function CreateReply() {
+		#setup values.
+		$data = array(
+		  'author' => $this->getAuthor(),
+		  'bid' => $this->getBid(),
+		  'tid' => $this->getTiD(),
+		  'Body' => $this->getBody(),
+		  'topic_type' => $this->getTopicType(),
+		  'important' => $this->getImportant(),
+		  'IP' => $this->getIp(),
+		  'Original_Date' => $this->getOriginalDate(),
+		  'disable_bbcode' => $this->getDisableBbCode(),
+		  'disable_smiles' => $this->getDisableSmiles()
+        );
+
+		#add new topic.
+		$this->db->insert('ebb_posts', $data);
 		
+		//get tid
+		return $this->db->insert_id();
 	}
 	
 	public function ModifyTopic() {

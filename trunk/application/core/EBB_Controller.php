@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/29/2012
+ * @version 05/31/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -340,10 +340,10 @@ class EBB_Controller extends CI_Controller {
 	 * Validate the poll options meet the criteria.
 	 * @param string $str The value from the form.
 	 * @return boolean 
-	 * @version 05/29/12
+	 * @version 05/31/12
 	 */
 	public function PollOptionValidation($str) {
-		$pollOptions = explode("\n", $str);
+		$pollOptions = explode(PHP_EOL, $str);
 		
 		//see if at least 2 options are listed.
 		if (count($pollOptions) < 2) {
