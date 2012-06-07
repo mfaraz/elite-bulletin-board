@@ -342,7 +342,6 @@ _________________<br />
 {# setup quick reply #}
 {% if LOGGEDUSER != "guest" and CANPOST_REPLY == TRUE %}
 
-<script type="text/javascript" src="{{BOARD_URL}}js/jPanels.js"></script>
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
@@ -353,12 +352,6 @@ _________________<br />
 <script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
 <!-- Rich text editor file -->
 <script type="text/javascript" src="{{BOARD_URL}}js/pEditor.js"></script>
-<!-- call our collapsible panel -->
-<script type="text/javascript">
-$(function(){
-	$("#replybox").jPanels();
-});
-</script>
 
 <!-- warning container -->
 <div align="center" style="display:none;" id="div_ErrMsg">
@@ -401,14 +394,16 @@ $(function(){
 	<textarea id="replyBody" name="reply_post" cols="80" rows="20"></textarea>
 	<br /><input type="submit" value="{{LANG_REPLY}}" class="submit" />
 
-	<div id="replybox" title="{{LANG_OPTIONS}}" style="width:400px;text-align:left;">
-		<div class="pContent">
-			<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a><br />
-			<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
-			<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
-			<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}<br />
-			<input type="hidden" name="page" value="{{FORM_PAGE}}" />
+	<br />
+	<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
+		<div style="text-align:center;">
+			{{LANG_OPTIONS}}<br />
+			<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
 		</div>
+		<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+		<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+		<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
+		<input type="hidden" name="page" value="{{FORM_PAGE}}" />
 	</div>
 </div>
 </form>
