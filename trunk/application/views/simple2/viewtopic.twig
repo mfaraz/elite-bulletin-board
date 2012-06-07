@@ -56,7 +56,7 @@
 				<strong>{{p.option_value}}: (0%)</strong><br /><br />
 			{% else %}
 				<strong>{{p.option_value}}: ({{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%)</strong><br />
-				<img src="{{BOARD_URL}}application/views/simple2/images/bar.gif" width="{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}" height="10" alt="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" title="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" /><br /><br />
+				<img src="{{BOARD_URL}}application/views/simple2/images/bar.gif" width="{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%" height="10" alt="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" title="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" /><br /><br />
 			{% endif %}
         {% endfor %}
 		{{LANG_TOTAL}}: <strong>{{TOTAL_VOTES}}</strong>
@@ -64,6 +64,7 @@
 </tr>
 </table>
 {% else %}
+{{POLLFORM|raw}}
 <table border="0" class="table" style="width: 500px;" align="center" cellpadding="1" cellspacing="1">
 <tr>
     <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
@@ -75,11 +76,11 @@
     </td>
 </tr><tr>
     <td align="center" class="ui-widget-content">
-        <input type="hidden" name="user_name" value="{{LOGGEDUSER}}" />
         <input type="submit" name="submit" value="{{LANG_VOTE}}" class="submit" />
     </td>
 </tr>
 </table>
+</form>
 {% endif %}
 <br />
 {% endif %}
@@ -411,6 +412,22 @@ _________________<br />
 {% endif %}
 
 <script type="text/javascript">
+	new FormValidator('frmQReply', [{
+		name: 'replyBody',
+		display: '{{LANG_TOPICBODY}}',
+		rules: 'required|min_length[10]'
+	}], function(errors, event) {
+
+		if (errors.length > 0) {
+			$('#validateRes').empty();
+			$('#validateRes').append(errors.join('<br />'));
+			$('#div_ErrMsg').show();
+		} else {
+			event.returnValue = true; //allow form to process.
+		}
+
+	});
+	
 	$(function() {
 		//"input:submit, a, button", ".demo" 
 		$("#juiBtnReply, .juiBtnQuoteAuthor, .juiBtnPmAuthor").button({
