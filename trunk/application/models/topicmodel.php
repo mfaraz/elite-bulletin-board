@@ -716,8 +716,6 @@ class Topicmodel extends CI_Model {
 		  'bid' => $this->getBid(),
 		  'tid' => $this->getTiD(),
 		  'Body' => $this->getBody(),
-		  'topic_type' => $this->getTopicType(),
-		  'important' => $this->getImportant(),
 		  'IP' => $this->getIp(),
 		  'Original_Date' => $this->getOriginalDate(),
 		  'disable_bbcode' => $this->getDisableBbCode(),

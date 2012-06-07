@@ -541,7 +541,7 @@ class Boards extends EBB_Controller {
 		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
 		  'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
 		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'QREPLYFORM' => form_open('boards/reply', array('name' => 'frmQReply')),
+		  'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
 		  'SMILES' => form_smiles(),
 		  'LANG_REPLY' => $this->lang->line('btnreply'),
 		  'LANG_OPTIONS' => $this->lang->line('options'),
@@ -934,6 +934,10 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/quote/5/5/2
 	 */
 	public function quote($tid, $pid, $type) {
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt', 'email', 'form_validation'));
+        $this->load->helper(array('form', 'user', 'posting'));
+		
 		$this->FORM_reply($tid, $pid, $type);
 	}
 	
@@ -946,6 +950,8 @@ class Boards extends EBB_Controller {
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user', 'posting'));
 		
+		//load topic model.
+		$this->load->model('Topicmodel');
 		
 		//load entities
 		$this->Topicmodel->GetTopicData($tid);
@@ -984,7 +990,7 @@ class Boards extends EBB_Controller {
 				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
 
 				#direct user.
-				redirect('/boards/viewboard/'.$bid, 'location');
+				redirect('/boards/viewtopic/'.$tid, 'location');
 				exit();
 			}
 			
@@ -1014,7 +1020,6 @@ class Boards extends EBB_Controller {
 			$this->Topicmodel->setPostedUser($this->logged_user);
 			$this->Topicmodel->setQuestion(null);
 			$this->Topicmodel->setTopicType(null);
-			$this->Topicmodel->setViews(0);
 			
 			$newPostId = $this->Topicmodel->CreateReply(); //create post, get Post ID.
 			
@@ -1024,7 +1029,7 @@ class Boards extends EBB_Controller {
 			}
 
 			#update board & topic details.
-			update_board($bid, $tid, $time, $this->logged_user);
+			update_board($this->Topicmodel->getBid(), $tid, $time, $this->logged_user);
 			update_topic($tid, $time, $this->logged_user);
 			
 			//update user's last post.
@@ -1061,7 +1066,7 @@ class Boards extends EBB_Controller {
 			  ->join('ebb_users u', 'tw.username=u.Username', 'LEFT')
 			  ->where('tw.username !=', $this->logged_user)
 			  ->where('tw.tid', $tid)
-			  ->where('tw.status', 0);
+			  ->where('tw.read_status', 0);
 			$notificationQ = $this->db->get();
 			
 			//see if we have any subscribers.
@@ -1085,7 +1090,7 @@ class Boards extends EBB_Controller {
 				//loop through data and bind to an array.
 				foreach ($notificationQ->result() as $notify) {
 					//send out email.        	
-					$this->email->bcc($notify->Email);
+					$this->email->to($notify->Email);
 					$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
 					$this->email->subject('RE: '.$this->Topicmodel->getTopic());
 					$this->email->message($this->twig->renderNoStyle('/emails/'.$notify->Language.'/eml_new_reply.twig', array(
@@ -1117,6 +1122,9 @@ class Boards extends EBB_Controller {
 	private function FORM_reply($tid, $quoteID=null, $quoteType=null) {
 		//load breadcrumb library
 		$this->load->library('breadcrumb');
+		
+		//load topic model.
+		$this->load->model('Topicmodel');
 
 		//load entities
 		$this->Topicmodel->GetTopicData($tid);
@@ -1136,7 +1144,7 @@ class Boards extends EBB_Controller {
 				
 				//see if the post exists.
 				if($query->num_rows() > 0) {
-					$row = $query->result();
+					$row = $query->row();
 					$quoteMsg = '[quote='.$row->author.']'.$row->Body.'[/quote]';
 				} else {
 					$quoteMsg = '';
@@ -1238,6 +1246,9 @@ class Boards extends EBB_Controller {
 	*/
 	public function vote($id) {
 
+		
+		//direct user to topic.
+		redirect('/boards/viewtopic/'.$id, 'location');
 	}
 	
 	/**

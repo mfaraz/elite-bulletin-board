@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/29/2012
+ * @version 06/06/2012
 */
 
 /**
@@ -809,7 +809,7 @@ function GetWarningLevel($user) {
  * @param string $user the user we want to this to affect.
  * @param integer $tid the Topic ID we want this to affect.
  * @param string $mode are we subscribing or unsubscribing?
- * @version 05/25/12
+ * @version 06/06/12
  */
 function subscriptionManager($user, $tid, $mode) {
 
@@ -827,7 +827,7 @@ function subscriptionManager($user, $tid, $mode) {
 		$data = array(
 		  "username" => $user,
 		  "tid" => $tid,
-		  "read" => 0
+		  "read_status" => 0
 		);
 		$ci->db->insert('ebb_topic_watch', $data);		
 	} elseif ($mode == "unsubscribe" && $query->num_rows() > 0) {
