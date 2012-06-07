@@ -512,6 +512,7 @@ class Boards extends EBB_Controller {
 		  'LANG_POSTED' => $this->lang->line('postedon'),
 		  'LANG_IP'  => $this->lang->line('ipmod'),
 		  'LANG_IPLOGGED' => $this->lang->line('iplogged'),
+		  'POLLFORM' => form_open('boards/vote/'.$id),
           'POLL_QUESTION' => $this->Topicmodel->getQuestion(),
           'POLLDATA' => $this->Topicmodel->GetPoll($id),
           'LANG_VOTE' => $this->lang->line('castvote'),
@@ -1245,7 +1246,49 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/vote/5
 	*/
 	public function vote($id) {
+		
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt'));
+        $this->load->helper(array('form'));
+		
+		//load topic model.
+		$this->load->model('Topicmodel');
+		
+		//load entities
+		$this->Topicmodel->GetTopicData($id);
+		$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+		
+		//see if user can vote.
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBVote())){
+			$this->session->set_flashdata('NotifyType', 'error');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('cantvote'));
+		} else {
+			if (!$this->Groupmodel->ValidateAccess(1, 36)){
+				$this->session->set_flashdata('NotifyType', 'error');
+				$this->session->set_flashdata('NotifyMsg', $this->lang->line('cantvote'));
+			}
+		}
+		
+		//get vote from form.
+		$vote = $this->input->post('vote', TRUE);
+		
+		//ensure the user entered something.
+		if (!$vote) {
+			//something went wrong.
+			$this->session->set_flashdata('NotifyType', 'error');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('novote'));
+		} else {
+			//load topic model.
+			$this->load->model('Topicmodel');
 
+			//cast vote.
+			$this->Topicmodel->CastVote($this->logged_user, $id, $vote);
+			
+			//vote has been recorded.
+			$this->session->set_flashdata('NotifyType', 'success');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('votecasted'));
+		}
 		
 		//direct user to topic.
 		redirect('/boards/viewtopic/'.$id, 'location');

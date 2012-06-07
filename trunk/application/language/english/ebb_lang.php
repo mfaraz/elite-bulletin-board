@@ -324,6 +324,7 @@ $lang['condel'] = 'Are you sure you wish to delete this?';
 $lang['total'] = 'Total Votes';
 $lang['castvote'] = 'Cast Vote';
 $lang['novote'] = 'No vote was casted.';
+$lang['votecasted'] = 'Your vote has been recorded.';
 #post form language tags.
 $lang['newtopic'] = 'Post New Topic';
 $lang['newpoll'] = 'Post New Poll';
