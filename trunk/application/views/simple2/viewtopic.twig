@@ -332,7 +332,7 @@ _________________<br />
 <td colspan="2" align="right" class="ui-widget-header">
 	<button class="juiBtnProfile" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/{{r.author}}');">{{LANG_PROFILE}}</button>
 	<button class="juiBtnPmAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/PM/compose/{{r.author}}');">{{LANG_BTNPMAUTHOR}}</button>
-	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reportpost/{{r.pid}}');">{{LANG_BTNREPORTPOST}}</button>
+	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reporttopic/{{r.tid}}');">{{LANG_BTNREPORTPOST}}</button>
 </td>
 </tr>
 {% endif %}
@@ -376,12 +376,19 @@ _________________<br />
 	<div id="filelist"></div>
 
 	<script type="text/javascript">
-
 		$(function(){
-			$('#attach').jUploader({LoadingGfx: "application/views/simple2/images/loading.gif",
-				LoadingMsg: lang.attachLoading, PendingMsg: lang.attachPending,
-				SuccessMsg: lang.attachSuccess, FailureMsg: lang.attachFailed,
-				uploadLimitMsg: lang.attachLimit, uploadLimit: "{ATTACHMENTLIMIT}"});
+			$('#attach').jUploader({
+				LoadingGfx: "application/views/simple2/images/loading.gif",
+				LoadingMsg: lang.attachLoading,
+				PendingMsg: lang.attachPending,
+				SuccessMsg: lang.attachSuccess,
+				FailureMsg: lang.attachFailed,
+				uploadLimitMsg: lang.attachLimit,
+				uploadLimit: "{{ATTACHMENTLIMIT}}",
+				deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
+				confirmDeletMsg: lang.attachDeletePrompt,
+				fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
+			});
 		});
 	</script>
 	<!--END upload -->
@@ -460,7 +467,6 @@ _________________<br />
                 primary: "ui-icon-unlocked"
             }
 		});
-		
 		$(".juiBtnEditPost").button({
 			icons: {
                 primary: "ui-icon-pencil"
@@ -475,8 +481,7 @@ _________________<br />
 			icons: {
                 primary: "ui-icon-alert"
             }
-		});
-		
+		});		
 		$('#juiBtnLocked').button({
 			disabled: true,
 			icons: {

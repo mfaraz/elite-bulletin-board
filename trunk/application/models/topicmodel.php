@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/29/2012
+ * @version 06/06/2012
 */
 
 /**
@@ -661,7 +661,7 @@ class Topicmodel extends CI_Model {
 	 * @access public
 	 * @version 05/23/12 
 	 * @return integer
-	 */
+	*/
 	public function CreateTopic() {
 		#setup values.
 		$data = array(
@@ -687,8 +687,6 @@ class Topicmodel extends CI_Model {
 		
 		//get tid
 		return $this->db->insert_id();
-		
-		
 	}
 	
 	/**
@@ -697,7 +695,7 @@ class Topicmodel extends CI_Model {
 	 * @param integer $topicId Topic ID
 	 * @access public
 	 * @version 05/29/12
-	 */
+	*/
 	public function CreatePoll($optionValue, $topicId) {
 		#setup values.
 		$data = array(
@@ -709,6 +707,11 @@ class Topicmodel extends CI_Model {
 		$this->db->insert('ebb_poll', $data);
 	}
 	
+	/**
+	 * Creates a reply
+	 * @return integer
+	 * @version 06/05/12 
+	*/
 	public function CreateReply() {
 		#setup values.
 		$data = array(
@@ -758,7 +761,7 @@ class Topicmodel extends CI_Model {
 	 * @param int $tid TopicID
 	 * @version 05/23/12
 	 * @access public
-	 */
+	*/
 	public function GetTopicData($tid) {
 
 		//fetch topic data.
@@ -842,7 +845,7 @@ class Topicmodel extends CI_Model {
      * @param integer $tid TopicID
      * @return array,boolean
 	 * @version 05/29/12
-     */
+    */
 	public function GetPoll($tid) {
 		
         //setup reply data array.
@@ -875,7 +878,7 @@ class Topicmodel extends CI_Model {
 	 * @param integer $tid the topic that holding the vote
 	 * @param integer $vote The vote value user selected
 	 * @version 1/12/12
-	 */
+	*/
 	public function CastVote($user, $tid, $vote) {
 
 		//INSERT INTO ebb_votes (Username, tid, Vote) VALUES('$logged_user', '$tid', '$vote')
@@ -888,6 +891,12 @@ class Topicmodel extends CI_Model {
 
 	}
     
+	/**
+	 * Show the results of a poll.
+	 * @param integer $tid Topic ID.
+	 * @return boolean|array
+	 * @version 06/06/12
+	*/
     public function ShowPollResults($tid) {
        
         //setup reply data array.
@@ -914,5 +923,3 @@ class Topicmodel extends CI_Model {
         
     }
 }
-
-?>

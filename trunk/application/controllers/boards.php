@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/29/2012
+ * @version 06/06/2012
 */
 
 /**
@@ -479,7 +479,7 @@ class Boards extends EBB_Controller {
 		  'LANG_BTNDELETEPOST' => $this->lang->line('btndeletemessage'),
 		  'LANG_BTNQUOTEAUTHOR' => $this->lang->line('btnquoteauthor'),
 		  'LANG_BTNPMAUTHOR' => $this->lang->line('btnpmauthor'),
-		  'LANG_BTNREPORTPOST' => $this->lang->line('report2mod'),
+		  'LANG_BTNREPORTPOST' => $this->lang->line('reporttomod'),
 		  'groupAccess' => $this->groupAccess,
 		  'LANG_PRINT' =>  $this->lang->line('ptitle'),
 		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
@@ -559,6 +559,16 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/newtopic/5
 	*/
 	public function newtopic($bid) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user', 'posting'));
@@ -680,6 +690,16 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/newpoll/5
 	*/
 	public function newpoll($bid) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user', 'posting'));
@@ -935,6 +955,16 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/quote/5/5/2
 	 */
 	public function quote($tid, $pid, $type) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user', 'posting'));
@@ -947,6 +977,16 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/reply/5/20
 	*/
 	public function reply($tid) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt', 'email', 'form_validation'));
         $this->load->helper(array('form', 'user', 'posting'));
@@ -1090,6 +1130,8 @@ class Boards extends EBB_Controller {
 
 				//loop through data and bind to an array.
 				foreach ($notificationQ->result() as $notify) {
+					$this->email->clear(); //reset email setting
+					
 					//send out email.        	
 					$this->email->to($notify->Email);
 					$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
@@ -1246,6 +1288,15 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/vote/5
 	*/
 	public function vote($id) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
 		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt'));
@@ -1295,29 +1346,147 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
-	 * report a topic.
+	 * report a topic/reply.
 	 * @example index.php/boards/reporttopic/5
 	*/
 	public function reporttopic($id) {
-		$this->FORM_reporttopic($id);
-	}
-	
-	/**
-	 * Report Topic Form.
-	 * @param integer $id
-	 * @version 04/17/12
-	 * @access private
-	*/
-	private function FORM_reporttopic($id) {
 		
-	}
-	
-	/**
-	 * report a reply.
-	 * @example index.php/boards/reportpost/5
-	*/
-	public function reportpost($id) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//alert user.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
 
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
+		//LOAD LIBRARIES
+        $this->load->library(array('encrypt', 'email', 'form_validation', 'breadcrumb'));
+        $this->load->helper(array('form', 'user'));
+		
+		//load topic model.
+		$this->load->model('Topicmodel');
+
+		//load topic entity.
+		$this->Topicmodel->GetTopicData($id);
+		
+		// add breadcrumbs
+		$this->breadcrumb->append_crumb($this->title, '/boards/');
+		$this->breadcrumb->append_crumb($this->lang->line("reporttomod"), '/boards/reporttopic/'.$id);
+		
+		//setup validation rules.
+        $this->form_validation->set_rules('reason', $this->lang->line('reason'), 'required|xss_clean');
+		$this->form_validation->set_rules('msg', $this->lang->line('message'), 'required|min_length[10]|max_length[255]|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			//render to HTML.
+			echo $this->twig->render($this->style, 'reporttopic', array (
+			  'boardName' => $this->title,
+			  'pageTitle'=> $this->lang->line("reporttomod"),
+			  'BOARD_URL' => $this->boardUrl,
+			  'APP_URL' => $this->boardUrl.APPPATH,
+			  'NOTIFY_TYPE' => $this->notifyType,
+			  'NOTIFY_MSG' =>  $this->notifyMsg,
+			  'LANG' => $this->lng,
+			  'groupAccess' => $this->groupAccess,
+			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			  'LOGGEDUSER' => $this->logged_user,
+			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			  'LANG_INFO' => $this->lang->line('info'),
+			  'LANG_LOGIN' => $this->lang->line('login'),
+			  'LANG_LOGOUT' => $this->lang->line('logout'),
+			  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			  'REPORTTOPICFORM' => form_open('boards/reporttopic/'.$id, array('name' => 'frmReportTopics')),
+			  'VALIDATIONSUMMARY' => validation_errors(),
+			  'VALIDATION_USERNAME' => form_error('username'),
+			  'VALIDATION_PASSWORD' => form_error('password'),
+			  'LANG_USERNAME' => $this->lang->line('username'),
+			  'LANG_REGISTER' => $this->lang->line('register'),
+			  'LANG_PASSWORD' => $this->lang->line('pass'),
+			  'LANG_FORGOT' => $this->lang->line('forgot'),
+			  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			  'LANG_SEARCH' => $this->lang->line('search'),
+			  'LANG_CP' => $this->lang->line('admincp'),
+			  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			  'LANG_HOME' => $this->lang->line('home'),
+			  'LANG_HELP' => $this->lang->line('help'),
+			  'LANG_MEMBERLIST' => $this->lang->line('members'),
+			  'LANG_PROFILE' => $this->lang->line('profile'),
+			  'LANG_POWERED' => $this->lang->line('poweredby'),
+			  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			  'BREADCRUMB' =>$this->breadcrumb->output(),
+			  'LANG_TEXT' => $this->lang->line('topicreporttxt'),
+			  'LANG_REPORTEDBY' => $this->lang->line('Reportedby'),
+			  'LANG_REASON' => $this->lang->line('reason'),
+			  'LANG_SPAMPOST' => $this->lang->line('spampost'),
+			  'LANG_FIGHTPOST' => $this->lang->line('fightpost'),
+			  'LANG_ADVERT' => $this->lang->line('advert'),
+			  'LANG_USERPROBLEMS' => $this->lang->line('userproblems'),
+			  'LANG_OTHER' => $this->lang->line('other'),
+			  'LANG_MESSAGE' => $this->lang->line('message'),
+			  'LANG_SUBMITREPORT' => $this->lang->line('submitreport')
+			));
+		} else {
+			//new topic notification.
+			$this->db->select('u.Email, u.Language')
+			  ->from('ebb_users u')
+			  ->join('ebb_groups g', 'u.gid=g.id', 'LEFT')
+			  ->where('g.Level', 1)
+			  ->or_where('g.Level', 2);
+			$notificationQ = $this->db->get();
+			
+			//see if we have any subscribers.
+			if($notificationQ->num_rows() > 0) {
+				#email user.
+				$config = array();
+				if ($this->preference->getPreferenceValue("mail_type") == 2) {
+					$config['protocol'] = 'sendmail';
+					$config['mailpath'] = $this->preference->getPreferenceValue("sendmail_path");
+					$this->email->initialize($config);
+				} elseif ($this->preference->getPreferenceValue("mail_type") == 0) {
+					$config['protocol'] = 'smtp';
+					$config['smtp_host'] = $this->preference->getPreferenceValue("smtp_host");
+					$config['smtp_user'] = $this->preference->getPreferenceValue("smtp_user");
+					$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
+					$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
+					$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
+					$this->email->initialize($config);
+				}
+
+				//loop through data and bind to an array.
+				foreach ($notificationQ->result() as $notify) {
+					$this->email->clear(); //reset email setting
+					
+					//send out email.        	
+					$this->email->to($notify->Email);
+					$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+					$this->email->subject($this->lang->line('reportsubject'));
+					$this->email->message($this->twig->renderNoStyle('/emails/'.$notify->Language.'/eml_report_topic.twig', array(
+					  'REPORTED_BY' => $this->logged_user,
+					  'REASON' => $this->input->post('reason', TRUE),
+					  'MSG' => $this->input->post('msg', TRUE),
+					  'BOARDADDR' => $this->boardUrl,
+					  'TID' => $id
+					  )));
+
+					//send out email.
+					$this->email->send();
+				}
+			}
+			
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'success');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('reportsent'));
+			
+			//direct user to topic.
+			redirect('/boards/viewtopic/'.$id, 'location');
+			
+		}
 	}
 	
 	/**
