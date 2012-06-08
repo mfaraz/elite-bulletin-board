@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/18/2012
+ * @version 06/07/2012
 */
 
 /**
@@ -56,7 +56,6 @@ class Login extends EBB_Controller {
 
 				#direct user to their previous location.
 				redirect('/', 'location');
-				exit();
 			} else {
 				//load breadcrumb library
 				$this->load->library('breadcrumb');
