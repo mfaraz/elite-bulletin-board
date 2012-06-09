@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/06/2012
+ * @version 06/09/2012
 */
 
 /**
@@ -1526,7 +1526,84 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/boardFeed/5
 	*/
 	public function boardFeed($id) {
+		
+		//load libraries/helpers/etc
+		$this->load->helper('text');
+		
+		if ($this->Boardmodel->ValidateBoardID($id) == 0) {
+			show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
+		}elseif ($this->Boardmodel->getType() == 1) {
+			redirect('/', 'location');
+		}
+		
+		$this->Boardmodel->GetBoardSettings($id);
+		$this->Boardaccessmodel->GetBoardAccess($id);
+		
+		//fetch topic data.
+		$this->db->select('t.tid, t.bid, p.pid, t.Topic, t.Body AS TBODY, p.Body AS PBODY, t.Original_Date AS TDATE, p.Original_Date AS PDATE')
+		  ->from('ebb_topics t')
+		  ->join('ebb_posts p', 't.tid=p.tid', 'LEFT')
+		  ->where('t.bid', $id)
+		  ->order_by('TDATE desc, PDATE desc')
+		  ->limit(20);
+		$query = $this->db->get();
+		
+		#set headers to make it an xml file.
+		header("Content-type: text/xml");
+		
+		echo '<?xml version="1.0" encoding="UTF-8" ?>';
+		echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
+		echo '<channel>
+		<title>'.$this->title.' - '.$this->Boardmodel->getBoard().'</title>
+		<description>'.$this->Boardmodel->getDescription().'</description>
+		<link>'.$this->boardUrl.'</link>';
+		
+		foreach ($query->result() as $row) {
+			
+			#see if user can view this topic.
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead())){
+								
+				//see if pid is blank(would be for topcis only)
+				if ($row->pid <> "") {
+					#if body is over 100 characters, cut it off.
+					if(strlen($row->PBODY) > 100){
+						$rss_desc = character_limiter($row->PBODY, 100);
+					}else{
+						$rss_desc = $row->PBODY;
+					}
 
+					//setup date
+					$gmttime = gmdate ("r", $row->PDATE);				
+					
+					echo '<item>
+					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<date>'. $gmttime .'</date>
+					<title>'.$row->Topic.'</title>
+					<description>'.$rss_desc.'</description>
+					<pubDate>'. $gmttime .'</pubDate>
+					</item>';
+				} else {
+					#if body is over 100 characters, cut it off.
+					if(strlen($row->TBODY) > 100){
+						$rss_desc = character_limiter($row->TBODY, 100);
+					}else{
+						$rss_desc = $row->TBODY;
+					}
+
+					//setup date
+					$gmttime = gmdate ("r", $row->TDATE);	
+
+					echo '<item>
+					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<date>'. $gmttime .'</date>
+					<title>'.$row->Topic.'</title>
+					<description>'.$rss_desc.'</description>
+					<pubDate>'. $gmttime .'</pubDate>
+					</item>';
+				}
+			}
+		}
+		echo '</channel></rss>';
 	}
 	
 	/**
@@ -1535,6 +1612,76 @@ class Boards extends EBB_Controller {
 	*/
 	public function latestPost() {
 
+		//load libraries/helpers/etc
+		$this->load->helper('text');
+		
+		//fetch topic data.
+		$this->db->select('t.tid, t.bid, p.pid, t.Topic, t.Body AS TBODY, p.Body AS PBODY, t.Original_Date AS TDATE, p.Original_Date AS PDATE')
+		  ->from('ebb_topics t')
+		  ->join('ebb_posts p', 't.tid=p.tid', 'LEFT')
+		  ->order_by('TDATE desc, PDATE desc')
+		  ->limit(20);
+		$query = $this->db->get();
+		
+		#set headers to make it an xml file.
+		header("Content-type: text/xml");
+		
+		echo '<?xml version="1.0" encoding="UTF-8" ?>';
+		echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
+		echo '<channel>
+		<title>'.$this->title.'</title>
+		<description>'.$this->lang->line('latestposts').'</description>
+		<link>'.$this->boardUrl.'</link>';
+		
+		foreach ($query->result() as $row) {
+			
+			$this->Boardmodel->GetBoardSettings($row->bid);
+			$this->Boardaccessmodel->GetBoardAccess($row->bid);
+			
+			#see if user can view this topic.
+			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead())){
+								
+				//see if pid is blank(would be for topcis only)
+				if ($row->pid <> "") {
+					#if body is over 100 characters, cut it off.
+					if(strlen($row->PBODY) > 100){
+						$rss_desc = character_limiter($row->PBODY, 100);
+					}else{
+						$rss_desc = $row->PBODY;
+					}
+
+					//setup date
+					$gmttime = gmdate ("r", $row->PDATE);				
+					
+					echo '<item>
+					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<date>'. $gmttime .'</date>
+					<title>'.$row->Topic.'</title>
+					<description>'.$rss_desc.'</description>
+					<pubDate>'. $gmttime .'</pubDate>
+					</item>';
+				} else {
+					#if body is over 100 characters, cut it off.
+					if(strlen($row->TBODY) > 100){
+						$rss_desc = character_limiter($row->TBODY, 100);
+					}else{
+						$rss_desc = $row->TBODY;
+					}
+
+					//setup date
+					$gmttime = gmdate ("r", $row->TDATE);	
+
+					echo '<item>
+					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<date>'. $gmttime .'</date>
+					<title>'.$row->Topic.'</title>
+					<description>'.$rss_desc.'</description>
+					<pubDate>'. $gmttime .'</pubDate>
+					</item>';
+				}
+			}
+		}
+		echo '</channel></rss>';
 	}
 	
 }
