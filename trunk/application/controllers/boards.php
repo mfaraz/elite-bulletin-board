@@ -681,7 +681,6 @@ class Boards extends EBB_Controller {
 			
 			//direct user to topic.
 			redirect('/boards/viewtopic/'.$newTopicId, 'location');
-			
 		}
 	}
 	
@@ -1000,21 +999,14 @@ class Boards extends EBB_Controller {
 		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
 		
 		//see if user can post on this board.
-		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())){
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBReply())){
 			show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
 		} else {
-			if (!$this->Groupmodel->ValidateAccess(1, 37)){
+			if (!$this->Groupmodel->ValidateAccess(1, 38)){
 				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
 			}
 		}
-		
-		#see if user can mark topics as important.
-		if ($this->Groupmodel->ValidateAccess(1, 39)){
-			$CanImportant = TRUE;
-		} else {
-			$CanImportant = FALSE;
-		}
-		
+
 		//setup validation rules.
         $this->form_validation->set_rules('reply_post', $this->lang->line('topicbody'), 'required|min_length[10]|callback_SpamFilter|xss_clean');
 		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
@@ -1152,7 +1144,6 @@ class Boards extends EBB_Controller {
 			
 			//direct user to topic.
 			redirect('/boards/viewtopic/'.$tid, 'location');
-			
 		}
 	}
 	
@@ -1495,13 +1486,229 @@ class Boards extends EBB_Controller {
 	*/
 	public function edittopic($id) {
 
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt', 'form_validation', 'breadcrumb'));
+        $this->load->helper(array('form', 'user', 'posting'));
+		
+		//load topic & attachments model.
+		$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+		
+		//load entities
+		$this->Topicmodel->GetTopicData($id);
+		$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+		
+		//see if user can post on this board.
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())){
+			show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+		} else {
+			if (!$this->Groupmodel->ValidateAccess(1, 37)){
+				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+			}
+		}
+		
+		#see if user can mark topics as important.
+		if ($this->Groupmodel->ValidateAccess(1, 39)){
+			$CanImportant = TRUE;
+		} else {
+			$CanImportant = FALSE;
+		}
+		
+		//setup validation rules.
+        $this->form_validation->set_rules('topic', $this->lang->line('topic'), 'required|min_length[5]|max_length[50]|callback_SpamFilter|xss_clean');
+        $this->form_validation->set_rules('post', $this->lang->line('topicbody'), 'required|min_length[10]|callback_SpamFilter|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$id);
+			$this->breadcrumb->append_crumb($this->lang->line("edittopic"), '/boards/edittopic/'.$id);
+
+			//grab board preferences.
+			$boardpref_bbcode = $this->Boardmodel->getBbCode();
+			$boardpref_smiles = $this->Boardmodel->getSmiles();
+			$boardpref_image = $this->Boardmodel->getImage();
+
+			#see if user can mark topics as important.
+			if ($this->Groupmodel->ValidateAccess(1, 39)){
+				$CanImportant = TRUE;
+			} else {
+				$CanImportant = FALSE;
+			}
+
+			#see if user can upload
+			if ($this->Groupmodel->ValidateAccess(1, 26)) {
+				$uploadLimit = $this->preference->getPreferenceValue("upload_limit");	
+			} else {
+				$uploadLimit = 0;
+			}
+
+			//render to HTML.
+			echo $this->twig->render($this->style, 'edit_topic', array (
+			  'boardName' => $this->title,
+			  'pageTitle'=> $this->lang->line("edittopic"),
+			  'BOARD_URL' => $this->boardUrl,
+			  'APP_URL' => $this->boardUrl.APPPATH,
+			  'NOTIFY_TYPE' => $this->notifyType,
+			  'NOTIFY_MSG' =>  $this->notifyMsg,
+			  'LANG' => $this->lng,
+			  'groupAccess' => $this->groupAccess,
+			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			  'LOGGEDUSER' => $this->logged_user,
+			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			  'LANG_INFO' => $this->lang->line('info'),
+			  'LANG_LOGIN' => $this->lang->line('login'),
+			  'LANG_LOGOUT' => $this->lang->line('logout'),
+			  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			  'NEWTOPICFORM' => form_open('boards/edittopic/'.$id, array('name' => 'frmEditTopic')),
+			  'UPLOADFORM' => form_open_multipart('upload/do_upload/'),
+			  'VALIDATIONSUMMARY' => validation_errors(),
+			  'VALIDATION_USERNAME' => form_error('username'),
+			  'VALIDATION_PASSWORD' => form_error('password'),
+			  'LANG_USERNAME' => $this->lang->line('username'),
+			  'LANG_REGISTER' => $this->lang->line('register'),
+			  'LANG_PASSWORD' => $this->lang->line('pass'),
+			  'LANG_FORGOT' => $this->lang->line('forgot'),
+			  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			  'LANG_SEARCH' => $this->lang->line('search'),
+			  'LANG_CP' => $this->lang->line('admincp'),
+			  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			  'LANG_HOME' => $this->lang->line('home'),
+			  'LANG_HELP' => $this->lang->line('help'),
+			  'LANG_MEMBERLIST' => $this->lang->line('members'),
+			  'LANG_PROFILE' => $this->lang->line('profile'),
+			  'LANG_POWERED' => $this->lang->line('poweredby'),
+			  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			  'BREADCRUMB' =>$this->breadcrumb->output(),
+			  "LANG_POSTINGRULES" => $this->lang->line("postingrules"),
+			  "LANG_YES" => $this->lang->line("yes"),
+			  "LANG_NO" => $this->lang->line("no"),
+			  "LANG_ALLOWSMILES" => $this->lang->line("smiles"),
+			  "ALLOWSMILES" => $boardpref_smiles,
+			  "LANG_ALLOWBBCODE" => $this->lang->line("bbcode"),
+			  "ALLOWBBCODE" => $boardpref_bbcode,
+			  "LANG_ALLOWIMG" => $this->lang->line("img"),
+			  "ALLOWIMG" => $boardpref_image,
+			  "LANG_SMILES" => $this->lang->line("moresmiles"),
+			  "SMILES" => form_smiles(),
+			  "LANG_TOPIC" => $this->lang->line("topic"),
+			  'TOPIC' => $this->Topicmodel->getTopic(),
+			  "LANG_TOPICBODY" => $this->lang->line('topicbody'),
+			  'POSTTOPIC' => $this->Topicmodel->getBody(),
+			  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
+			  "LANG_CLEAR" => $this->lang->line("clearfile"),
+			  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+			  "ATTACHMENTLIMIT" => $uploadLimit,
+			  "LANG_DISABLERTF" => $this->lang->line("disablertf"),
+			  "LANG_OPTIONS" => $this->lang->line("options"),
+			  "LANG_POSTTYPE" => $this->lang->line("type"),
+			  "POSTTYPE" => $this->Topicmodel->getImportant(),
+			  "GAC_IMPORTANT" => $CanImportant,
+			  "LANG_IMPORTANT" => $this->lang->line("important"),
+			  "LANG_NORMAL" => $this->lang->line("normal"),
+			  "LANG_NOTIFY" => $this->lang->line("notify"),
+			  "LANG_DISABLESMILES" => $this->lang->line("disablesmiles"),
+			  "DISABLESMILES" => $this->Topicmodel->getDisableSmiles(),
+			  "LANG_DISABLEBBCODE" => $this->lang->line("disablebbcode"),
+			  "DISABLEBBCODE" => $this->Topicmodel->getDisableBbCode(),
+			  "LANG_EDITTOPIC" => $this->lang->line("edittopic")
+			));
+		} else {
+			$no_smile = ($this->input->post('no_smile', TRUE) == FALSE) ? FALSE : TRUE;
+			$no_bbcode = ($this->input->post('no_bbcode', TRUE) == FALSE) ? FALSE : TRUE;
+			$subscribe = ($this->input->post('subscribe', TRUE) == FALSE) ? FALSE : TRUE;
+			
+			//create new topic.
+			$this->Topicmodel->setTopic($this->input->post('topic', TRUE));
+			$this->Topicmodel->setBody($this->input->post('post', TRUE));
+			$this->Topicmodel->setDisableBbCode($no_bbcode);
+			$this->Topicmodel->setDisableSmiles($no_smile);
+			$this->Topicmodel->setImportant($this->input->post('post_type', TRUE));
+			
+			$this->Topicmodel->ModifyTopic(); //update topic.
+			
+			//see if user wants to subscribe to this topic.
+			if ($subscribe) {
+				subscriptionManager($this->logged_user, $id, "subscribe");
+			}
+		
+			//validate user can attach files.
+			if($this->Groupmodel->ValidateAccess(1, 26)){ 
+				#see if user uploaded a file, if so lets assign the file to the topic.
+				$this->db->select('id')
+					->from('ebb_attachments')
+					->where('Username', $this->logged_user)
+					->where('tid', 0)
+					->where('pid', 0);
+				$query = $this->db->get();
+				
+				//see if we have anything to assign first.
+				if($query->num_rows() > 0) {
+					foreach ($query->result() as $row) {
+						#add attachment to db for listing purpose.
+						$this->Attachmentsmodel->AssignAttachment($id, 0, $row->id);
+					}
+				}
+			}
+			
+			//direct user to topic.
+			redirect('/boards/viewtopic/'.$id, 'location');
+		}
+		
 	}
 	
 	/**
-	 * delets topic and all things assocated with it.
+	 * deletes topic and all things assocated with it.
 	 * @example index.php/boards/deletetopic/5
 	*/
 	public function deletetopic($id) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
+		//load topic & attachments model.
+		$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+		
+		//load entities
+		$LoadSuccess = $this->Topicmodel->GetTopicData($id);
+		
+		//ensure everything loaded correctly.
+		if ($LoadSuccess) {
+			$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+			$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+
+			//see if user can post on this board.
+			if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())){
+				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+			} else {
+				if (!$this->Groupmodel->ValidateAccess(1, 37)){
+					show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+				}
+			}
+		} else {
+			exit(show_error($this->lang->line('doesntexist'), 500, $this->lang->line('error')));
+		}
 
 	}
 	
@@ -1510,7 +1717,168 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/editpost/5
 	*/
 	public function editpost($id) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->session->set_flashdata('NotifyType', 'warning');
+			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
 
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
+		//LOAD LIBRARIES
+		$this->load->library(array('encrypt', 'form_validation', 'breadcrumb'));
+        $this->load->helper(array('form', 'user', 'posting'));
+		
+		//load topic & attachments model.
+		$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+		
+		//load entities
+		$this->Topicmodel->GetReplyData($id);
+		$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+		
+		//see if user can post on this board.
+		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBReply())){
+			show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+		} else {
+			if (!$this->Groupmodel->ValidateAccess(1, 38)){
+				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+			}
+		}
+
+		//setup validation rules.
+        $this->form_validation->set_rules('reply_post', $this->lang->line('topicbody'), 'required|min_length[10]|callback_SpamFilter|xss_clean');
+		$this->form_validation->set_error_delimiters('<div class="ui-widget" style="width: 45%;"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+		//see if any validation rules failed.
+		if ($this->form_validation->run() == FALSE) {
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$this->Topicmodel->getTiD());
+			$this->breadcrumb->append_crumb($this->lang->line("editpost"), '/boards/editpost/'.$id);
+
+			//grab board preferences.
+			$boardpref_bbcode = $this->Boardmodel->getBbCode();
+			$boardpref_smiles = $this->Boardmodel->getSmiles();
+			$boardpref_image = $this->Boardmodel->getImage();
+
+			#see if user can upload
+			if ($this->Groupmodel->ValidateAccess(1, 26)) {
+				$uploadLimit = $this->preference->getPreferenceValue("upload_limit");	
+			} else {
+				$uploadLimit = 0;
+			}
+
+			//render to HTML.
+			echo $this->twig->render($this->style, 'edit_post', array (
+			  'boardName' => $this->title,
+			  'pageTitle'=> $this->lang->line("edittopic"),
+			  'BOARD_URL' => $this->boardUrl,
+			  'APP_URL' => $this->boardUrl.APPPATH,
+			  'NOTIFY_TYPE' => $this->notifyType,
+			  'NOTIFY_MSG' =>  $this->notifyMsg,
+			  'LANG' => $this->lng,
+			  'groupAccess' => $this->groupAccess,
+			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+			  'LOGGEDUSER' => $this->logged_user,
+			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+			  'LANG_INFO' => $this->lang->line('info'),
+			  'LANG_LOGIN' => $this->lang->line('login'),
+			  'LANG_LOGOUT' => $this->lang->line('logout'),
+			  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+			  'EDITPOSTFORM' => form_open('boards/editpost/'.$id, array('name' => 'frmEditPost')),
+			  'UPLOADFORM' => form_open_multipart('upload/do_upload/'),
+			  'VALIDATIONSUMMARY' => validation_errors(),
+			  'VALIDATION_USERNAME' => form_error('username'),
+			  'VALIDATION_PASSWORD' => form_error('password'),
+			  'LANG_USERNAME' => $this->lang->line('username'),
+			  'LANG_REGISTER' => $this->lang->line('register'),
+			  'LANG_PASSWORD' => $this->lang->line('pass'),
+			  'LANG_FORGOT' => $this->lang->line('forgot'),
+			  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+			  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+			  'LANG_SEARCH' => $this->lang->line('search'),
+			  'LANG_CP' => $this->lang->line('admincp'),
+			  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+			  'LANG_HOME' => $this->lang->line('home'),
+			  'LANG_HELP' => $this->lang->line('help'),
+			  'LANG_MEMBERLIST' => $this->lang->line('members'),
+			  'LANG_PROFILE' => $this->lang->line('profile'),
+			  'LANG_POWERED' => $this->lang->line('poweredby'),
+			  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+			  'BREADCRUMB' =>$this->breadcrumb->output(),
+			  "LANG_POSTINGRULES" => $this->lang->line("postingrules"),
+			  "LANG_YES" => $this->lang->line("yes"),
+			  "LANG_NO" => $this->lang->line("no"),
+			  "LANG_ALLOWSMILES" => $this->lang->line("smiles"),
+			  "ALLOWSMILES" => $boardpref_smiles,
+			  "LANG_ALLOWBBCODE" => $this->lang->line("bbcode"),
+			  "ALLOWBBCODE" => $boardpref_bbcode,
+			  "LANG_ALLOWIMG" => $this->lang->line("img"),
+			  "ALLOWIMG" => $boardpref_image,
+			  "LANG_SMILES" => $this->lang->line("moresmiles"),
+			  "SMILES" => form_smiles(),
+			  "LANG_TOPICBODY" => $this->lang->line('topicbody'),
+			  'POSTBODY' => $this->Topicmodel->getBody(),
+			  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
+			  "LANG_CLEAR" => $this->lang->line("clearfile"),
+			  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+			  "ATTACHMENTLIMIT" => $uploadLimit,
+			  "LANG_DISABLERTF" => $this->lang->line("disablertf"),
+			  "LANG_OPTIONS" => $this->lang->line("options"),
+			  "LANG_NOTIFY" => $this->lang->line("notify"),
+			  "LANG_DISABLESMILES" => $this->lang->line("disablesmiles"),
+			  "DISABLESMILES" => $this->Topicmodel->getDisableSmiles(),
+			  "LANG_DISABLEBBCODE" => $this->lang->line("disablebbcode"),
+			  "DISABLEBBCODE" => $this->Topicmodel->getDisableBbCode(),
+			  "LANG_EDITPOST" => $this->lang->line("editpost")
+			));
+		} else {
+			
+			//CREATE NEW TOPIC.
+			$no_smile = ($this->input->post('no_smile', TRUE) == FALSE) ? FALSE : TRUE;
+			$no_bbcode = ($this->input->post('no_bbcode', TRUE) == FALSE) ? FALSE : TRUE;
+			$subscribe = ($this->input->post('subscribe', TRUE) == FALSE) ? FALSE : TRUE;
+			
+			//update topic.
+			$this->Topicmodel->setBody($this->input->post('reply_post', TRUE));
+			$this->Topicmodel->setDisableBbCode($no_bbcode);
+			$this->Topicmodel->setDisableSmiles($no_smile);
+			
+			$this->Topicmodel->ModifyReply(); //update post.
+			
+			//see if user wants to subscribe to this topic.
+			if ($subscribe) {
+				subscriptionManager($this->logged_user, $this->Topicmodel->getTiD(), "subscribe");
+			}
+			
+			//validate user can attach files.
+			if($this->Groupmodel->ValidateAccess(1, 26)){ 
+				#see if user uploaded a file, if so lets assign the file to the topic.
+				$this->db->select('id')
+					->from('ebb_attachments')
+					->where('Username', $this->logged_user)
+					->where('tid', 0)
+					->where('pid', 0);
+				$query = $this->db->get();
+				
+				//see if we have anything to assign first.
+				if($query->num_rows() > 0) {
+					foreach ($query->result() as $row) {
+						#add attachment to db for listing purpose.
+						$this->Attachmentsmodel->AssignAttachment(0, $id, $row->id);
+					}
+				}
+			}
+			
+			//direct user to topic.
+			redirect('/boards/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
+			
+		}
 	}
 	
 	/**
