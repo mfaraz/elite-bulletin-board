@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/06/2012
+ * @version 06/13/2012
 */
 
 /**
@@ -20,6 +20,7 @@ class Topicmodel extends CI_Model {
 	
 	private $author;
 	private $tiD;
+	private $piD;
 	private $bid;
 	private $topic;
 	private $body;
@@ -100,6 +101,30 @@ class Topicmodel extends CI_Model {
 		return $this->tiD;
 	}
 
+	/**
+	 * set value for pid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $piD
+	 * @return Topicmodel
+	*/
+	public function &setPiD($piD) {
+		$this->piD=$piD;
+		return $this;
+	}
+
+	/**
+	 * get value for pid
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
+	*/
+	public function getPiD() {
+		return $this->piD;
+	}
+	
 	/**
 	 * set value for bid
 	 *
@@ -732,44 +757,94 @@ class Topicmodel extends CI_Model {
 		return $this->db->insert_id();
 	}
 	
+	/**
+	 * Update topic data.
+	 * @version 06/13/12
+	 */
 	public function ModifyTopic() {
+		#setup values.
+		$data = array(
+		  'Topic' => $this->getTopic(),
+		  'Body' => $this->getBody(),
+		  'important' => $this->getImportant(),
+		  'disable_bbcode' => $this->getDisableBbCode(),
+		  'disable_smiles' => $this->getDisableSmiles()
+        );
 		
+		#update user.
+		$this->db->where('tid', $this->getTiD());
+		$this->db->update('ebb_topics', $data);
 	}
 	
 	public function ModifyPoll() {
 		
 	}
 	
+	/**
+	 * Update reply data.
+	 * @version 06/13/12
+	 */
 	public function ModifyReply() {
+		#setup values.
+		$data = array(
+		  'Body' => $this->getBody(),
+		  'disable_bbcode' => $this->getDisableBbCode(),
+		  'disable_smiles' => $this->getDisableSmiles()
+        );
 		
+		#update user.
+		$this->db->where('pid', $this->getPiD());
+		$this->db->update('ebb_posts', $data);
 	}
 	
+	/**
+	 * Delete topic data.
+	 */
 	public function DeleteTopic() {
-		
+		$this->db->where('tid', $this->getTiD())
+		  ->delete('ebb_topics');
 	}
 	
+	/**
+	 * Delete poll data for defined Topic ID.
+	 * @version 06/13/12
+	 */
 	public function DeletePoll() {
-		
+		$this->db->where('tid', $this->getTiD())
+		  ->delete('ebb_poll');
 	}
 	
-	public function DeleteReply() {
-		
+	/**
+	 * Delete Replies.
+	 * @param boolean $deleteAll Delet all replies or just one?
+	 * @version 06/13/12
+	 */
+	public function DeleteReply($deleteAll = FALSE) {
+		//see if we want to delete all replies associated with a topic or just one reply.
+		if ($deleteAll) {
+			$this->db->where('tid', $this->getTiD())
+			  ->delete('ebb_posts');
+		} else {
+			$this->db->where('pid', $this->getPiD())
+			  ->delete('ebb_posts');
+		}
 	}
 
 	/**
 	 * Grab topic data.
 	 * @param int $tid TopicID
-	 * @version 05/23/12
+	 * @version 06/13/12
 	 * @access public
+	 * @return boolean
 	*/
 	public function GetTopicData($tid) {
 
 		//fetch topic data.
-		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.topic_type, t.important, t.IP, t.Original_Date, t.last_update, t.pid, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
-		$this->db->from('ebb_topics t');
-		$this->db->join('ebb_users u', 't.author=u.Username', 'LEFT');
-		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
-		$this->db->where('tid', $tid);
+		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.topic_type, t.important, t.IP, t.Original_Date, t.last_update, t.pid, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
+		  ->from('ebb_topics t')
+		  ->join('ebb_users u', 't.author=u.Username', 'LEFT')
+		  ->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT')
+		  ->where('tid', $tid);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -800,12 +875,52 @@ class Topicmodel extends CI_Model {
 			$this->setCustomTitle($TopicData->Custom_Title);
 			$this->setGroupAccess($TopicData->access_level);
 			$this->setGroupProfile($TopicData->profile);
+			
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+	
+	/**
+	 * Get a single reply record.
+	 * @param integer $pid Post ID
+	 * @version 06/13/12
+	 * @return boolean
+	 */
+	public function GetReplyData($pid){
+		//fetch topic data.
+		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, t.Topic')
+		  ->from('ebb_posts p')
+		  ->join('ebb_topics t', 'p.tid=t.tid', 'LEFT')
+		  ->where('p.pid', $pid);
+		$query = $this->db->get();
+
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+		
+			$PostData = $query->row();
+
+			//populate properties with values.
+			$this->setAuthor($PostData->author);
+			$this->setTopic($PostData->Topic);
+			$this->setPiD($PostData->pid);
+			$this->setTiD($PostData->tid);
+			$this->setBid($PostData->bid);
+			$this->setBody($PostData->Body);
+			$this->setDisableBbCode($PostData->disable_bbcode);
+			$this->setDisableSmiles($PostData->disable_smiles);
+			$this->setIp($PostData->IP);
+			$this->setOriginalDate($PostData->Original_Date);
+			return TRUE;
+		} else {
+			return FALSE;
 		}
 	}
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 1/11/12
+	 * @version 06/13/12
 	 * @param int $tid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
@@ -818,12 +933,12 @@ class Topicmodel extends CI_Model {
 		$replies = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level');
-		$this->db->from('ebb_posts p');
-		$this->db->join('ebb_users u', 'p.author=u.Username', 'LEFT');
-		$this->db->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT');
-		$this->db->where('tid', $tid);
-		$this->db->limit($limit, $start);
+		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
+		  ->from('ebb_posts p')
+		  ->join('ebb_users u', 'p.author=u.Username', 'LEFT')
+		  ->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT')
+		  ->where('tid', $tid)
+		  ->limit($limit, $start);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -844,7 +959,7 @@ class Topicmodel extends CI_Model {
      * Get Poll Options
      * @param integer $tid TopicID
      * @return array,boolean
-	 * @version 05/29/12
+	 * @version 06/13/12
     */
 	public function GetPoll($tid) {
 		
@@ -852,9 +967,9 @@ class Topicmodel extends CI_Model {
 		$pollOpt = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('option_value, option_id');
-		$this->db->from('ebb_poll');
-		$this->db->where('tid', $tid);
+		$this->db->select('option_value, option_id')
+		  ->from('ebb_poll')
+		  ->where('tid', $tid);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -877,11 +992,10 @@ class Topicmodel extends CI_Model {
 	 * @param string $user User who casted the vote
 	 * @param integer $tid the topic that holding the vote
 	 * @param integer $vote The vote value user selected
-	 * @version 1/12/12
+	 * @version 01/12/12
 	*/
 	public function CastVote($user, $tid, $vote) {
 
-		//INSERT INTO ebb_votes (Username, tid, Vote) VALUES('$logged_user', '$tid', '$vote')
 		$data = array(
 		  'Username' => $user,
 		  'tid' => $tid,

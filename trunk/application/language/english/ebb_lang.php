@@ -528,38 +528,16 @@ $lang['lockedtopic'] = 'Locked Topic';
 $lang['importanttopic'] = 'Important Topic';
 $lang['hottopic'] = 'Hot Topic';
 $lang['marktopics'] = 'Mark all posts as read';
-$lang['doesntexist'] = 'Board doesnt exist!';
+$lang['doesntexist'] = 'The requested item was not found';
 #viewtopic language tags.
 $lang['viewtopic'] = 'View Topic';
-//$lang['canread'] = 'You <b>can</b> read the topics in this board';
-//$lang['cantread'] = 'You <b>can\'t</b> read the topics in this board';
-//$lang['canpost'] = 'You <b>can</b> post new topics in this board';
-//$lang['cantpost'] = 'You <b>can\'t</b> post new topics in this board';
-//$lang['canreply'] = 'You <b>can</b> reply to topics in this board';
-//$lang['cantreply'] = 'You <b>can\'t</b> reply to topics in this board';
-//$lang['canvote'] = 'You <b>can</b> cast your vote in this board';
-//$lang['cantvote'] = 'You <b>can\'t</b> cast your vote in this board';
-//$lang['canpoll'] = 'You <b>can</b> create polls in this board';
-//$lang['cantpoll'] = 'You <b>can\'t</b> create polls in this board';
-//$lang['canedit'] = 'You <b>can</b> edit your posts in this board';
-//$lang['cantedit'] = 'You <b>can\'t</b> edit your posts in this board';
-//$lang['candelete'] = 'You <b>can</b> delete your posts in this board';
-//$lang['cantdelete'] = 'You <b>can\'t</b> delete your posts in this board';
-//$lang['canimportant'] = 'You <b>can</b> post important topics in this board';
-//$lang['cantimportant'] = 'You <b>can\'t</b> post important topics in this board';
-//$lang['canattach'] = 'You <b>can</b> add attachments to topics in this board';
-//$lang['cantattach'] = 'You <b>can\'t</b> add attachments to topics in this board';
-//$lang['moderated'] = 'You <b>can</b> moderate this board';
 $lang['ptitle'] = 'Printable Version';
 $lang['replytopicalt'] = 'Reply to this topic';
-$lang['doesntexist'] = 'The requested topic was not found.';
 $lang['postedon'] ='Posted on';
 $lang['warnlevel'] = 'Warning Level';
 $lang['iplogged'] = 'IP Logged';
 $lang['ipmod'] = 'IP:';
 $lang['instantreply'] = 'Instant Reply';
-$lang['canceledit'] = 'Cancel Edit';
-$lang['processingedit'] = 'Processing...';
 #Administration Panel language tags.
 /*
 START TEMPORARY LANGUAGE TAGS
