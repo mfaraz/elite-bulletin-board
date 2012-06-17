@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @verson 04/12/2012
+ * @verson 06/17/2012
 */
 
 /**
@@ -23,6 +23,8 @@ class Boardaccessmodel extends CI_Model {
 	private $bReply;
 	private $bVote;
 	private $bPoll;
+	private $bDelete;
+	private $bEdit;
 	private $bAttachment;
 	private $bId;
 
@@ -155,6 +157,54 @@ class Boardaccessmodel extends CI_Model {
 	}
 
 	/**
+	 * set value for B_Delete 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $bDelete
+	 * @return EbbBoardAccessmodel
+	 */
+	public function &setBDelete($bDelete) {
+		$this->bDelete=$bDelete;
+		return $this;
+	}
+
+	/**
+	 * get value for B_Delete
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getBDelete() {
+		return $this->bDelete;
+	}
+	
+	/**
+	 * set value for B_Edit
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @param mixed $bEdit
+	 * @return EbbBoardAccessmodel
+	 */
+	public function &setBEdit($bEdit) {
+		$this->bEdit=$bEdit;
+		return $this;
+	}
+
+	/**
+	 * get value for B_Edit 
+	 *
+	 * type:BIT,size:0,default:0
+	 *
+	 * @return mixed
+	 */
+	public function getBEdit() {
+		return $this->bEdit;
+	}
+
+	/**
 	 * set value for B_Attachment 
 	 *
 	 * type:BIT,size:0,default:null
@@ -206,16 +256,16 @@ class Boardaccessmodel extends CI_Model {
 	 * METHODS
 	*/
 
-
 	/**
 	 * Loads Entity weith data from database.
 	 * @param int $bid BoardID
-	 * @version 04/12/12
+	 * @version 06/17/12
+	 * @return boolean
 	 */
 	public function GetBoardAccess($bid) {
 
 		//fetch board access data.
-		$this->db->select('B_Read, B_Post, B_Reply, B_Vote, B_Poll, B_Attachment, B_id');
+		$this->db->select('B_Read, B_Post, B_Reply, B_Vote, B_Poll, B_Delete, B_Edit, B_Attachment, B_id');
 		$this->db->from('ebb_board_access');
 		$this->db->where('B_id', $bid);
 		$query = $this->db->get();
@@ -231,11 +281,12 @@ class Boardaccessmodel extends CI_Model {
 			$this->setBReply($BoardAccessData->B_Reply);
 			$this->setBVote($BoardAccessData->B_Vote);
 			$this->setBPoll($BoardAccessData->B_Poll);
+			$this->setBDelete($BoardAccessData->B_Delete);
+			$this->setBEdit($BoardAccessData->B_Edit);
 			$this->setBAttachment($BoardAccessData->B_Attachment);
+			return TRUE;
 		} else {
-			//no record was found, throw an error.
-			show_error($this->lang->line('doesntexist').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
-			log_message('error', 'invalid BoardID was provided.'); //log error in error log.
+			return FALSE;
 		}
 	}
 

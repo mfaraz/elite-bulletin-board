@@ -7,7 +7,6 @@
 {{BREADCRUMB|raw}}<br />
 {{PAGINATION|raw}}<br />
 
-
 {# grab permissions for posting on this board. #}
 {% if LOGGEDUSER == "guest" %}
 <button id="juiBtnLocked">{{LANG_BTNLOCKED}}</button>
@@ -104,11 +103,11 @@
 			{{LANG_IPLOGGED}}&nbsp;
 		{% endif%}
 
-		{% if GAC_EDITTOPIC == TRUE %}
+		{% if GAC_EDITTOPICACL == TRUE %}
 			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/edittopic/{{TOPICID}}');">{{LANG_BTNEDITPOST}}</button>
 		{% endif%}
 
-		{% if GAC_DELETETOPIC == TRUE %}
+		{% if GAC_DELETEACL == TRUE %}
 			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 		{% endif%}
 
@@ -230,11 +229,11 @@ _________________<br />
 			{{LANG_IPLOGGED}}&nbsp;
 		{% endif%}
 
-		{% if GAC_EDITTOPIC == TRUE %}
+		{% if GAC_EDITTOPICACL == TRUE %}
 			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/editpost/{{r.pid}}');">{{LANG_BTNEDITPOST}}</button>
 		{% endif%}
 
-		{% if GAC_DELETETOPIC == TRUE %}
+		{% if GAC_DELETEACL == TRUE %}
 			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{LANG_BTNDELETEPOST}}</button>
 		{% endif%}
 

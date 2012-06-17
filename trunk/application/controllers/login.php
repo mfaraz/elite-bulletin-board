@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/07/2012
+ * @version 06/17/2012
 */
 
 /**
@@ -22,8 +22,6 @@ class Login extends EBB_Controller {
 
 	/**
 	 * Index Page for this controller.
-	 * @version 10/11/11
-	 * @access public
 	 * @example index.php/login
 	*/
 	public function index() {
@@ -32,8 +30,6 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Processes login form and logs user in.
-	 * @version 05/07/12
-	 * @access public
 	 * @example index.php/login/LogIn
 	*/
 	public function LogIn() {
@@ -51,8 +47,7 @@ class Login extends EBB_Controller {
 			#if Group Access property is not 0, redirect user.
 			if ($this->groupAccess <> 0) {
 				//show success message.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+				$this->notifications('warning', $this->lang->line('alreadyloggedin'));
 
 				#direct user to their previous location.
 				redirect('/', 'location');
@@ -118,8 +113,7 @@ class Login extends EBB_Controller {
 			
 			    #see if user is inactive.
 				if($this->auth->isActive() == false) {
-				    $this->session->set_flashdata('NotifyType', 'error');
-					$this->session->set_flashdata('NotifyMsg', $this->lang->line('inactiveuser'));
+					$this->notifications('error', $this->lang->line('inactiveuser'));
 
 					redirect('/login/LogIn', 'location');
 				} else {
@@ -145,9 +139,7 @@ class Login extends EBB_Controller {
 							#direct user to their previous location.
        						redirect('/', 'location');
 						}else{
-							#setup error session.
-							$this->session->set_flashdata('NotifyType', 'error');
-                            $this->session->set_flashdata('NotifyMsg', $this->lang->line('offlinemsg'));
+							$this->notifications('error', $this->lang->line('offlinemsg'));
 
 							#direct user.
        						redirect('/', 'location');
@@ -160,8 +152,7 @@ class Login extends EBB_Controller {
 						$this->auth->logOn($remember);
 						
 						//show success message.
-						$this->session->set_flashdata('NotifyType', 'success');
-						$this->session->set_flashdata('NotifyMsg', $this->lang->line('loggedinas'). $this->session->userdata('ebbUser'));
+						$this->notifications('success', $this->lang->line('loggedinas'). $this->session->userdata('ebbUser'));
 
 						#direct user to their previous location.
 	     				redirect('/', 'location');
@@ -177,8 +168,7 @@ class Login extends EBB_Controller {
 					$this->auth->deactivateUser();
 
 				    #alert user of reaching their limit of incorrect login attempts.
-					$this->session->set_flashdata('NotifyType', 'error');
-     				$this->session->set_flashdata('NotifyMsg', $this->lang->line('lockeduser'));
+					$this->notifications('error', $this->lang->line('lockeduser'));
 
 					#direct user.
      				redirect('/login/LogIn', 'location');
@@ -186,9 +176,8 @@ class Login extends EBB_Controller {
 				    #add to failed login count.
 					$this->auth->setFailedLogin();
 
-					#setup error session.
-					$this->session->set_flashdata('NotifyType', 'error');
-                    $this->session->set_flashdata('NotifyMsg', $this->lang->line('invalidlogin'));
+					#setup error message.
+					$this->notifications('error', $this->lang->line('invalidlogin'));
 
 					#direct user.
      				redirect('/login/LogIn', 'location');
@@ -200,8 +189,6 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Activates inactive account.
-	 * @version 05/15/12
-	 * @access public
 	 * @example index.php/login/ActivateAccount/12345/user
 	*/
 	public function ActivateAccount($key, $u) {
@@ -218,9 +205,8 @@ class Login extends EBB_Controller {
 			
 			//see if user has already been activated.
 			if ($userData->active == 1) {
-				#setup error session.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyactive'));
+				#setup error message.
+				$this->notifications('warning', $this->lang->line('alreadyactive'));
 				
 				#direct user.
 				redirect('/', 'location');
@@ -231,17 +217,15 @@ class Login extends EBB_Controller {
 				$this->db->where('Username', $u);
 				$this->db->update('ebb_users', $data);
 
-				#setup error session.
-				$this->session->set_flashdata('NotifyType', 'success');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('correctinfo'));
+				#setup success message.
+				$this->notifications('success', $this->lang->line('correctinfo'));
 				
 				#direct user.
 				redirect('/login/LogIn', 'location');
 			}
 		} else {
-			#setup error session.
-			$this->session->set_flashdata('NotifyType', 'error');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('incorrectinfo'));
+			#setup error message.
+			$this->notifications('error', $this->lang->line('incorrectinfo'));
 
 			#direct user.
 			redirect('/login/LogIn', 'location');
@@ -250,8 +234,6 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Password recovery View. Also validate & process lost password request.
-	 * @version 05/15/12
-	 * @access public
 	 * @example index.php/login/PasswordRecovery
 	*/
 	public function PasswordRecovery() {
@@ -269,8 +251,7 @@ class Login extends EBB_Controller {
 			#if Group Access property is not 0, redirect user.
 			if ($this->groupAccess <> 0) {
 				//show success message.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyloggedin'));
+				$this->notifications('warning', $this->lang->line('alreadyloggedin'));
 
 				#direct user to their previous location.
 				redirect('/', 'location');
@@ -393,12 +374,9 @@ class Login extends EBB_Controller {
 			)));
 
 			//send out email.
-			//$this->email->send();
-			
 			if ($this->email->send()) {
 				#let user know their account is created.
-				$this->session->set_flashdata('NotifyType', 'success');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('newpwdsent'));
+				$this->notifications('success', $this->lang->line('newpwdsent'));
 
 				#direct user.
 				redirect('/login/LogIn', 'location');
@@ -411,8 +389,6 @@ class Login extends EBB_Controller {
 
     /**
 	 * Logs user out and clears all active login sessions.
-	 * @version 05/11/12
-	 * @access public
 	 * @example index.php/login/LogOut
 	*/
 	public function LogOut() {
@@ -436,8 +412,6 @@ class Login extends EBB_Controller {
 
 	/**
 	 * Create New User form submit action.
-	 * @version 05/15/12
-	 * @access public
 	 * @example index.php/login/register
 	*/
 	public function register() {
@@ -462,9 +436,8 @@ class Login extends EBB_Controller {
 		if ($this->form_validation->run() == FALSE) {
 			#if Group Access property is not 0, redirect user.
 			if ($this->groupAccess <> 0) {
-				//show success message.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('alreadyreg'));
+				//show warning message.
+				$this->notifications('warning', $this->lang->line('alreadyreg'));
 
 				#direct user to their previous location.
 				redirect('/', 'location');
@@ -656,8 +629,7 @@ class Login extends EBB_Controller {
 				$this->email->send();
 				
 				#let user know their account is created.
-				$this->session->set_flashdata('NotifyType', 'success');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctmade'));
+				$this->notifications('success', $this->lang->line('acctmade'));
 				
 				#auto log user in.
 				$params = array(
@@ -687,8 +659,7 @@ class Login extends EBB_Controller {
 				$this->email->send();
 				
 				#let user know their account is created.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctuser'));
+				$this->notifications('warning', $this->lang->line('acctuser'));
 
 				#direct user.
 				redirect('/login/LogIn', 'location');
@@ -706,8 +677,7 @@ class Login extends EBB_Controller {
 				$this->email->send();
 				
 				#let user know their account is created.
-				$this->session->set_flashdata('NotifyType', 'warning');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('acctadmin'));
+				$this->notifications('warning', $this->lang->line('acctadmin'));
 
 				#direct user.
 				redirect('/login/LogIn', 'location');
