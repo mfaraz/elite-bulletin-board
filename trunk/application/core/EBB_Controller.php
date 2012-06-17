@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/31/2012
+ * @version 06/17/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -206,9 +206,23 @@ class EBB_Controller extends CI_Controller {
 
 	}
 	
-	#
-	# CI FORM VALIDATION METHODS.
-	#
+	/**
+	 * GLOBAL FUNCTIONS 
+	 */
+	
+	/**
+	 * setup notification messages.
+	 * @param string $type the type of message being broadcasted.
+	 * @param string $msg the message to broadcast to user.
+	 */
+	public function notifications($type, $msg) {
+		$this->session->set_flashdata('NotifyType', $type);
+		$this->session->set_flashdata('NotifyMsg', $msg);
+	}
+	
+	/**
+	 * CI FORM VALIDATION METHODS.
+	*/
 	
 	/**
 	 * Validates CAPTCHA.

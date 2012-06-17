@@ -1,13 +1,12 @@
 <?php
-//security check
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
   * English.lang.php
   * @package Elite Bulletin Board v3
   * @author Elite Bulletin Board Team <http://elite-board.us>
-  * @copyright  (c) 2006-2011
+  * @copyright  (c) 2006-2013
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 04/11/2012
+  * @version 06/17/2012
 */
 
 #Common language tags.
@@ -77,6 +76,9 @@ $lang['nonews'] = 'No News To Report On.';
 $lang['groupstatus'] = 'GROUP STATUS ERROR!';
 $lang['extlookup'] = 'No file extension was entered.';
 $lang['noaction'] = 'No action was given by user.';
+#success notifications.
+$lang['deletetopicsuccess'] = 'Successfully Deleted Topic';
+
 #Menu-based language tags.
 $lang['nonewpm'] = 'You have no new messages';
 $lang['newpm'] = '&nbsp;New Private Messages';
@@ -332,7 +334,7 @@ $lang['newpoll'] = 'Post New Poll';
 
 $lang['posttopic'] = 'Post Topic';
 $lang['postreply'] = 'Post Reply';
-$lang['nowrite'] = 'You can not post anything in this board.';
+$lang['nowrite'] = 'You can not post anything on this board.'; //TODO re-phase this tag.
 $lang['postingrules'] = 'Posting Rules';
 $lang['img'] = '[img]';
 $lang['bbcode'] = 'BBcode';

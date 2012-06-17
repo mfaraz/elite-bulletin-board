@@ -4,15 +4,15 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * boards.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/09/2012
+ * @version 06/17/2012
 */
 
 /**
  * Board Controller.
  * @abstract EBB_Controller 
- */
+*/
 class Boards extends EBB_Controller {
 
 	function __construct() {
@@ -34,8 +34,7 @@ class Boards extends EBB_Controller {
 		$this->load->helper(array('boardindex', 'topic', 'user', 'form'));
 		$this->load->library('datetime_52', 'encrypt');
 
-		$data = array();
-		$data2 = array();
+		$data = $data2 = array();
 
 		//SQL CI style.
 		$this->db->select('id, Board')->from('ebb_boards')->where('type', 1)->order_by("B_Order", "asc");
@@ -131,162 +130,169 @@ class Boards extends EBB_Controller {
 	 * shows list of topics.
 	 * @example index.php/boards/viewboard/5
 	*/
-	public function viewboard($id){
+	public function viewboard($id) {
 
-		//don't allow user to view category boards.
+		//make sure Board ID is defined.
 		if (!isset($id) OR (empty($id)) OR (!is_numeric($id))) {
-			show_error($this->lang->line('nobid'),404,$this->lang->line('error'));
-		}else {
+			show_error($this->lang->line('nobid'),500,$this->lang->line('error'));
+		} else {
 
-			if ($this->Boardmodel->ValidateBoardID($id) == 0) {
-				show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
-			}elseif ($this->Boardmodel->getType() == 1) {
+			//if user is trying to access a category board, redirect them, category boards are locked.
+			if ($this->Boardmodel->getType() == 1) {
 				redirect('/', 'location');
-				exit();
 			}
 
 			//load entity.
-			$this->Boardmodel->GetBoardSettings($id);
-			$this->Boardaccessmodel->GetBoardAccess($id);
+			$boardOpt = $this->Boardmodel->GetBoardSettings($id);
+			$boardAcc = $this->Boardaccessmodel->GetBoardAccess($id);
+			
+			//see if all board data loaded correctly.
+			if ($boardOpt && $boardAcc) {
+				/**
+				 *  Permission Validation
+				*/
 
-			//
-			// Permission Validation
-			//
+				#see if user can view this topic.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead())) {
+					$CanRead = TRUE;
+				} else {
+					$CanRead = FALSE;
+				}
 
-			#see if user can view this topic.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == FALSE){
-				$CanRead = FALSE;
+				#see if user can post a topic or not.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->validateAccess(1, 37)){
+						$CanPost = TRUE;
+					} else {
+						$CanPost = FALSE;
+					}
+				} else {
+					$CanPost = FALSE;
+				}
+
+				#see if user can post a topic poll or not.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->validateAccess(1, 35)) {
+						$CanPostPoll = TRUE;
+					} else {
+						$CanPostPoll = FALSE;
+					}
+				} else {
+					$CanPostPoll = FALSE;
+				}
+				
+				//load pagination library
+				$this->load->helper(array('boardindex', 'topic', 'user', 'form'));
+				$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
+
+				//record user coming in here
+				if ((!CheckReadStatus($id, $this->logged_user)) AND ($this->logged_user <> "guest")){
+					$data = array(
+					'Board' => $id,
+					'User' => $this->logged_user
+					);
+					$this->db->insert('ebb_read_board', $data);
+				}
+
+				//setup pagination.
+				$config = array();
+				$config['base_url'] = $this->boardUrl . 'index.php/boards/viewboard/'.$id;
+				$config['total_rows'] = GetCount($id, 'TopicCount');
+				$config['per_page'] = $this->preference->getPreferenceValue("per_page");
+				$config['uri_segment'] = 4;
+				$config['full_tag_open'] = '<div class="pagination">';
+				$config['full_tag_close'] = '</div>';
+				$config['next_tag_open'] = '<span class="nextpage">';
+				$config['next_tag_close'] = '</span>';
+				$config['prev_tag_open'] = '<span class="prevpage">';
+				$config['prev_tag_close'] = '</span>';
+				$config['cur_tag_open'] = '<span class="currentpage">';
+				$config['cur_tag_close'] = '</span>';
+				$config['next_link'] = '&raquo;';
+				$config['prev_link'] = '&laquo;';
+				$config['first_link'] = $this->lang->line('pagination_first');
+				$config['last_link'] = $this->lang->line('pagination_last');
+				$this->pagination->initialize($config);
+
+				//add breadcrumbs
+				$this->breadcrumb->append_crumb($this->title, '/');
+				$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard');
+
+				#setup filters.
+				$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
+				$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
+				$this->twig->_twig_env->addFunction('Attachment', new Twig_Function_Function('HasAttachment'));
+				$this->twig->_twig_env->addFunction('SubBoardCount', new Twig_Function_Function('GetSubBoardCount'));
+				$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
+				$this->twig->_twig_env->addFilter('SubBoards', new Twig_Filter_Function('getSubBoard'));
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'viewboard', array (
+				'boardName' => $this->title,
+				'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->notifyType,
+				'NOTIFY_MSG' =>  $this->notifyMsg,
+				'LANG' => $this->lng,
+				'TimeFormat' => $this->timeFormat,
+				'TimeZone' => $this->timeZone,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
+				'LANG_BTNNEWTOPIC' => $this->lang->line('newtopic'),
+				'LANG_BTNNEWPOLL' => $this->lang->line('newpoll'),
+				'groupAccess' => $this->groupAccess,
+				'BOARDID' => $id,
+				'BOARDCOUNT' => GetCount($id, 'TopicCount'),
+				'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], $this->uri->segment(4)),
+				'SUBBOARDDATA' => $this->Boardmodel->GetSubBoards($id),
+				'PAGINATION' => $this->pagination->create_links(),
+				'BREADCRUMB' => $this->breadcrumb->output(),
+				'LANG_NOREAD' => $this->lang->line('noread'),
+				'LANG_NOPOST' => $this->lang->line('nopost'),
+				'CANREAD_TOPIC' => $CanRead,
+				'CANPOST_TOPIC' => $CanPost,
+				'CANPOST_POLL' => $CanPostPoll,
+				'LANG_NEWPOST' => $this->lang->line('newpost'),
+				'LANG_OLDPOST' => $this->lang->line('oldpost'),
+				'LANG_BOARD' => $this->lang->line('boards'),
+				'LANG_TOPIC' => $this->lang->line('topics'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'LANG_REPLIES' => $this->lang->line('replies'),
+				'LANG_POSTVIEWS' => $this->lang->line('views'),
+				'LANG_POST' => $this->lang->line('posts'),
+				'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
+				'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby')
+				));
 			} else {
-				$CanRead = TRUE;
+				show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
 			}
-
-
-			#see if user can post a topic or not.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost()) == FALSE){
-				$CanPost = FALSE;
-			}elseif($this->Groupmodel->validateAccess(1, 37) == FALSE){
-				$CanPost = FALSE;
-			} else {
-				$CanPost = TRUE;
-			}
-
-			#see if user can post a topic poll or not.
-			if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPoll()) == FALSE){
-				$CanPostPoll = FALSE;
-			}elseif($this->Groupmodel->validateAccess(1, 35) == FALSE){
-				$CanPostPoll = FALSE;
-			} else {
-				$CanPostPoll = TRUE;
-			}
-
 		}
-
-		//load pagination library
-		$this->load->helper(array('boardindex', 'topic', 'user', 'form'));
-		$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
-
-		//record user coming in here
-		if ((CheckReadStatus($id, $this->logged_user) == FALSE) AND ($this->logged_user !== "guest")){
-			$data = array(
-			   'Board' => $id,
-			   'User' => $this->logged_user
-			);
-			$this->db->insert('ebb_read_board', $data);
-		}
-		
-		//setup pagination.
-		$config = array();
-		$config['base_url'] = $this->boardUrl . 'index.php/boards/viewboard/'.$id;
-		$config['total_rows'] = GetCount($id, 'TopicCount');
-		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
-		$config['uri_segment'] = 4;
-		$config['full_tag_open'] = '<div class="pagination">';
-		$config['full_tag_close'] = '</div>';
-		$config['next_tag_open'] = '<span class="nextpage">';
-		$config['next_tag_close'] = '</span>';
-		$config['prev_tag_open'] = '<span class="prevpage">';
-		$config['prev_tag_close'] = '</span>';
-		$config['cur_tag_open'] = '<span class="currentpage">';
-		$config['cur_tag_close'] = '</span>';
-		$config['next_link'] = '&raquo;';
-		$config['prev_link'] = '&laquo;';
-		$config['first_link'] = $this->lang->line('pagination_first');
-		$config['last_link'] = $this->lang->line('pagination_last');
-		$this->pagination->initialize($config);
-
-		//add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard');
-
-        #setup filters.
-		$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
-		$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
-		$this->twig->_twig_env->addFunction('Attachment', new Twig_Function_Function('HasAttachment'));
-		$this->twig->_twig_env->addFunction('SubBoardCount', new Twig_Function_Function('GetSubBoardCount'));
-		$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
-		$this->twig->_twig_env->addFilter('SubBoards', new Twig_Filter_Function('getSubBoard'));
-
-		//render to HTML.
-		echo $this->twig->render($this->style, 'viewboard', array (
-		  'boardName' => $this->title,
-		  'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->notifyType,
-		  'NOTIFY_MSG' =>  $this->notifyMsg,
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('members'),
-		  'LANG_PROFILE' => $this->lang->line('profile'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
-		  'LANG_BTNNEWTOPIC' => $this->lang->line('newtopic'),
-		  'LANG_BTNNEWPOLL' => $this->lang->line('newpoll'),
-		  'groupAccess' => $this->groupAccess,
-		  'BOARDID' => $id,
-		  'BOARDCOUNT' => GetCount($id, 'TopicCount'),
-		  'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], $this->uri->segment(4)),
-		  'SUBBOARDDATA' => $this->Boardmodel->GetSubBoards($id),
-		  'PAGINATION' => $this->pagination->create_links(),
-		  'BREADCRUMB' => $this->breadcrumb->output(),
-		  'LANG_NOREAD' => $this->lang->line('noread'),
-		  'LANG_NOPOST' => $this->lang->line('nopost'),
-		  'CANREAD_TOPIC' => $CanRead,
-		  'CANPOST_TOPIC' => $CanPost,
-		  'CANPOST_POLL' => $CanPostPoll,
-		  'LANG_NEWPOST' => $this->lang->line('newpost'),
-		  'LANG_OLDPOST' => $this->lang->line('oldpost'),
-		  'LANG_BOARD' => $this->lang->line('boards'),
-		  'LANG_TOPIC' => $this->lang->line('topics'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'LANG_REPLIES' => $this->lang->line('replies'),
-		  'LANG_POSTVIEWS' => $this->lang->line('views'),
-		  'LANG_POST' => $this->lang->line('posts'),
-		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
-		  'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby')
-		));
 	}
 
 	/**
@@ -295,263 +301,292 @@ class Boards extends EBB_Controller {
 	*/
 	public function viewtopic($id) {
 
-		//load library & helpers
-		$this->load->helper(array('boardindex', 'topic', 'user', 'form', 'posting', 'group', 'attachment'));
-		$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
+		//make sure Topic ID is defined.
+		if (!isset($id) OR (empty($id)) OR (!is_numeric($id))) {
+			show_error($this->lang->line('notid'),500,$this->lang->line('error'));
+		} else {
+			//load library & helpers
+			$this->load->helper(array('boardindex', 'topic', 'user', 'form', 'posting', 'group', 'attachment'));
+			$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
 
-		//load topic model.
-		$this->load->model('Topicmodel');
+			//load topic model.
+			$this->load->model('Topicmodel');
 
-		//load entities
-		$this->Topicmodel->GetTopicData($id);
-		$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
-		$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+			//load entities
+			$tData = $this->Topicmodel->GetTopicData($id);
+			$boardOpt = $this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+			$boardAcc = $this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
 
-		//
-		// Permission Validation
-		//
+			//ensure everything loaded correctly.
+			if ($tData && $boardOpt && $boardAcc) {
+				/**
+				* Permission Validation
+				*/
 
-		#see if user can view this topic.
-		if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
-			show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
-		}
-		
-		#see if user can post a reply or not.
-		if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBReply())){
-			//see if we got any group-based permission overwritting the board-level permission.
-			if($this->Groupmodel->validateAccess(1, 38)){
-				$CanReply = TRUE;
+				#see if user can view this topic.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
+					show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
+				}
+
+				#see if user can post a reply or not.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBReply())){
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->validateAccess(1, 38)){
+						$CanReply = TRUE;
+					} else {
+						$CanReply = FALSE;
+					}
+				} else {
+					$CanReply = FALSE;
+				}
+
+				#see if user can vote.
+				if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBVote())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->ValidateAccess(1, 36)) {
+						$CanVote = TRUE;
+					} else {
+						$CanVote = FALSE;
+					}
+				} else {
+					$CanVote = TRUE;
+				}
+
+				#see if this user can delete a topic as a moderator/admin.
+				if($this->Groupmodel->ValidateAccess(1, 20)){
+					$CanEditACL = TRUE;
+				} else {
+					$CanEditACL = FALSE;
+				}		
+
+				#see if this user can delete a topic as a moderator/admin.
+				if($this->Groupmodel->ValidateAccess(1, 21)){
+					$CanDeleteACL = TRUE;
+				} else {
+					$CanDeleteACL = FALSE;
+				}
+
+				#see if user can move topic.
+				if($this->Groupmodel->ValidateAccess(1, 23)){
+					$CanMoveACL = TRUE;
+				} else {
+					$CanMoveACL = FALSE;
+				}
+
+				#see if user can lock/unlock a topic.
+				if($this->Groupmodel->ValidateAccess(1, 22)){
+					$CanToggleLockACL = TRUE;
+				} else {
+					$CanToggleLockACL = FALSE;
+				}
+
+				#see if user can alter warning levels.
+				if($this->Groupmodel->validateAccess(1, 25)){
+					$canAlterWarn = TRUE;
+				} else {
+					$canAlterWarn = FALSE;
+				}
+
+				#see if user can view poster's IP.
+				if($this->Groupmodel->ValidateAccess(1, 24)){
+					$canSeeIP = TRUE;
+				} else {
+					$canSeeIP = FALSE;
+				}
+
+				#see if user can alter topic.
+				if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBEdit())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->ValidateAccess(1, 40)){
+						$CanEdit = TRUE;
+					} else {
+						$CanEdit = FALSE;
+					}
+				} else {
+					$CanEdit = FALSE;
+				}
+
+				#see if user can delete topic.
+				if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBDelete())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->ValidateAccess(1, 41)){
+						$CanDelete = TRUE;
+					} else {
+						$CanDelete = FALSE;
+					}
+				} else {
+					$CanDelete = FALSE;
+				}
+
+				/**
+				* Setup Pagination.
+				*/
+				$config = array();
+				$config['base_url'] = $this->boardUrl . 'index.php/boards/viewtopic/'.$id;
+				$config['total_rows'] = GetCount($id, 'TopicReplies');
+				$config['per_page'] = $this->preference->getPreferenceValue("per_page");
+				$config['uri_segment'] = 4;
+				$config['full_tag_open'] = '<div class="pagination">';
+				$config['full_tag_close'] = '</div>';
+				$config['next_tag_open'] = '<span class="nextpage">';
+				$config['next_tag_close'] = '</span>';
+				$config['prev_tag_open'] = '<span class="prevpage">';
+				$config['prev_tag_close'] = '</span>';
+				$config['cur_tag_open'] = '<span class="currentpage">';
+				$config['cur_tag_close'] = '</span>';
+				$config['next_link'] = '&raquo;';
+				$config['prev_link'] = '&laquo;';
+				$config['first_link'] = $this->lang->line('pagination_first');
+				$config['last_link'] = $this->lang->line('pagination_last');
+				$this->pagination->initialize($config);
+
+				//add breadcrumbs
+				$this->breadcrumb->append_crumb($this->title, '/');
+				$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
+				$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic');
+
+				#setup filters.
+				$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
+				$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
+				$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
+				$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
+				$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
+				$this->twig->_twig_env->addFunction('ATTACH_BAR', new Twig_Function_Function('GetAttachments'));
+				$this->twig->_twig_env->addFunction('ATTACH_FILE_SIZE', new Twig_Function_Function('getFileSize'));
+				$this->twig->_twig_env->addFunction('MATH_ROUND', new Twig_Function_Function('Round'));
+				$this->twig->_twig_env->addFunction('CALC_VOTE', new Twig_Function_Function('CalcVotes'));
+				$this->twig->_twig_env->addFunction('VOTECHECK', new Twig_Function_Function('CheckVoteStatus'));
+
+				//Grab some settings.
+				$disable_bbcode = $this->Topicmodel->getDisableBbCode();
+				$disable_smiles = $this->Topicmodel->getDisableSmiles();
+				$boardpref_bbcode = $this->Boardmodel->getBbCode();
+				$boardpref_smiles = $this->Boardmodel->getSmiles();
+				$boardpref_image = $this->Boardmodel->getImage();
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'viewtopic', array (
+				'boardName' => $this->title,
+				'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->notifyType,
+				'NOTIFY_MSG' =>  $this->notifyMsg,
+				'LANG' => $this->lng,
+				'TimeFormat' => $this->timeFormat,
+				'TimeZone' => $this->timeZone,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
+				'LANG_BTNREPLY' => $this->lang->line('postreply'),
+				'LANG_BTNMOVETOPIC' => $this->lang->line('movetopic'),
+				'LANG_BTNDELETETOPIC' => $this->lang->line('btndeletetopic'),
+				'LANG_BTNLOCKTOPIC' => $this->lang->line('btnlocktopic'),
+				'LANG_BTNUNLOCKTOPIC' => $this->lang->line('btnunlocktopic'),
+				'LANG_BTNEDITPOST' => $this->lang->line('editpost'),
+				'LANG_BTNDELETEPOST' => $this->lang->line('btndeletemessage'),
+				'LANG_BTNQUOTEAUTHOR' => $this->lang->line('btnquoteauthor'),
+				'LANG_BTNPMAUTHOR' => $this->lang->line('btnpmauthor'),
+				'LANG_BTNREPORTPOST' => $this->lang->line('reporttomod'),
+				'groupAccess' => $this->groupAccess,
+				'LANG_PRINT' =>  $this->lang->line('ptitle'),
+				'LANG_POSTCOUNT' => $this->lang->line('postcount'),
+				'LANG_DELPROMPT' => $this->lang->line('topiccon'),
+				'LANG_DELPROMPT2' => $this->lang->line('postcon'),
+				'TOPICID' => $id,
+				'DISABLE_SMILES' => $disable_smiles,
+				'BOARDPREF_SMILES' => $boardpref_smiles,
+				'DISABLE_BBCODE' => $disable_bbcode,
+				'BOARDPREF_BBCODE' => $boardpref_bbcode,
+				'BOARDPREF_IMAGE' => $boardpref_image,
+				'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
+				'LANG_WARNLEVEL' => $this->lang->line('warnlevel'),
+				'TOPIC_TYPE' => $this->Topicmodel->getTopicType(),
+				'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
+				'TOPIC_BODY' => $this->Topicmodel->getBody(),
+				'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
+				'TOPIC_IP' => $this->Topicmodel->getIp(),
+				'TOPIC_POSTEDON' => $this->Topicmodel->getOriginalDate(),
+				'AUTHOR_GROUPNAME' => $this->Topicmodel->getGroupProfile(),
+				'AUTHOR_GROUPLEVEL' => $this->Topicmodel->getGroupAccess(),
+				'AUTHOR_AVATAR' => $this->Topicmodel->getAvatar(),
+				'AUTHOR_GID' => $this->Topicmodel->getGid(),
+				'AUTHOR_POSTCOUNT' => $this->Topicmodel->getPostCount(),
+				'AUTHOR_SIG' => $this->Topicmodel->getSig(),
+				'AUTHOR_WARNLEVEL' => $this->Topicmodel->getWarningLevel(),
+				'AUTHOR_CTITLE' => $this->Topicmodel->getCustomTitle(),
+				'LANG_DOWNLOADS' => $this->lang->line('downloadct'),
+				'LANG_ATTACHMENTS' => $this->lang->line('attachments'),
+				'LANG_POSTED' => $this->lang->line('postedon'),
+				'LANG_IP'  => $this->lang->line('ipmod'),
+				'LANG_IPLOGGED' => $this->lang->line('iplogged'),
+				'POLLFORM' => form_open('boards/vote/'.$id),
+				'POLL_QUESTION' => $this->Topicmodel->getQuestion(),
+				'POLLDATA' => $this->Topicmodel->GetPoll($id),
+				'LANG_VOTE' => $this->lang->line('castvote'),
+				'LANG_TOTAL' => $this->lang->line('total'),
+				'TOTAL_VOTES' => GetCount($id, 'PollCount'),
+				'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], $this->uri->segment(4)),
+				'PAGINATION' => $this->pagination->create_links(),
+				'FORM_PAGE' => $this->uri->segment(4),
+				'BREADCRUMB' => $this->breadcrumb->output(),
+				'CANPOST_REPLY' => $CanReply,
+				'CANVOTE' => $CanVote,
+				'GAC_WARNINGLEVELS' => $canAlterWarn,
+				'GAC_SEEIP' => $canSeeIP,
+				'GAC_EDITTOPIC' => $CanEdit,
+				'GAC_EDITTOPICACL' => $CanEditACL,
+				'GAC_DELETETOPIC' => $CanDelete,
+				'GAC_DELETEACL' => $CanDeleteACL,
+				'GAC_MOVEACL' => $CanMoveACL,
+				'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
+				'LANG_NEWPOST' => $this->lang->line('newpost'),
+				'LANG_OLDPOST' => $this->lang->line('oldpost'),
+				'LANG_BOARD' => $this->lang->line('boards'),
+				'LANG_TOPIC' => $this->lang->line('topics'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'LANG_REPLIES' => $this->lang->line('replies'),
+				'LANG_POSTVIEWS' => $this->lang->line('views'),
+				'LANG_POST' => $this->lang->line('posts'),
+				'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
+				'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
+				'SMILES' => form_smiles(),
+				'LANG_REPLY' => $this->lang->line('btnreply'),
+				'LANG_OPTIONS' => $this->lang->line('options'),
+				'LANG_DISABLERTF' => $this->lang->line('disablertf'),
+				'LANG_SMILES' => $this->lang->line('moresmiles'),
+				'LANG_NOTIFY' => $this->lang->line('notify'),
+				'LANG_DISABLESMILES' => $this->lang->line('disablesmiles'),
+				'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode')
+				));
 			} else {
-				$CanReply = FALSE;
+				show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 			}
-		} else {
-			$CanReply = FALSE;
 		}
 		
-		#see if user can vote.
-		if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBVote())) {
-			//see if we got any group-based permission overwritting the board-level permission.
-			if($this->Groupmodel->ValidateAccess(1, 36)) {
-				$CanVote = TRUE;
-			} else {
-				$CanVote = FALSE;
-			}
-		} else {
-			$CanVote = TRUE;
-		}
-
-		#see if this user can delete a topic as a moderator/admin.
-		if($this->Groupmodel->ValidateAccess(1, 21)){
-			$CanDeleteACL = TRUE;
-		} else {
-			$CanDeleteACL = FALSE;
-		}
-
-		#see if user can move topic.
-		if($this->Groupmodel->ValidateAccess(1, 23)){
-			$CanMoveACL = TRUE;
-		} else {
-			$CanMoveACL = FALSE;
-		}
-
-		#see if user can lock/unlock a topic.
-		if($this->Groupmodel->ValidateAccess(1, 22)){
-			$CanToggleLockACL = TRUE;
-		} else {
-			$CanToggleLockACL = FALSE;
-		}
-
-		#see if user can alter warning levels.
-		if($this->Groupmodel->validateAccess(1, 25)){
-			$canAlterWarn = TRUE;
-		} else {
-			$canAlterWarn = FALSE;
-		}
-
-		#see if user can view poster's IP.
-		if($this->Groupmodel->ValidateAccess(1, 24)){
-			$canSeeIP = TRUE;
-		} else {
-			$canSeeIP = FALSE;
-		}
-
-		#see if user can alter topic.
-		if($this->Groupmodel->ValidateAccess(1, 38)){
-			$CanEdit = TRUE;
-		} else {
-			$CanEdit = FALSE;
-		}
-
-		#see if user can delete topic.
-		if($this->Groupmodel->ValidateAccess(1, 21)){
-			$CanDelete = TRUE;
-		} else {
-			$CanDelete = FALSE;
-		}
-
-		//
-		// Setup Pagination.
-		//
-		$config = array();
-		$config['base_url'] = $this->boardUrl . 'index.php/boards/viewtopic/'.$id;
-		$config['total_rows'] = GetCount($id, 'TopicReplies');
-		$config['per_page'] = $this->preference->getPreferenceValue("per_page");
-		$config['uri_segment'] = 4;
-		$config['full_tag_open'] = '<div class="pagination">';
-		$config['full_tag_close'] = '</div>';
-		$config['next_tag_open'] = '<span class="nextpage">';
-		$config['next_tag_close'] = '</span>';
-		$config['prev_tag_open'] = '<span class="prevpage">';
-		$config['prev_tag_close'] = '</span>';
-		$config['cur_tag_open'] = '<span class="currentpage">';
-		$config['cur_tag_close'] = '</span>';
-		$config['next_link'] = '&raquo;';
-		$config['prev_link'] = '&laquo;';
-		$config['first_link'] = $this->lang->line('pagination_first');
-		$config['last_link'] = $this->lang->line('pagination_last');
-		$this->pagination->initialize($config);
-		
-		//add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
-		$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic');
-
-		 #setup filters.
-		$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
-		$this->twig->_twig_env->addFilter('TopicReadStat', new Twig_Filter_Function('readTopicStat'));
-		$this->twig->_twig_env->addFilter('ReadStat', new Twig_Filter_Function('CheckReadStatus'));
-		$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
-		$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
-		$this->twig->_twig_env->addFunction('ATTACH_BAR', new Twig_Function_Function('GetAttachments'));
-		$this->twig->_twig_env->addFunction('ATTACH_FILE_SIZE', new Twig_Function_Function('getFileSize'));
-		$this->twig->_twig_env->addFunction('MATH_ROUND', new Twig_Function_Function('Round'));
-		$this->twig->_twig_env->addFunction('CALC_VOTE', new Twig_Function_Function('CalcVotes'));
-		$this->twig->_twig_env->addFunction('VOTECHECK', new Twig_Function_Function('CheckVoteStatus'));
-
-		//Grab some settings.
-		$disable_bbcode = $this->Topicmodel->getDisableBbCode();
-		$disable_smiles = $this->Topicmodel->getDisableSmiles();
-		$boardpref_bbcode = $this->Boardmodel->getBbCode();
-		$boardpref_smiles = $this->Boardmodel->getSmiles();
-		$boardpref_image = $this->Boardmodel->getImage();
-
-		//render to HTML.
-		echo $this->twig->render($this->style, 'viewtopic', array (
-		  'boardName' => $this->title,
-		  'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->notifyType,
-		  'NOTIFY_MSG' =>  $this->notifyMsg,
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('members'),
-		  'LANG_PROFILE' => $this->lang->line('profile'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
-		  'LANG_BTNREPLY' => $this->lang->line('postreply'),
-		  'LANG_BTNMOVETOPIC' => $this->lang->line('movetopic'),
-		  'LANG_BTNDELETETOPIC' => $this->lang->line('btndeletetopic'),
-		  'LANG_BTNLOCKTOPIC' => $this->lang->line('btnlocktopic'),
-		  'LANG_BTNUNLOCKTOPIC' => $this->lang->line('btnunlocktopic'),
-		  'LANG_BTNEDITPOST' => $this->lang->line('editpost'),
-		  'LANG_BTNDELETEPOST' => $this->lang->line('btndeletemessage'),
-		  'LANG_BTNQUOTEAUTHOR' => $this->lang->line('btnquoteauthor'),
-		  'LANG_BTNPMAUTHOR' => $this->lang->line('btnpmauthor'),
-		  'LANG_BTNREPORTPOST' => $this->lang->line('reporttomod'),
-		  'groupAccess' => $this->groupAccess,
-		  'LANG_PRINT' =>  $this->lang->line('ptitle'),
-		  'LANG_POSTCOUNT' => $this->lang->line('postcount'),
-		  'LANG_DELPROMPT' => $this->lang->line('topiccon'),
-		  'LANG_DELPROMPT2' => $this->lang->line('postcon'),
-		  'TOPICID' => $id,
-		  'DISABLE_SMILES' => $disable_smiles,
-		  'BOARDPREF_SMILES' => $boardpref_smiles,
-		  'DISABLE_BBCODE' => $disable_bbcode,
-		  'BOARDPREF_BBCODE' => $boardpref_bbcode,
-		  'BOARDPREF_IMAGE' => $boardpref_image,
-		  'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
-		  'LANG_WARNLEVEL' => $this->lang->line('warnlevel'),
-		  'TOPIC_TYPE' => $this->Topicmodel->getTopicType(),
-		  'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
-		  'TOPIC_BODY' => $this->Topicmodel->getBody(),
-		  'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
-		  'TOPIC_IP' => $this->Topicmodel->getIp(),
-		  'TOPIC_POSTEDON' => $this->Topicmodel->getOriginalDate(),
-		  'AUTHOR_GROUPNAME' => $this->Topicmodel->getGroupProfile(),
-		  'AUTHOR_GROUPLEVEL' => $this->Topicmodel->getGroupAccess(),
-		  'AUTHOR_AVATAR' => $this->Topicmodel->getAvatar(),
-		  'AUTHOR_GID' => $this->Topicmodel->getGid(),
-		  'AUTHOR_POSTCOUNT' => $this->Topicmodel->getPostCount(),
-		  'AUTHOR_SIG' => $this->Topicmodel->getSig(),
-		  'AUTHOR_WARNLEVEL' => $this->Topicmodel->getWarningLevel(),
-		  'AUTHOR_CTITLE' => $this->Topicmodel->getCustomTitle(),
-		  'LANG_DOWNLOADS' => $this->lang->line('downloadct'),
-		  'LANG_ATTACHMENTS' => $this->lang->line('attachments'),
-		  'LANG_POSTED' => $this->lang->line('postedon'),
-		  'LANG_IP'  => $this->lang->line('ipmod'),
-		  'LANG_IPLOGGED' => $this->lang->line('iplogged'),
-		  'POLLFORM' => form_open('boards/vote/'.$id),
-          'POLL_QUESTION' => $this->Topicmodel->getQuestion(),
-          'POLLDATA' => $this->Topicmodel->GetPoll($id),
-          'LANG_VOTE' => $this->lang->line('castvote'),
-		  'LANG_TOTAL' => $this->lang->line('total'),
-		  'TOTAL_VOTES' => GetCount($id, 'PollCount'),
-		  'REPLYDATA' => $this->Topicmodel->GetReplies($id, $config['per_page'], $this->uri->segment(4)),
-		  'PAGINATION' => $this->pagination->create_links(),
-		  'FORM_PAGE' => $this->uri->segment(4),
-		  'BREADCRUMB' => $this->breadcrumb->output(),
-		  'CANPOST_REPLY' => $CanReply,
-		  'CANVOTE' => $CanVote,
-		  'GAC_WARNINGLEVELS' => $canAlterWarn,
-		  'GAC_SEEIP' => $canSeeIP,
-		  'GAC_EDITTOPIC' => $CanEdit,
-		  'GAC_DELETETOPIC' => $CanDelete,
-		  'GAC_DELETEACL' => $CanDeleteACL,
-		  'GAC_MOVEACL' => $CanMoveACL,
-		  'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
-		  'LANG_NEWPOST' => $this->lang->line('newpost'),
-		  'LANG_OLDPOST' => $this->lang->line('oldpost'),
-		  'LANG_BOARD' => $this->lang->line('boards'),
-		  'LANG_TOPIC' => $this->lang->line('topics'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'LANG_REPLIES' => $this->lang->line('replies'),
-		  'LANG_POSTVIEWS' => $this->lang->line('views'),
-		  'LANG_POST' => $this->lang->line('posts'),
-		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
-		  'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
-		  'SMILES' => form_smiles(),
-		  'LANG_REPLY' => $this->lang->line('btnreply'),
-		  'LANG_OPTIONS' => $this->lang->line('options'),
-		  'LANG_DISABLERTF' => $this->lang->line('disablertf'),
-		  'LANG_SMILES' => $this->lang->line('moresmiles'),
-		  'LANG_NOTIFY' => $this->lang->line('notify'),
-		  'LANG_DISABLESMILES' => $this->lang->line('disablesmiles'),
-		  'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode')
-		));
 	}
 	
 	/**
@@ -562,8 +597,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -603,10 +637,9 @@ class Boards extends EBB_Controller {
 		} else {
 			
 			//flood check,
-			if (flood_check("posting", $this->Usermodel->getLastPost())) {
+			if ($this->groupAccess == 3 && flood_check("posting", $this->Usermodel->getLastPost())) {
 				#setup error session.
-				$this->session->set_flashdata('NotifyType', 'error');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
+				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
 				redirect('/boards/viewboard/'.$bid, 'location');
@@ -692,8 +725,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -735,10 +767,9 @@ class Boards extends EBB_Controller {
 		} else {
 			
 			//flood check,
-			if (flood_check("posting", $this->Usermodel->getLastPost())) {
+			if ($this->groupAccess == 3 && flood_check("posting", $this->Usermodel->getLastPost())) {
 				#setup error session.
-				$this->session->set_flashdata('NotifyType', 'error');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
+				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
 				redirect('/boards/viewboard/'.$bid, 'location');
@@ -957,8 +988,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -979,8 +1009,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -1017,10 +1046,9 @@ class Boards extends EBB_Controller {
 		} else {
 			
 			//flood check,
-			if (flood_check("posting", $this->Usermodel->getLastPost())) {
+			if ($this->groupAccess == 3 && flood_check("posting", $this->Usermodel->getLastPost())) {
 				#setup error session.
-				$this->session->set_flashdata('NotifyType', 'error');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('flood'));
+				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
 				redirect('/boards/viewtopic/'.$tid, 'location');
@@ -1282,8 +1310,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -1303,12 +1330,10 @@ class Boards extends EBB_Controller {
 		
 		//see if user can vote.
 		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBVote())){
-			$this->session->set_flashdata('NotifyType', 'error');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('cantvote'));
+			$this->notifications('error', $this->lang->line('cantvote'));
 		} else {
 			if (!$this->Groupmodel->ValidateAccess(1, 36)){
-				$this->session->set_flashdata('NotifyType', 'error');
-				$this->session->set_flashdata('NotifyMsg', $this->lang->line('cantvote'));
+				$this->notifications('error', $this->lang->line('cantvote'));
 			}
 		}
 		
@@ -1318,8 +1343,7 @@ class Boards extends EBB_Controller {
 		//ensure the user entered something.
 		if (!$vote) {
 			//something went wrong.
-			$this->session->set_flashdata('NotifyType', 'error');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('novote'));
+			$this->notifications('error', $this->lang->line('novote'));
 		} else {
 			//load topic model.
 			$this->load->model('Topicmodel');
@@ -1328,8 +1352,7 @@ class Boards extends EBB_Controller {
 			$this->Topicmodel->CastVote($this->logged_user, $id, $vote);
 			
 			//vote has been recorded.
-			$this->session->set_flashdata('NotifyType', 'success');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('votecasted'));
+			$this->notifications('success', $this->lang->line('votecasted'));
 		}
 		
 		//direct user to topic.
@@ -1345,8 +1368,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//alert user.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -1471,8 +1493,7 @@ class Boards extends EBB_Controller {
 			}
 			
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'success');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('reportsent'));
+			$this->notifications('success', $this->lang->line('reportsent'));
 			
 			//direct user to topic.
 			redirect('/boards/viewtopic/'.$id, 'location');
@@ -1489,8 +1510,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -1680,8 +1700,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');
@@ -1691,21 +1710,37 @@ class Boards extends EBB_Controller {
 		$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
 		
 		//load entities
-		$LoadSuccess = $this->Topicmodel->GetTopicData($id);
+		$tData = $this->Topicmodel->GetTopicData($id);
+		$boardOpt = $this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$boardAcc = $this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
 		
 		//ensure everything loaded correctly.
-		if ($LoadSuccess) {
-			$this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
-			$this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
-
-			//see if user can post on this board.
-			if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBPost())){
-				show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
-			} else {
-				if (!$this->Groupmodel->ValidateAccess(1, 37)){
-					show_error($this->lang->line('nowrite'),403,$this->lang->line('error'));
+		if ($tData && $boardOpt && $boardAcc) {
+			
+			//see if user can delete this topic.
+			if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBDelete())) {
+				//see if we got any group-based permission overwritting the board-level permission.
+				if($this->Groupmodel->ValidateAccess(1, 41)){
+					$CanDelete = TRUE;
+				} else {
+					$CanDelete = FALSE;
 				}
+			} else {
+				$CanDelete = FALSE;
 			}
+			
+			//if user can delete, delete all data, if not, let them know this.
+			if ($CanDelete) {
+				
+				//display success message.
+				$this->notifications('success', $this->lang->line('deletetopicsuccess'));
+				
+				#direct user to login page.
+				redirect('/board/viewboard/'.$this->Topicmodel->getBid(), 'location');
+			} else {
+				show_error($this->lang->line('accessdenied'),403,$this->lang->line('error'));
+			}
+
 		} else {
 			exit(show_error($this->lang->line('doesntexist'), 500, $this->lang->line('error')));
 		}
@@ -1720,8 +1755,7 @@ class Boards extends EBB_Controller {
 		#if Group Access property is 0, redirect user.
 		if ($this->groupAccess == 0) {
 			//show success message.
-			$this->session->set_flashdata('NotifyType', 'warning');
-			$this->session->set_flashdata('NotifyMsg', $this->lang->line('notloggedin'));
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
 			redirect('/login/Login', 'location');

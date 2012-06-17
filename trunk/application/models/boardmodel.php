@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * boardmodel.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 04/12/2012
+ * @version 06/17/2012
 */
 
 /**
@@ -407,19 +407,6 @@ class Boardmodel extends CI_Model {
 	 * METHODS
 	*/
 
-    /**
-     * Validates Selected Board Exists.
-     * @param integer $bid
-     * @return integer
-     */
-    public function ValidateBoardID($bid) {
-
-		//SQL grabbing count of all topics for this board.
-		$this->db->select('id')->from('ebb_boards')->where('id', $bid);
-		return $this->db->count_all_results();
-
-	}
-	
 	public function CreateBoard() {
 
 	}
@@ -436,7 +423,8 @@ class Boardmodel extends CI_Model {
     /**
      * Load Entity with values from our database.
      * @param integer $bid
-     * @version 04/12/12
+     * @version 06/17/12
+	 * @return boolean
      */
 	public function GetBoardSettings($bid) {
 
@@ -466,10 +454,9 @@ class Boardmodel extends CI_Model {
 			$this->setPostIncrement($BoardData->Post_Increment);
 			$this->setImage($BoardData->Image);
 			$this->setBOrder($BoardData->B_Order);
+			return TRUE;
 		} else {
-			//no record was found, throw an error.
-			show_error($this->lang->line('doesntexist').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
-			log_message('error', 'invalid BoardID was provided.'); //log error in error log.
+			return FALSE;
 		}
 	}
 
