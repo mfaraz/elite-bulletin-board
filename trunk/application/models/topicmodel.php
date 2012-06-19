@@ -771,7 +771,7 @@ class Topicmodel extends CI_Model {
 		  'disable_smiles' => $this->getDisableSmiles()
         );
 		
-		#update user.
+		#update topic.
 		$this->db->where('tid', $this->getTiD());
 		$this->db->update('ebb_topics', $data);
 	}
@@ -792,41 +792,137 @@ class Topicmodel extends CI_Model {
 		  'disable_smiles' => $this->getDisableSmiles()
         );
 		
-		#update user.
+		#update reply.
 		$this->db->where('pid', $this->getPiD());
 		$this->db->update('ebb_posts', $data);
 	}
 	
 	/**
 	 * Delete topic data.
+	 * @version 06/18/12
+	 * @return boolean
 	 */
 	public function DeleteTopic() {
-		$this->db->where('tid', $this->getTiD())
-		  ->delete('ebb_topics');
+		
+		$this->db->select('Filename')
+		  ->from('ebb_attachments')
+		  ->where('tid', $this->getTiD());
+		$query = $this->db->get();
+		
+		//see if we have any records to delete.
+		if($query->num_rows() > 0) {
+			foreach ($query->result() as $attachRow) {
+				$success = unlink(UPLOAD_PATH.$attachRow->Filename);
+				
+				//see if the file successfully deleted.
+				if ($success) {
+					//remove entry from db.
+					$this->db->where('tid', $this->getTiD())
+					  ->where('Filename', $attachRow->Filename)
+					  ->delete('ebb_attachments');
+				}
+			}
+
+			$this->db->where('tid', $this->getTiD())
+			  ->delete('ebb_topics');
+
+			return TRUE;
+		} else {
+			//no attachments, so just delete the topic.
+			$this->db->where('tid', $this->getTiD())
+			  ->delete('ebb_topics');
+			return TRUE;
+		}
+		
 	}
 	
 	/**
 	 * Delete poll data for defined Topic ID.
-	 * @version 06/13/12
+	 * @version 06/18/12
 	 */
 	public function DeletePoll() {
 		$this->db->where('tid', $this->getTiD())
 		  ->delete('ebb_poll');
+		
+		$this->db->where('tid', $this->getTiD())
+		  ->delete('ebb_votes');
 	}
 	
 	/**
 	 * Delete Replies.
-	 * @param boolean $deleteAll Delet all replies or just one?
-	 * @version 06/13/12
+	 * @param boolean $deleteAll Delete all replies or just one?
+	 * @version 06/18/12
+	 * @return boolean
 	 */
 	public function DeleteReply($deleteAll = FALSE) {
 		//see if we want to delete all replies associated with a topic or just one reply.
 		if ($deleteAll) {
-			$this->db->where('tid', $this->getTiD())
-			  ->delete('ebb_posts');
+			
+			$this->db->select('pid')
+			  ->from('ebb_posts')
+			  ->where('tid', $this->getTiD());
+			$rQuery = $this->db->get();
+			
+			//see if we have any replies to delete.
+			if($rQuery->num_rows() == 0) {
+				return TRUE; //no replies, just exit then.
+			} else {
+				//loop through data and clear attachments.
+				foreach ($rQuery->result() as $replyRow) {
+					$this->db->select('Filename')
+					  ->from('ebb_attachments')
+					  ->where('pid', $replyRow->pid);
+					$aQuery = $this->db->get();
+					
+					//see if we have any records to show.
+					if($aQuery->num_rows() > 0) {
+						
+						foreach ($aQuery->result() as $attachRow) {
+							$success = unlink(UPLOAD_PATH.$attachRow->Filename);
+							//see if the file successfully deleted.
+							if ($success) {
+								//remove entry from db.
+								$this->db->where('pid', $replyRow->pid)
+								  ->where('Filename', $attachRow->Filename)
+								  ->delete('ebb_attachments');
+							}
+						}
+					}
+				}
+				//delete all replies tied to defined topic id.
+				$this->db->where('tid', $this->getTiD())
+				  ->delete('ebb_posts');
+				return TRUE;
+			}
 		} else {
-			$this->db->where('pid', $this->getPiD())
-			  ->delete('ebb_posts');
+			$this->db->select('Filename')
+			  ->from('ebb_attachments')
+			  ->where('pid', $this->getPiD());
+			$query = $this->db->get();
+			
+			//see if we have any records to show.
+			if($query->num_rows() > 0) {
+				foreach ($query->result() as $attachRow) {
+					$success = unlink(UPLOAD_PATH.$attachRow->Filename);
+					
+					//see if the file successfully deleted.
+					if ($success) {
+						//remove entry from db.
+						$this->db->where('pid', $this->getPiD())
+						  ->where('Filename', $attachRow->Filename)
+						  ->delete('ebb_attachments');
+					}
+					
+				}
+				$this->db->where('pid', $this->getPiD())
+				  ->delete('ebb_posts');
+
+				return TRUE;
+			} else {
+				//no attachments, just delete the post.
+				$this->db->where('pid', $this->getPiD())
+				  ->delete('ebb_posts');
+			}
 		}
 	}
 
