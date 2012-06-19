@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/17/2012
+ * @version 06/18/2012
 */
 
 /**
@@ -1706,8 +1706,8 @@ class Boards extends EBB_Controller {
 			redirect('/login/Login', 'location');
 		}
 		
-		//load topic & attachments model.
-		$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+		//load topic model.
+		$this->load->model(array('Topicmodel'));
 		
 		//load entities
 		$tData = $this->Topicmodel->GetTopicData($id);
@@ -1717,20 +1717,32 @@ class Boards extends EBB_Controller {
 		//ensure everything loaded correctly.
 		if ($tData && $boardOpt && $boardAcc) {
 			
-			//see if user can delete this topic.
-			if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBDelete())) {
-				//see if we got any group-based permission overwritting the board-level permission.
-				if($this->Groupmodel->ValidateAccess(1, 41)){
+			//see if admin or moderator, they got different access control to validate from.
+			if ($this->groupAccess == 1 || $this->groupAccess == 2) {
+				if($this->Groupmodel->ValidateAccess(1, 21)){
 					$CanDelete = TRUE;
 				} else {
 					$CanDelete = FALSE;
 				}
 			} else {
-				$CanDelete = FALSE;
+				//see if user can delete this topic.
+				if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBDelete())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->ValidateAccess(1, 41)){
+						$CanDelete = TRUE;
+					} else {
+						$CanDelete = FALSE;
+					}
+				} else {
+					$CanDelete = FALSE;
+				}
 			}
 			
 			//if user can delete, delete all data, if not, let them know this.
 			if ($CanDelete) {
+				$this->Topicmodel->DeleteTopic();
+				$this->Topicmodel->DeleteReply(TRUE);
+				$this->Topicmodel->DeletePoll();
 				
 				//display success message.
 				$this->notifications('success', $this->lang->line('deletetopicsuccess'));
@@ -1744,7 +1756,6 @@ class Boards extends EBB_Controller {
 		} else {
 			exit(show_error($this->lang->line('doesntexist'), 500, $this->lang->line('error')));
 		}
-
 	}
 	
 	/**
@@ -1920,7 +1931,63 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/deletepost/5
 	*/
 	public function deletepost($id) {
+		#if Group Access property is 0, redirect user.
+		if ($this->groupAccess == 0) {
+			//show success message.
+			$this->notifications('warning', $this->lang->line('notloggedin'));
 
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		}
+		
+		//load topic model.
+		$this->load->model(array('Topicmodel'));
+		
+		//load entities
+		$pData = $this->Topicmodel->GetReplyData($id);
+		$boardOpt = $this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+		$boardAcc = $this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+		
+		//ensure everything loaded correctly.
+		if ($pData && $boardOpt && $boardAcc) {
+			
+			//see if admin or moderator, they got different access control to validate from.
+			if ($this->groupAccess == 1 || $this->groupAccess == 2) {
+				if($this->Groupmodel->ValidateAccess(1, 21)){
+					$CanDelete = TRUE;
+				} else {
+					$CanDelete = FALSE;
+				}
+			} else {
+				//see if user can delete this topic.
+				if ($this->Groupmodel->ValidateAccess(0, $this->Boardaccessmodel->getBDelete())) {
+					//see if we got any group-based permission overwritting the board-level permission.
+					if($this->Groupmodel->ValidateAccess(1, 41)){
+						$CanDelete = TRUE;
+					} else {
+						$CanDelete = FALSE;
+					}
+				} else {
+					$CanDelete = FALSE;
+				}
+			}
+			
+			//if user can delete, delete all data, if not, let them know this.
+			if ($CanDelete) {
+				$this->Topicmodel->DeleteReply();
+				
+				//display success message.
+				$this->notifications('success', $this->lang->line('deletereplysuccess'));
+				
+				#direct user to login page.
+				redirect('/board/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
+			} else {
+				show_error($this->lang->line('accessdenied'),403,$this->lang->line('error'));
+			}
+
+		} else {
+			exit(show_error($this->lang->line('doesntexist'), 500, $this->lang->line('error')));
+		}
 	}
 	
 	/**

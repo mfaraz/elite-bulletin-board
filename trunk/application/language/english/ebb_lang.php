@@ -78,6 +78,7 @@ $lang['extlookup'] = 'No file extension was entered.';
 $lang['noaction'] = 'No action was given by user.';
 #success notifications.
 $lang['deletetopicsuccess'] = 'Successfully Deleted Topic';
+$lang['deletereplysuccess'] = 'Successfully Deleted Reply';
 
 #Menu-based language tags.
 $lang['nonewpm'] = 'You have no new messages';
