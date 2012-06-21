@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/29/2012
+ * @version 06/20/2012
 */
 
 /**
@@ -82,7 +82,7 @@ function form_smiles($boardPref_smiles = 1){
  * Formats our messages converting over BBCode tags into HTML content.
  * @param string $string the string to check for our BBCode tags.
  * @param boolean $allowimgs allow parsing of image tags?
- * @version 12/12/10
+ * @version 06/20/12
  * @return mixed
 */
 function BBCode($string, $allowimgs = false) {
@@ -103,8 +103,8 @@ function BBCode($string, $allowimgs = false) {
     $string = preg_replace('~\[sub\](.*?)\[\/sub\]~is', '<sub>\\1</sub>', $string);
     $string = preg_replace('~\[sup\](.*?)\[\/sup\]~is', '<sup>\\1</sup>', $string);
     $string = preg_replace('~\[color=(.*?)\](.*?)\[\/color\]~is', '<span style="color: \\1">\\2</span>', $string);
-    $string = preg_replace('~\[quote\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">Quote:</div><div class=\"quote\">\\1</div>", $string);
-    $string = preg_replace('~\[quote=(.*?)\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">\\1 Wrote:</div><div class=\"quote\">\\2</div>", $string);
+    $string = preg_replace('~\[quote\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">Quote:</div><blockquote class=\"quote\">\\1</blockquote>", $string);
+    $string = preg_replace('~\[quote=(.*?)\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">\\1 Wrote:</div><blockquote class=\"quote\">\\2</blockquote>", $string);
     $string = preg_replace('~\[code\](.*?)\[\/code\]~is', "<div class=\"codeheader\">Code:</div><div class=\"code\"><pre style=\"display: inline;\">\\1</pre></div>", $string);
     $string = preg_replace("/\\[youtube(=([0-9]+),([0-9]+))?\\](.+?)\\[\\/youtube\\]/se","youtubeParse('\\4')", $string);
 
@@ -129,7 +129,7 @@ function youtubeParse($vCode) {
 /**
  * Same functionality as BBcode, only used for printer-friendly pages and has a limited number of things it'll parse.
  * @param string [str] - string to check for BBCode tags.
- * @version 12/12/10
+ * @version 06/20/12
  * @return mixed
 */
 function BBCode_print($string) {
@@ -145,9 +145,9 @@ function BBCode_print($string) {
     $string = preg_replace('~\[left\](.*?)\[\/left\]~is', '<div align="left">\\1</div>', $string);
     $string = preg_replace('~\[sub\](.*?)\[\/sub\]~is', '<sub>\\1</sub>', $string);
     $string = preg_replace('~\[sup\](.*?)\[\/sup\]~is', '<sup>\\1</sup>', $string);
-    $string = preg_replace('~\[quote\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">Quote:</div><div class=\"quote\">\\1</div>", $string);
-    $string = preg_replace('~\[quote=(.*?)\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">\\1 Wrote:</div><div class=\"quote\">\\2</div>", $string);
-    $string = preg_replace('~\[code\](.*?)\[\/code\]~is', "<div class=\"codeheader\">Code:</div><div class=\"code\"><pre style=\"display: inline;\">\\1</pre></div>", $string);
+    $string = preg_replace('~\[quote\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">Quote:</div><blockquote>\\1</blockquote>", $string);
+    $string = preg_replace('~\[quote=(.*?)\](.*?)\[\/quote\]~is', "<div class=\"quoteheader\">\\1 Wrote:</div><blockquote>\\2</blockquote>", $string);
+    $string = preg_replace('~\[code\](.*?)\[\/code\]~is', "<div class=\"codeheader\">Code:</div><code><pre style=\"display: inline;\">\\1</pre></code>", $string);
 
 	return ($string);
 }

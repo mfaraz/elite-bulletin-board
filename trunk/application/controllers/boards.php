@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/18/2012
+ * @version 06/20/2012
 */
 
 /**
@@ -67,62 +67,62 @@ class Boards extends EBB_Controller {
 
 		//render to HTML.
 		echo $this->twig->render($this->style, 'board_index', array (
-		  'boardName' => $this->title,
-		  'pageTitle'=> $this->lang->line('index'),
-		  'BOARD_URL' => $this->boardUrl,
-		  'APP_URL' => $this->boardUrl.APPPATH,
-		  'NOTIFY_TYPE' => $this->notifyType,
-		  'NOTIFY_MSG' =>  $this->notifyMsg,
-		  'LANG' => $this->lng,
-		  'TimeFormat' => $this->timeFormat,
-		  'TimeZone' => $this->timeZone,
-		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-		  'LOGGEDUSER' => $this->logged_user,
-		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-		  'LANG_INFO' => $this->lang->line('info'),
-		  'LANG_LOGIN' => $this->lang->line('login'),
-		  'LANG_LOGOUT' => $this->lang->line('logout'),
-		  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-		  'LANG_USERNAME' => $this->lang->line('username'),
-		  'LANG_REGISTER' => $this->lang->line('register'),
-		  'LANG_PASSWORD' => $this->lang->line('pass'),
-		  'LANG_FORGOT' => $this->lang->line('forgot'),
-		  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-		  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-		  'LANG_SEARCH' => $this->lang->line('search'),
-		  'LANG_CP' => $this->lang->line('admincp'),
-		  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-		  'LANG_HOME' => $this->lang->line('home'),
-		  'LANG_HELP' => $this->lang->line('help'),
-		  'LANG_MEMBERLIST' => $this->lang->line('members'),
-		  'LANG_PROFILE' => $this->lang->line('profile'),
-		  'LANG_POWERED' => $this->lang->line('poweredby'),
-		  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-		  'groupAccess' => $this->groupAccess,
-		  'showInfoBox' => $this->preference->getPreferenceValue("infobox_status"),
-		  'LANG_TICKER' => $this->lang->line('ticker_txt'),
-		  'ANNOUNCEMENT' => informationPanel(),
-		  'LANG_BOARD' => $this->lang->line('boards'),
-		  'LANG_TOPIC' => $this->lang->line('topics'),
-		  'LANG_POST' => $this->lang->line('posts'),
-		  'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
-		  "LANG_RSS" => $this->lang->line('viewfeed'),
-		  'Category' => $data,
-		  'Boards' => $data2,
-		  "LANG_BOARDSTAT" => $this->lang->line('boardstatus'),
-		  "LANG_ICONGUIDE" => $this->lang->line('iconguide'),
-		  "LANG_NEWESTMEMBER" => $this->lang->line('newestmember'),
-		  "LANG_TOTALTOPIC" => $this->lang->line('topics'),
-		  "LANG_TOTALPOST" => $this->lang->line('posts'),
-		  "LANG_TOTALUSER" => $this->lang->line('membernum'),
-		  "LANG_NEWPOST" => $this->lang->line('newpost'),
-		  "LANG_OLDPOST" => $this->lang->line('oldpost'),
-		  "LANG_WHOSONLINE" => $this->lang->line('whosonline'),
-		  "LANG_ONLINEKEY" => $this->lang->line('onlinekey'),
-		  "LANG_LOGGED_ONLINE" => $this->lang->line('membernum'),
-		  "LANG_GUEST_ONLINE" => $this->lang->line('guestonline'),
-		  "WHOSONLINE"=> whosonline()
+            'boardName' => $this->title,
+            'pageTitle'=> $this->lang->line('index'),
+            'BOARD_URL' => $this->boardUrl,
+            'APP_URL' => $this->boardUrl.APPPATH,
+            'NOTIFY_TYPE' => $this->notifyType,
+            'NOTIFY_MSG' =>  $this->notifyMsg,
+            'LANG' => $this->lng,
+            'TimeFormat' => $this->timeFormat,
+            'TimeZone' => $this->timeZone,
+            'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+            'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+            'LOGGEDUSER' => $this->logged_user,
+            'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+            'LANG_INFO' => $this->lang->line('info'),
+            'LANG_LOGIN' => $this->lang->line('login'),
+            'LANG_LOGOUT' => $this->lang->line('logout'),
+            'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+            'LANG_USERNAME' => $this->lang->line('username'),
+            'LANG_REGISTER' => $this->lang->line('register'),
+            'LANG_PASSWORD' => $this->lang->line('pass'),
+            'LANG_FORGOT' => $this->lang->line('forgot'),
+            'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+            'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+            'LANG_SEARCH' => $this->lang->line('search'),
+            'LANG_CP' => $this->lang->line('admincp'),
+            'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+            'LANG_HOME' => $this->lang->line('home'),
+            'LANG_HELP' => $this->lang->line('help'),
+            'LANG_MEMBERLIST' => $this->lang->line('members'),
+            'LANG_PROFILE' => $this->lang->line('profile'),
+            'LANG_POWERED' => $this->lang->line('poweredby'),
+            'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+            'groupAccess' => $this->groupAccess,
+            'showInfoBox' => $this->preference->getPreferenceValue("infobox_status"),
+            'LANG_TICKER' => $this->lang->line('ticker_txt'),
+            'ANNOUNCEMENT' => informationPanel(),
+            'LANG_BOARD' => $this->lang->line('boards'),
+            'LANG_TOPIC' => $this->lang->line('topics'),
+            'LANG_POST' => $this->lang->line('posts'),
+            'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
+            "LANG_RSS" => $this->lang->line('viewfeed'),
+            'Category' => $data,
+            'Boards' => $data2,
+            "LANG_BOARDSTAT" => $this->lang->line('boardstatus'),
+            "LANG_ICONGUIDE" => $this->lang->line('iconguide'),
+            "LANG_NEWESTMEMBER" => $this->lang->line('newestmember'),
+            "LANG_TOTALTOPIC" => $this->lang->line('topics'),
+            "LANG_TOTALPOST" => $this->lang->line('posts'),
+            "LANG_TOTALUSER" => $this->lang->line('membernum'),
+            "LANG_NEWPOST" => $this->lang->line('newpost'),
+            "LANG_OLDPOST" => $this->lang->line('oldpost'),
+            "LANG_WHOSONLINE" => $this->lang->line('whosonline'),
+            "LANG_ONLINEKEY" => $this->lang->line('onlinekey'),
+            "LANG_LOGGED_ONLINE" => $this->lang->line('membernum'),
+            "LANG_GUEST_ONLINE" => $this->lang->line('guestonline'),
+            "WHOSONLINE"=> whosonline()
 		));
 	}
 
@@ -230,64 +230,68 @@ class Boards extends EBB_Controller {
 
 				//render to HTML.
 				echo $this->twig->render($this->style, 'viewboard', array (
-				'boardName' => $this->title,
-				'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
-				'BOARD_URL' => $this->boardUrl,
-				'APP_URL' => $this->boardUrl.APPPATH,
-				'NOTIFY_TYPE' => $this->notifyType,
-				'NOTIFY_MSG' =>  $this->notifyMsg,
-				'LANG' => $this->lng,
-				'TimeFormat' => $this->timeFormat,
-				'TimeZone' => $this->timeZone,
-				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-				'LOGGEDUSER' => $this->logged_user,
-				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-				'LANG_INFO' => $this->lang->line('info'),
-				'LANG_LOGIN' => $this->lang->line('login'),
-				'LANG_LOGOUT' => $this->lang->line('logout'),
-				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-				'LANG_USERNAME' => $this->lang->line('username'),
-				'LANG_REGISTER' => $this->lang->line('register'),
-				'LANG_PASSWORD' => $this->lang->line('pass'),
-				'LANG_FORGOT' => $this->lang->line('forgot'),
-				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-				'LANG_SEARCH' => $this->lang->line('search'),
-				'LANG_CP' => $this->lang->line('admincp'),
-				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-				'LANG_HOME' => $this->lang->line('home'),
-				'LANG_HELP' => $this->lang->line('help'),
-				'LANG_MEMBERLIST' => $this->lang->line('members'),
-				'LANG_PROFILE' => $this->lang->line('profile'),
-				'LANG_POWERED' => $this->lang->line('poweredby'),
-				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-				'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
-				'LANG_BTNNEWTOPIC' => $this->lang->line('newtopic'),
-				'LANG_BTNNEWPOLL' => $this->lang->line('newpoll'),
-				'groupAccess' => $this->groupAccess,
-				'BOARDID' => $id,
-				'BOARDCOUNT' => GetCount($id, 'TopicCount'),
-				'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], $this->uri->segment(4)),
-				'SUBBOARDDATA' => $this->Boardmodel->GetSubBoards($id),
-				'PAGINATION' => $this->pagination->create_links(),
-				'BREADCRUMB' => $this->breadcrumb->output(),
-				'LANG_NOREAD' => $this->lang->line('noread'),
-				'LANG_NOPOST' => $this->lang->line('nopost'),
-				'CANREAD_TOPIC' => $CanRead,
-				'CANPOST_TOPIC' => $CanPost,
-				'CANPOST_POLL' => $CanPostPoll,
-				'LANG_NEWPOST' => $this->lang->line('newpost'),
-				'LANG_OLDPOST' => $this->lang->line('oldpost'),
-				'LANG_BOARD' => $this->lang->line('boards'),
-				'LANG_TOPIC' => $this->lang->line('topics'),
-				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-				'LANG_REPLIES' => $this->lang->line('replies'),
-				'LANG_POSTVIEWS' => $this->lang->line('views'),
-				'LANG_POST' => $this->lang->line('posts'),
-				'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
-				'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
-				'LANG_POSTEDBY' => $this->lang->line('Postedby')
+                    'boardName' => $this->title,
+                    'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
+                    'BOARD_URL' => $this->boardUrl,
+                    'APP_URL' => $this->boardUrl.APPPATH,
+                    'NOTIFY_TYPE' => $this->notifyType,
+                    'NOTIFY_MSG' =>  $this->notifyMsg,
+                    'LANG' => $this->lng,
+                    'TimeFormat' => $this->timeFormat,
+                    'TimeZone' => $this->timeZone,
+                    'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+                    'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+                    'LOGGEDUSER' => $this->logged_user,
+                    'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+                    'LANG_INFO' => $this->lang->line('info'),
+                    'LANG_LOGIN' => $this->lang->line('login'),
+                    'LANG_LOGOUT' => $this->lang->line('logout'),
+                    'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+                    'LANG_USERNAME' => $this->lang->line('username'),
+                    'LANG_REGISTER' => $this->lang->line('register'),
+                    'LANG_PASSWORD' => $this->lang->line('pass'),
+                    'LANG_FORGOT' => $this->lang->line('forgot'),
+                    'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+                    'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+                    'LANG_SEARCH' => $this->lang->line('search'),
+                    'LANG_CP' => $this->lang->line('admincp'),
+                    'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+                    'LANG_HOME' => $this->lang->line('home'),
+                    'LANG_HELP' => $this->lang->line('help'),
+                    'LANG_MEMBERLIST' => $this->lang->line('members'),
+                    'LANG_PROFILE' => $this->lang->line('profile'),
+                    'LANG_POWERED' => $this->lang->line('poweredby'),
+                    'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+                    'LANG_BTNLOCKED' => $this->lang->line('btnlocked'),
+                    'LANG_BTNNEWTOPIC' => $this->lang->line('newtopic'),
+                    'LANG_BTNNEWPOLL' => $this->lang->line('newpoll'),
+                    'groupAccess' => $this->groupAccess,
+                    'BOARDID' => $id,
+                    'BOARDCOUNT' => GetCount($id, 'TopicCount'),
+                    'BOARDDATA' => $this->Boardmodel->GetTopics($id, $config['per_page'], $this->uri->segment(4)),
+                    'SUBBOARDDATA' => $this->Boardmodel->GetSubBoards($id),
+                    'PAGINATION' => $this->pagination->create_links(),
+                    'BREADCRUMB' => $this->breadcrumb->output(),
+                    'LANG_NOREAD' => $this->lang->line('noread'),
+                    'LANG_NOPOST' => $this->lang->line('nopost'),
+                    'CANREAD_TOPIC' => $CanRead,
+                    'CANPOST_TOPIC' => $CanPost,
+                    'CANPOST_POLL' => $CanPostPoll,
+                    'LANG_NEWPOST' => $this->lang->line('newpost'),
+                    'LANG_OLDPOST' => $this->lang->line('oldpost'),
+                    'LANG_POLLTOPIC' => $this->lang->line('polltopic'),
+                    'LANG_LOCKTOPIC' => $this->lang->line('lockedtopic'),
+                    'LANG_IMPORTANTTOPIC' => $this->lang->line('importanttopic'),
+                    'LANG_HOTTOPIC' => $this->lang->line('hottopic'),
+                    'LANG_BOARD' => $this->lang->line('boards'),
+                    'LANG_TOPIC' => $this->lang->line('topics'),
+                    'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+                    'LANG_REPLIES' => $this->lang->line('replies'),
+                    'LANG_POSTVIEWS' => $this->lang->line('views'),
+                    'LANG_POST' => $this->lang->line('posts'),
+                    'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
+                    'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
+                    'LANG_POSTEDBY' => $this->lang->line('Postedby')
 				));
 			} else {
 				show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
@@ -561,17 +565,6 @@ class Boards extends EBB_Controller {
 				'GAC_DELETEACL' => $CanDeleteACL,
 				'GAC_MOVEACL' => $CanMoveACL,
 				'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
-				'LANG_NEWPOST' => $this->lang->line('newpost'),
-				'LANG_OLDPOST' => $this->lang->line('oldpost'),
-				'LANG_BOARD' => $this->lang->line('boards'),
-				'LANG_TOPIC' => $this->lang->line('topics'),
-				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-				'LANG_REPLIES' => $this->lang->line('replies'),
-				'LANG_POSTVIEWS' => $this->lang->line('views'),
-				'LANG_POST' => $this->lang->line('posts'),
-				'LANG_LASTPOSTDATE' => $this->lang->line('lastposteddate'),
-				'LANG_LASTPOSTEDBY' => $this->lang->line('lastpost'),
-				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
 				'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
 				'SMILES' => form_smiles(),
 				'LANG_REPLY' => $this->lang->line('btnreply'),
@@ -588,6 +581,82 @@ class Boards extends EBB_Controller {
 		}
 		
 	}
+    
+    /**
+	 * post new topic on board.
+	 * @example index.php/boards/printable/5
+	*/
+    public function printable($id) {
+        //make sure Topic ID is defined.
+		if (!isset($id) OR (empty($id)) OR (!is_numeric($id))) {
+			show_error($this->lang->line('notid'),500,$this->lang->line('error'));
+		} else {
+			//load library & helpers
+			$this->load->helper(array('boardindex', 'topic', 'user', 'form', 'posting', 'group', 'attachment'));
+			$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
+
+			//load topic model.
+			$this->load->model('Topicmodel');
+
+			//load entities
+			$tData = $this->Topicmodel->GetTopicData($id);
+			$boardOpt = $this->Boardmodel->GetBoardSettings($this->Topicmodel->getBid());
+			$boardAcc = $this->Boardaccessmodel->GetBoardAccess($this->Topicmodel->getBid());
+
+			//ensure everything loaded correctly.
+			if ($tData && $boardOpt && $boardAcc) {
+				/**
+				* Permission Validation
+				*/
+
+				#see if user can view this topic.
+				if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead()) == false){
+					show_error($this->lang->line('noread'), 403, $this->lang->line('error'));
+				}
+
+				#setup filters.
+				$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
+				$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
+
+				//Grab some settings.
+				$disable_bbcode = $this->Topicmodel->getDisableBbCode();
+				$disable_smiles = $this->Topicmodel->getDisableSmiles();
+				$boardpref_bbcode = $this->Boardmodel->getBbCode();
+				$boardpref_smiles = $this->Boardmodel->getSmiles();
+				$boardpref_image = $this->Boardmodel->getImage();
+
+				//render to HTML.
+				echo $this->twig->render($this->style, 'printable', array (
+                    'boardName' => $this->title,
+                    'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
+                    'TimeFormat' => $this->timeFormat,
+                    'TimeZone' => $this->timeZone,
+                    'LOGGEDUSER' => $this->logged_user,
+                    'groupAccess' => $this->groupAccess,
+                    'TOPICID' => $id,
+                    'DISABLE_SMILES' => $disable_smiles,
+                    'BOARDPREF_SMILES' => $boardpref_smiles,
+                    'DISABLE_BBCODE' => $disable_bbcode,
+                    'BOARDPREF_BBCODE' => $boardpref_bbcode,
+                    'BOARDPREF_IMAGE' => $boardpref_image,
+                    'LANG_VIEWORIGTOPIC' => $this->lang->line('vieworiginal'),
+                    'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
+                    'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
+                    'TOPIC_BODY' => $this->Topicmodel->getBody(),
+                    'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
+                    'TOPIC_POSTEDON' => $this->Topicmodel->getOriginalDate(),
+                    'LANG_POSTED' => $this->lang->line('postedon'),
+                    'REPLYDATA' => $this->Topicmodel->GetReplies($id, null, null),
+                    'LANG_BOARD' => $this->lang->line('boards'),
+                    'LANG_TOPIC' => $this->lang->line('topics'),
+                    'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+                    'LANG_POWERED' => $this->lang->line('poweredby'),
+				));
+			} else {
+				show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
+			}
+		}
+    }
 	
 	/**
 	 * post new topic on board.

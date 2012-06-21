@@ -535,6 +535,7 @@ $lang['doesntexist'] = 'The requested item was not found';
 #viewtopic language tags.
 $lang['viewtopic'] = 'View Topic';
 $lang['ptitle'] = 'Printable Version';
+$lang['vieworiginal'] = 'View Original Topic';
 $lang['replytopicalt'] = 'Reply to this topic';
 $lang['postedon'] ='Posted on';
 $lang['warnlevel'] = 'Warning Level';

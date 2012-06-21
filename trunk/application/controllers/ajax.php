@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/30/2012
+ * @version 06/20/2012
 */
 
 /**
@@ -45,7 +45,7 @@ class Ajax extends EBB_Controller {
 		$q = $this->input->post('topic', TRUE);
 
 		//flood check.
-		if (flood_check("search", $this->Usermodel->getLastSearch())) {
+		if ($this->groupAccess == 3 && flood_check("search", $this->Usermodel->getLastSearch())) {
 			exit($this->lang->line('flood'));
 		} else {
 			if ($q == "") {
