@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * boardindex_helper.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 11/22/2011
+ * @version 06/20/2012
 */
 
 /**
@@ -308,11 +308,11 @@ function getSubBoard($boardID) {
  * @param boolean $board_bbcode Board Settings to Allow BBCode.
  * @param boolean $board_Image Board Settings to Allow Images.
  * @param mixed $body Topic Body to format.
- * @version 11/30/11
+ * @param boolean printable Is this in the print mode?
+ * @version 06/20/12
  * @return string
  */
-function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbcode, $board_Image, $body) {
-
+function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbcode, $board_Image, $body, $printable=false) {
 	$topicBody = $body;
 
 	#see if user wish to allow smiles.
@@ -327,7 +327,12 @@ function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbc
 	if($topic_bbcode == 0){
 		#see if board allow BBCode formatting.
 		if ($board_bbcode == 1){
-			$topicBody = BBCode($topicBody);
+			//is this in print-mode?
+			if ($printable) {
+				$topicBody = BBCode_print($topicBody);
+			} else {
+				$topicBody = BBCode($topicBody);
+			}
 		}
 
 		#see if board allows use of [img] tag.
@@ -338,4 +343,3 @@ function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbc
 
 	return ($topicBody);
 }
-?>

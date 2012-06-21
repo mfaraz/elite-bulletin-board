@@ -1016,7 +1016,7 @@ class Topicmodel extends CI_Model {
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 06/13/12
+	 * @version 06/20/12
 	 * @param int $tid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
@@ -1033,8 +1033,12 @@ class Topicmodel extends CI_Model {
 		  ->from('ebb_posts p')
 		  ->join('ebb_users u', 'p.author=u.Username', 'LEFT')
 		  ->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT')
-		  ->where('tid', $tid)
-		  ->limit($limit, $start);
+		  ->where('tid', $tid);
+		
+		if(!is_null($limit) && !is_null($start)) {
+			$this->db->limit($limit, $start);
+		}
+		  
 		$query = $this->db->get();
 
 		//see if we have any records to show.

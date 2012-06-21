@@ -1,0 +1,484 @@
+{% extends "/ClearBlue2/master.twig" %}
+
+{% block title %}{{boardName}} - {{pageTitle}}{% endblock %}
+
+{% block bodyRender %}
+
+{{BREADCRUMB|raw}}<br />
+{{PAGINATION|raw}}<br />
+
+{# grab permissions for posting on this board. #}
+{% if LOGGEDUSER == "guest" %}
+<button id="juiBtnLocked">{{LANG_BTNLOCKED}}</button>
+{% else %}
+
+{# can user post a reply?. #}
+{% if CANPOST_REPLY == TRUE %}
+<button id="juiBtnReply" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reply/{{TOPICID}}/{{FORM_PAGE}}');">{{LANG_BTNREPLY}}</button>
+{% endif %}
+
+{% endif %}
+
+<button id="juiBtnPrint" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/printable/{{TOPICID}}');">{{LANG_PRINT}}</button>
+
+{# Show these buttons only when the user is an admin or a moderator. #}
+{% if groupAccess == 1 or groupAccess == 2 %}
+	{% if GAC_MOVEACL == TRUE %}
+		<button id="juiBtnMoveTopic" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/move/{{TOPICID}}');">{{LANG_BTNMOVETOPIC}}</button>
+	{% endif%}
+
+	{% if GAC_DELETEACL == TRUE %}
+		<button id="juiBtnDeleteTopic" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/maintenance/delete/{{TOPICID}}');return false;">{{LANG_BTNDELETETOPIC}}</button>
+	{% endif%}
+
+	{# see if user can toggle lock. #}
+	{% if GAC_TOGGLELOCKACL == TRUE %}
+		{%if TOPIC_LOCKED == 1 %}
+			<button id="juiBtnUnlock" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/unlock/{{TOPICID}}');">{{LANG_BTNUNLOCKTOPIC}}</button>
+		{%else%}
+			<button id="juiBtnLock" onclick="gotoUrl('{{BOARD_URL}}index.php/maintenance/lock/{{TOPICID}}');">{{LANG_BTNLOCKTOPIC}}</button>
+		{% endif %}
+	{% endif %}
+{% endif %}
+<br /><br />
+{# display a poll if present. #}
+{% if TOPIC_TYPE == 1 %}
+
+{% if VOTECHECK(LOGGEDUSER, TOPICID) == TRUE or CANVOTE == FALSE or LOGGEDUSER == "guest" %}
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+    <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
+</tr><tr>
+    <td class="ui-widget-content">
+		{% for p in POLLDATA %}		
+			{% if CALC_VOTE(p.option_id, TOPICID) == 0%}
+				<strong>{{p.option_value}}: (0%)</strong><br /><br />
+			{% else %}
+				<strong>{{p.option_value}}: ({{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%)</strong><br />
+				<img src="{{BOARD_URL}}application/views/ClearBlue2/images/bar.gif" width="{{MATH_ROUND(CALC_VOTE(p.option_id, TOPICID) / TOTAL_VOTES * 100)}}%" height="10" alt="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" title="{{LANG_TOTAL}}: {{CALC_VOTE(p.option_id, TOPICID)}}" /><br /><br />
+			{% endif %}
+        {% endfor %}
+		{{LANG_TOTAL}}: <strong>{{TOTAL_VOTES}}</strong>
+    </td>
+</tr>
+</table>
+{% else %}
+{{POLLFORM|raw}}
+<table border="0" class="table" style="width: 500px;" align="center" cellpadding="1" cellspacing="1">
+<tr>
+    <td align="center" class="ui-widget-header">{{POLL_QUESTION}}</td>
+</tr><tr>
+    <td class="ui-widget-content">
+		{% for p in POLLDATA %}
+        <input type="radio" name="vote" value="{{p.option_id}}" />{{p.option_value}}<br />
+        {% endfor %}		
+    </td>
+</tr><tr>
+    <td align="center" class="ui-widget-content">
+        <input type="submit" name="submit" value="{{LANG_VOTE}}" class="submit" />
+    </td>
+</tr>
+</table>
+</form>
+{% endif %}
+<br />
+{% endif %}
+
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+<td colspan="2" class="ui-widget-content">{{TOPIC_SUBJECT}} - {{LANG_POSTED}}: {{TOPIC_POSTEDON|PostedDate(TimeFormat, TimeZone)}}
+
+<span class="postopt">&nbsp;
+{% if groupAccess == 1 or groupAccess == 2 %}
+
+	{# see if poster is an admin and logged user is not. #}
+	{% if AUTHOR_GROUPLEVEL == 1 and groupAccess == 2 %}
+		{{LANG_IPLOGGED}}&nbsp;
+	{% else %}
+
+		{# IP Visiblity#}
+		{% if GAC_SEEIP == TRUE %}
+			{{LANG_IP}}&nbsp;{{URL_TAG("maintenance/viewip/", TOPIC_IP)|raw}}
+		{% else %}
+			{{LANG_IPLOGGED}}&nbsp;
+		{% endif%}
+
+		{% if GAC_EDITTOPICACL == TRUE %}
+			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/edittopic/{{TOPICID}}');">{{LANG_BTNEDITPOST}}</button>
+		{% endif%}
+
+		{% if GAC_DELETEACL == TRUE %}
+			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{LANG_BTNDELETEPOST}}</button>
+		{% endif%}
+
+	{% endif%}
+{% else %}
+
+	{% if LOGGEDUSER == TOPIC_AUTHOR and GAC_EDITTOPIC == TRUE %}
+		<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/edittopic/{{TOPICID}}');">{{LANG_BTNEDITPOST}}</button>
+	{% endif %}
+
+	{% if LOGGEDUSER == TOPIC_AUTHOR and GAC_DELETETOPIC == TRUE %}
+		<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT}}', '{{BOARD_URL}}index.php/boards/deletetopic/{{TOPICID}}');return false;">{{LANG_BTNDELETEPOST}}</button>
+	{% endif %}
+
+{% endif%}
+
+{% if LOGGEDUSER != "guest" %}
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/quote/{{TOPICID}}/0/1');">{{LANG_BTNQUOTEAUTHOR}}</button>
+{% endif%}
+
+</span></td>
+</tr><tr>
+<td width="15%" valign="top" class="ui-widget-header">
+    <b>{{TOPIC_AUTHOR}}</b><br />
+	{{AUTHOR_CTITLE}}<br />
+	<em>{{AUTHOR_GROUPNAME}}</em><br />
+	{%if AUTHOR_GROUPLEVEL == 1 %}
+		{{IMG("application/views/ClearBlue2/images/adminstar.gif")|raw}}
+	{%elseif AUTHOR_GROUPLEVEL == 2 %}
+		{{IMG("application/views/ClearBlue2/images/modstar.gif")|raw}}
+	{%elseif AUTHOR_GROUPLEVEL == 3 %}
+		{{IMG("application/views/ClearBlue2/images/fullstar.gif")|raw}}
+	{%endif%}
+	<br /><br />
+
+	{%if AUTHOR_AVATAR == "" %}
+		{{IMG("images/noavatar.gif")|raw}}<br /><br />
+	{%else%}
+		<img src="{{AUTHOR_AVATAR}}" alt="" /><br /><br />
+	{%endif%}
+	{{LANG_POSTCOUNT}}: {{AUTHOR_POSTCOUNT}}<br />
+
+	{# See if user is an admin or moderator. #}
+	{%if groupAccess == 1 or groupAccess == 2 %}
+		{#see if user they wish to warn is higher in rank than them, if so don't let them set anything. #}
+		{%if groupAccess == 2 and AUTHOR_GROUPLEVEL == 1 %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+		{%else%}
+			{# See if user has preoper permissions to do this. #}
+			{% if GAC_WARNINGLEVELS == TRUE %}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{URL_TAG("maintenance/warn/"~TOPIC_AUTHOR, AUTHOR_WARNLEVEL)|raw}}%</div>
+			{%else%}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+			{%endif%}
+		{%endif%}
+	{%else%}
+		{# See if author is logged in user. #}
+		{% if TOPIC_AUTHOR == LOGGEDUSER %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{AUTHOR_WARNLEVEL}}%</div>
+		{%endif%}
+	{%endif%}
+</td>
+<td width="85%" valign="top" class="ui-widget-content">
+<div id="topic">
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, TOPIC_BODY),1))|raw}}
+</div><br />
+
+{# grab a list of attachments, if logged in. #}
+{% if LOGGEDUSER != "guest" and ATTACH_BAR("topic", TOPIC_AUTHOR, TOPICID) != FALSE %}
+<div class="attachheader">{{LANG_ATTACHMENTS}}</div>
+<div class="attachment">
+{% for a in ATTACH_BAR("topic", TOPIC_AUTHOR, TOPICID) %}
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{% endfor %}
+</div>
+{% endif %}
+<br />
+
+_________________<br />
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, AUTHOR_SIG),1))|raw}}</td>
+</tr>
+
+{# Hide user bar if user is guest. #}
+{% if LOGGEDUSER != "guest" %}
+<tr>
+<td colspan="2" align="right" class="ui-widget-content">
+	<button class="juiBtnProfile" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/{{AUTHOR}}');">{{LANG_PROFILE}}</button>
+	<button class="juiBtnPmAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/PM/compose/{{AUTHOR}}');">{{LANG_BTNPMAUTHOR}}</button>
+	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reporttopic/{{TOPICID}}');">{{LANG_BTNREPORTPOST}}</button>
+</td>
+</tr>
+{%endif %}
+</table><br />
+
+{# display a list of replies if present. #}
+{% for r in REPLYDATA %}
+
+<table border="0" class="table" id="post{{r.pid}}" cellspacing="1" cellpadding="1">
+<tr>
+<td colspan="2" class="ui-widget-content">{{LANG_POSTED}}: {{r.Original_Date|PostedDate(TimeFormat, TimeZone)}}
+<span class="postopt">
+&nbsp;
+
+{% if groupAccess == 1 or groupAccess == 2 %}
+
+	{# see if poster is an admin and logged user is not. #}
+	{% if AUTHOR_GROUPLEVEL == 1 and groupAccess == 2 %}
+		{{LANG_IPLOGGED}}&nbsp;
+	{% else %}
+
+		{# IP Visiblity#}
+		{% if GAC_SEEIP == TRUE %}
+			{{LANG_IP}}&nbsp;{{URL_TAG("maintenance/viewip/", r.IP)|raw}}
+		{% else %}
+			{{LANG_IPLOGGED}}&nbsp;
+		{% endif%}
+
+		{% if GAC_EDITTOPICACL == TRUE %}
+			<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/editpost/{{r.pid}}');">{{LANG_BTNEDITPOST}}</button>
+		{% endif%}
+
+		{% if GAC_DELETEACL == TRUE %}
+			<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{LANG_BTNDELETEPOST}}</button>
+		{% endif%}
+
+	{% endif%}
+{% else %}
+
+	{% if LOGGEDUSER == r.author and GAC_EDITTOPIC == TRUE %}
+		<button class="juiBtnEditPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/editpost/{{r.pid}}');">{{LANG_BTNEDITPOST}}</button>
+	{% endif %}
+
+	{% if LOGGEDUSER == r.author and GAC_DELETETOPIC == TRUE %}
+		<button class="juiBtnDeletePost" onclick="confirmDlg('{{LANG_DELPROMPT2}}', '{{BOARD_URL}}index.php/boards/deletepost/{{r.pid}}');return false;">{{LANG_BTNDELETEPOST}}</button>
+	{% endif %}
+
+{% endif%}
+
+{% if LOGGEDUSER != "guest" %}
+	<button class="juiBtnQuoteAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/quote/{{TOPICID}}/{{r.pid}}/2');">{{LANG_BTNQUOTEAUTHOR}}</button>
+{% endif%}
+</span></td>
+</tr><tr>
+<td width="15%" class="ui-widget-header" valign="top">
+    <b>{{r.author}}</b><br />
+	{{r.Custom_Title}}<br />
+	<em>{{r.profile}}</em><br />
+	{%if r.access_level == 1 %}
+		{{IMG("application/views/ClearBlue2/images/adminstar.gif")|raw}}
+	{%elseif r.access_level == 2 %}
+		{{IMG("application/views/ClearBlue2/images/modstar.gif")|raw}}
+	{%elseif r.access_level == 3 %}
+		{{IMG("application/views/ClearBlue2/images/fullstar.gif")|raw}}
+	{%endif%}
+
+	<br /><br />
+	{%if r.Avatar == "" %}
+		{{IMG("images/noavatar.gif")|raw}}<br /><br />
+	{%else%}
+		<img src="{{r.Avatar}}" alt="" /><br /><br />
+	{%endif%}
+	{{LANG_POSTCOUNT}}: {{r.Post_Count}}<br />
+
+	{# See if user is an admin or moderator. #}
+	{%if groupAccess == 1 or groupAccess == 2 %}
+		{#see if user they wish to warn is higher in rank than them, if so don't let them set anything. #}
+		{%if groupAccess == 2 and AUTHOR_GROUPLEVEL == 1 %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{r.warning_level}}%</div>
+		{%else%}
+			{# See if user has preoper permissions to do this. #}
+			{% if GAC_WARNINGLEVELS == TRUE %}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{URL_TAG("maintenance/warn/"~TOPIC_AUTHOR, r.warning_level)|raw}}%</div>
+			{%else%}
+				<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+				<div class="warnlevel">{{r.warning_level}}%</div>
+			{%endif%}
+		{%endif%}
+	{%else%}
+		{# See if author is logged in user. #}
+		{% if r.author == LOGGEDUSER %}
+			<div class="warningheader">{{LANG_WARNLEVEL}}</div>
+			<div class="warnlevel">{{r.warning_level}}%</div>
+		{%endif%}
+	{%endif%}
+</td>
+<td width="85%" valign="top" class="ui-widget-content">
+<div id="edit">
+	{{nl_2_br(Spam_Filter(FormatMsg(r.disable_smiles, BOARDPREF_SMILES, r.disable_bbcode, BOARDPREF_BBCODE, BOARDPREF_IMAGE, r.Body),1))|raw}}
+</div><br />
+
+{# grab a list of attachments #}
+{% if LOGGEDUSER != "guest" and ATTACH_BAR("post", r.author, r.pid) != FALSE %}
+<div class="attachheader">{{LANG_ATTACHMENTS}}</div>
+<div class="attachment">
+{% for a in ATTACH_BAR("topic", r.author, r.pid) %}
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{% endfor %}
+</div>
+{% endif %}
+<br />
+_________________<br />
+{{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, r.Sig),1))|raw}}</td>
+</tr>
+{# Hide user bar if user is guest. #}
+{% if LOGGEDUSER != "guest" %}
+<tr>
+<td colspan="2" align="right" class="ui-widget-content">
+	<button class="juiBtnProfile" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/{{r.author}}');">{{LANG_PROFILE}}</button>
+	<button class="juiBtnPmAuthor" onclick="gotoUrl('{{BOARD_URL}}index.php/users/#/PM/compose/{{r.author}}');">{{LANG_BTNPMAUTHOR}}</button>
+	<button class="juiBtnReportPost" onclick="gotoUrl('{{BOARD_URL}}index.php/boards/reporttopic/{{r.tid}}');">{{LANG_BTNREPORTPOST}}</button>
+</td>
+</tr>
+{% endif %}
+</table><br />
+
+{% endfor %}
+
+{# setup quick reply #}
+{% if LOGGEDUSER != "guest" and CANPOST_REPLY == TRUE %}
+
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="{{BOARD_URL}}js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="{{BOARD_URL}}js/pEditor.js"></script>
+
+<!-- warning container -->
+<div align="center" style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+<div id="moreSmiles"></div>
+<div id="DLG_upload">
+	<!--START upload -->
+	<form action="upload.php" method="post" enctype="multipart/form-data">
+		<input id="attach" name="attachment" type="file" /><br />
+		<input type="submit" value="{LANG-UPLOAD}" id="fileUpload" />
+		<input type="reset" value="{LANG-CLEAR}" id="ClearList" />
+		<input type="button" value="{LANG-VIEWFILES}" id="AttachList" />
+	</form>
+	<div id="filelist"></div>
+
+	<script type="text/javascript">
+		$(function(){
+			$('#attach').jUploader({
+				LoadingGfx: "application/views/ClearBlue2/images/loading.gif",
+				LoadingMsg: lang.attachLoading,
+				PendingMsg: lang.attachPending,
+				SuccessMsg: lang.attachSuccess,
+				FailureMsg: lang.attachFailed,
+				uploadLimitMsg: lang.attachLimit,
+				uploadLimit: "{{ATTACHMENTLIMIT}}",
+				deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
+				confirmDeletMsg: lang.attachDeletePrompt,
+				fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
+			});
+		});
+	</script>
+	<!--END upload -->
+</div>
+
+{{QREPLYFORM|raw}}
+<div align="center">
+	<div id="emoticons" style="width:500px;" align="center">
+		{{SMILES|raw}}
+	</div>
+	<textarea id="replyBody" name="reply_post" cols="80" rows="20"></textarea>
+	<br /><input type="submit" value="{{LANG_REPLY}}" class="submit" />
+
+	<br />
+	<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
+		<div style="text-align:center;">
+			{{LANG_OPTIONS}}<br />
+			<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
+		</div>
+		<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+		<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+		<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
+		<input type="hidden" name="page" value="{{FORM_PAGE}}" />
+	</div>
+</div>
+</form>
+
+{% endif %}
+
+<script type="text/javascript">
+	new FormValidator('frmQReply', [{
+		name: 'replyBody',
+		display: '{{LANG_TOPICBODY}}',
+		rules: 'required|min_length[10]'
+	}], function(errors, event) {
+
+		if (errors.length > 0) {
+			$('#validateRes').empty();
+			$('#validateRes').append(errors.join('<br />'));
+			$('#div_ErrMsg').show();
+		} else {
+			event.returnValue = true; //allow form to process.
+		}
+
+	});
+	
+	$(function() {
+		//"input:submit, a, button", ".demo" 
+		$("#juiBtnReply, .juiBtnQuoteAuthor, .juiBtnPmAuthor").button({
+			icons: {
+                primary: "ui-icon-comment"
+            }
+		});
+		$("#juiBtnPrint").button({
+			icons: {
+                primary: "ui-icon-print"
+            }
+		});
+		$("#juiBtnMoveTopic").button({
+			icons: {
+                primary: "ui-icon-extlink"
+            }
+		});
+		$("#juiBtnDeleteTopic, .juiBtnDeletePost").button({
+			icons: {
+                primary: "ui-icon-trash"
+            }
+		});
+		$("#juiBtnLock").button({
+			icons: {
+                primary: "ui-icon-locked"
+            }
+		});
+		$("#juiBtnUnlock").button({
+			icons: {
+                primary: "ui-icon-unlocked"
+            }
+		});
+		$(".juiBtnEditPost").button({
+			icons: {
+                primary: "ui-icon-pencil"
+            }
+		});
+		$(".juiBtnProfile").button({
+			icons: {
+                primary: "ui-icon-person"
+            }
+		});
+		$(".juiBtnReportPost").button({
+			icons: {
+                primary: "ui-icon-alert"
+            }
+		});		
+		$('#juiBtnLocked').button({
+			disabled: true,
+			icons: {
+                primary: "ui-icon-locked"
+            }
+		});
+	});
+</script>
+{% endblock %}
