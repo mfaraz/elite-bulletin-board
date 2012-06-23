@@ -5,7 +5,6 @@
 {% block bodyRender %}
 
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
-<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
 <!-- markItUp! toolbar settings -->
@@ -88,7 +87,7 @@
 <div id="DLG_upload">
 	{% if ATTACHMENTLIMIT > 0 %}
 	{{UPLOADFORM|raw}}
-		<input id="attach" name="attachment" type="file" /><br />
+		<input id="attach" name="userfile" type="file" /><br />
 		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
 		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
 		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />

@@ -1,12 +1,10 @@
 /**
-Filename: pEditor.js
-Last Modified: 6/9/2011
-
-Term of Use:
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+ * pEditor.js
+ * @package Elite Bulletin Board v3
+ * @author Elite Bulletin Board Team <http://elite-board.us>
+ * @copyright  (c) 2006-2013
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * @version 06/22/2012
 */
 
 $(document).ready(function()	{
@@ -21,7 +19,8 @@ $(document).ready(function()	{
     });
 
 	// And you can add/remove markItUp! whenever you want
-	$('.toggle').live("click", function() {
+	$('.toggle').click(function(e) {
+		e.preventDefault(); //we don't want to leave this page.
 		if ($("#replyBody.markItUpEditor").length === 1) {
  			$("#replyBody").markItUpRemove();
  			$("#emoticons").hide();

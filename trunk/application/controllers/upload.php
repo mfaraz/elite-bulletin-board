@@ -16,12 +16,6 @@ class Upload extends EBB_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		
-		//ensure this is an AJAX call
-		if (IS_AJAX) {
-			exit(show_error($this->lang->line('ajaxerror'), 403, $this->lang->line('error')));
-		}
-		
 		$this->load->helper(array('form', 'url', 'attachment'));
 	}
 

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/20/2012
+ * @version 06/21/2012
 */
 
 /**
@@ -309,7 +309,7 @@ function getSubBoard($boardID) {
  * @param boolean $board_Image Board Settings to Allow Images.
  * @param mixed $body Topic Body to format.
  * @param boolean printable Is this in the print mode?
- * @version 06/20/12
+ * @version 06/21/12
  * @return string
  */
 function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbcode, $board_Image, $body, $printable=false) {
@@ -337,7 +337,9 @@ function FormatTopicBody($topic_smiles, $board_smiles, $topic_bbcode, $board_bbc
 
 		#see if board allows use of [img] tag.
 		if ($board_Image == 1){
-			$topicBody = BBCode($topicBody, true);
+			if (!$printable) {
+				$topicBody = BBCode($topicBody, true);
+			}
 		}
 	}
 

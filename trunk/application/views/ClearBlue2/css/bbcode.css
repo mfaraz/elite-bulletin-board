@@ -356,10 +356,6 @@ limited bbcode for non-topic textareas.
 	background-image:url(../../../views/ClearBlue2/images/clean.png);
 }
 
-.limitedbbcode .spellChk a{
-	background-image:url(../../../views/ClearBlue2/images/spell-check.png);
-}
-
 .limitedbbcode .preview a {
 	background-image:url(../../../views/ClearBlue2/images/preview.png);
 }

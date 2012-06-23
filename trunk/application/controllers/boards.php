@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/20/2012
+ * @version 06/22/2012
 */
 
 /**
@@ -566,6 +566,7 @@ class Boards extends EBB_Controller {
 				'GAC_MOVEACL' => $CanMoveACL,
 				'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
 				'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
+				  'UPLOADFORM' => form_open_multipart('upload/do_upload/'),
 				'SMILES' => form_smiles(),
 				'LANG_REPLY' => $this->lang->line('btnreply'),
 				'LANG_OPTIONS' => $this->lang->line('options'),
@@ -573,7 +574,10 @@ class Boards extends EBB_Controller {
 				'LANG_SMILES' => $this->lang->line('moresmiles'),
 				'LANG_NOTIFY' => $this->lang->line('notify'),
 				'LANG_DISABLESMILES' => $this->lang->line('disablesmiles'),
-				'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode')
+				'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode'),
+				  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
+				  "LANG_CLEAR" => $this->lang->line("clearfile"),
+				  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
 				));
 			} else {
 				show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
@@ -631,8 +635,6 @@ class Boards extends EBB_Controller {
                     'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
                     'TimeFormat' => $this->timeFormat,
                     'TimeZone' => $this->timeZone,
-                    'LOGGEDUSER' => $this->logged_user,
-                    'groupAccess' => $this->groupAccess,
                     'TOPICID' => $id,
                     'DISABLE_SMILES' => $disable_smiles,
                     'BOARDPREF_SMILES' => $boardpref_smiles,
@@ -640,7 +642,6 @@ class Boards extends EBB_Controller {
                     'BOARDPREF_BBCODE' => $boardpref_bbcode,
                     'BOARDPREF_IMAGE' => $boardpref_image,
                     'LANG_VIEWORIGTOPIC' => $this->lang->line('vieworiginal'),
-                    'TOPIC_LOCKED' =>$this->Topicmodel->getLocked(),
                     'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
                     'TOPIC_BODY' => $this->Topicmodel->getBody(),
                     'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
@@ -1451,123 +1452,129 @@ class Boards extends EBB_Controller {
 		$this->load->model('Topicmodel');
 
 		//load topic entity.
-		$this->Topicmodel->GetTopicData($id);
+		$tData = $this->Topicmodel->GetTopicData($id);
 		
-		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->lang->line("reporttomod"), '/boards/reporttopic/'.$id);
-		
-		//setup validation rules.
-        $this->form_validation->set_rules('reason', $this->lang->line('reason'), 'required|xss_clean');
-		$this->form_validation->set_rules('msg', $this->lang->line('message'), 'required|min_length[10]|max_length[255]|xss_clean');
-		$this->form_validation->set_error_delimiters('<div class="ui-widget"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+		if ($tData) {
+			// add breadcrumbs
+			$this->breadcrumb->append_crumb($this->title, '/boards/');
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$this->Topicmodel->getTiD());
+			$this->breadcrumb->append_crumb($this->lang->line("reporttomod"), '/boards/reporttopic/'.$id);
 
-		//see if any validation rules failed.
-		if ($this->form_validation->run() == FALSE) {
-			//render to HTML.
-			echo $this->twig->render($this->style, 'reporttopic', array (
-			  'boardName' => $this->title,
-			  'pageTitle'=> $this->lang->line("reporttomod"),
-			  'BOARD_URL' => $this->boardUrl,
-			  'APP_URL' => $this->boardUrl.APPPATH,
-			  'NOTIFY_TYPE' => $this->notifyType,
-			  'NOTIFY_MSG' =>  $this->notifyMsg,
-			  'LANG' => $this->lng,
-			  'groupAccess' => $this->groupAccess,
-			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
-			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
-			  'LOGGEDUSER' => $this->logged_user,
-			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
-			  'LANG_INFO' => $this->lang->line('info'),
-			  'LANG_LOGIN' => $this->lang->line('login'),
-			  'LANG_LOGOUT' => $this->lang->line('logout'),
-			  'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
-			  'REPORTTOPICFORM' => form_open('boards/reporttopic/'.$id, array('name' => 'frmReportTopics')),
-			  'VALIDATIONSUMMARY' => validation_errors(),
-			  'VALIDATION_USERNAME' => form_error('username'),
-			  'VALIDATION_PASSWORD' => form_error('password'),
-			  'LANG_USERNAME' => $this->lang->line('username'),
-			  'LANG_REGISTER' => $this->lang->line('register'),
-			  'LANG_PASSWORD' => $this->lang->line('pass'),
-			  'LANG_FORGOT' => $this->lang->line('forgot'),
-			  'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
-			  'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
-			  'LANG_SEARCH' => $this->lang->line('search'),
-			  'LANG_CP' => $this->lang->line('admincp'),
-			  'LANG_NEWPOSTS' => $this->lang->line('newposts'),
-			  'LANG_HOME' => $this->lang->line('home'),
-			  'LANG_HELP' => $this->lang->line('help'),
-			  'LANG_MEMBERLIST' => $this->lang->line('members'),
-			  'LANG_PROFILE' => $this->lang->line('profile'),
-			  'LANG_POWERED' => $this->lang->line('poweredby'),
-			  'LANG_POSTEDBY' => $this->lang->line('Postedby'),
-			  'BREADCRUMB' =>$this->breadcrumb->output(),
-			  'LANG_TEXT' => $this->lang->line('topicreporttxt'),
-			  'LANG_REPORTEDBY' => $this->lang->line('Reportedby'),
-			  'LANG_REASON' => $this->lang->line('reason'),
-			  'LANG_SPAMPOST' => $this->lang->line('spampost'),
-			  'LANG_FIGHTPOST' => $this->lang->line('fightpost'),
-			  'LANG_ADVERT' => $this->lang->line('advert'),
-			  'LANG_USERPROBLEMS' => $this->lang->line('userproblems'),
-			  'LANG_OTHER' => $this->lang->line('other'),
-			  'LANG_MESSAGE' => $this->lang->line('message'),
-			  'LANG_SUBMITREPORT' => $this->lang->line('submitreport')
-			));
-		} else {
-			//new topic notification.
-			$this->db->select('u.Email, u.Language')
-			  ->from('ebb_users u')
-			  ->join('ebb_groups g', 'u.gid=g.id', 'LEFT')
-			  ->where('g.Level', 1)
-			  ->or_where('g.Level', 2);
-			$notificationQ = $this->db->get();
-			
-			//see if we have any subscribers.
-			if($notificationQ->num_rows() > 0) {
-				#email user.
-				$config = array();
-				if ($this->preference->getPreferenceValue("mail_type") == 2) {
-					$config['protocol'] = 'sendmail';
-					$config['mailpath'] = $this->preference->getPreferenceValue("sendmail_path");
-					$this->email->initialize($config);
-				} elseif ($this->preference->getPreferenceValue("mail_type") == 0) {
-					$config['protocol'] = 'smtp';
-					$config['smtp_host'] = $this->preference->getPreferenceValue("smtp_host");
-					$config['smtp_user'] = $this->preference->getPreferenceValue("smtp_user");
-					$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
-					$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
-					$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
-					$this->email->initialize($config);
+			//setup validation rules.
+			$this->form_validation->set_rules('reason', $this->lang->line('reason'), 'required|xss_clean');
+			$this->form_validation->set_rules('msg', $this->lang->line('message'), 'required|min_length[10]|max_length[255]|xss_clean');
+			$this->form_validation->set_error_delimiters('<div class="ui-widget"><div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;"><p id="validateResSvr">', '</p></div></div>');
+
+			//see if any validation rules failed.
+			if ($this->form_validation->run() == FALSE) {
+				//render to HTML.
+				echo $this->twig->render($this->style, 'reporttopic', array (
+				'boardName' => $this->title,
+				'pageTitle'=> $this->lang->line("reporttomod"),
+				'BOARD_URL' => $this->boardUrl,
+				'APP_URL' => $this->boardUrl.APPPATH,
+				'NOTIFY_TYPE' => $this->notifyType,
+				'NOTIFY_MSG' =>  $this->notifyMsg,
+				'LANG' => $this->lng,
+				'groupAccess' => $this->groupAccess,
+				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
+				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
+				'LOGGEDUSER' => $this->logged_user,
+				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
+				'LANG_INFO' => $this->lang->line('info'),
+				'LANG_LOGIN' => $this->lang->line('login'),
+				'LANG_LOGOUT' => $this->lang->line('logout'),
+				'LOGINFORM' => form_open('login/LogIn', array('name' => 'frmQLogin')),
+				'REPORTTOPICFORM' => form_open('boards/reporttopic/'.$id, array('name' => 'frmReportTopics')),
+				'VALIDATIONSUMMARY' => validation_errors(),
+				'VALIDATION_USERNAME' => form_error('username'),
+				'VALIDATION_PASSWORD' => form_error('password'),
+				'LANG_USERNAME' => $this->lang->line('username'),
+				'LANG_REGISTER' => $this->lang->line('register'),
+				'LANG_PASSWORD' => $this->lang->line('pass'),
+				'LANG_FORGOT' => $this->lang->line('forgot'),
+				'LANG_REMEMBERTXT' => $this->lang->line('remembertxt'),
+				'LANG_QUICKSEARCH' => $this->lang->line('quicksearch'),
+				'LANG_SEARCH' => $this->lang->line('search'),
+				'LANG_CP' => $this->lang->line('admincp'),
+				'LANG_NEWPOSTS' => $this->lang->line('newposts'),
+				'LANG_HOME' => $this->lang->line('home'),
+				'LANG_HELP' => $this->lang->line('help'),
+				'LANG_MEMBERLIST' => $this->lang->line('members'),
+				'LANG_PROFILE' => $this->lang->line('profile'),
+				'LANG_POWERED' => $this->lang->line('poweredby'),
+				'LANG_POSTEDBY' => $this->lang->line('Postedby'),
+				'BREADCRUMB' =>$this->breadcrumb->output(),
+				'LANG_TEXT' => $this->lang->line('topicreporttxt'),
+				'LANG_REPORTEDBY' => $this->lang->line('Reportedby'),
+				'LANG_REASON' => $this->lang->line('reason'),
+				'LANG_SPAMPOST' => $this->lang->line('spampost'),
+				'LANG_FIGHTPOST' => $this->lang->line('fightpost'),
+				'LANG_ADVERT' => $this->lang->line('advert'),
+				'LANG_USERPROBLEMS' => $this->lang->line('userproblems'),
+				'LANG_OTHER' => $this->lang->line('other'),
+				'LANG_MESSAGE' => $this->lang->line('message'),
+				'LANG_SUBMITREPORT' => $this->lang->line('submitreport')
+				));
+			} else {
+				//new topic notification.
+				$this->db->select('u.Email, u.Language')
+				->from('ebb_users u')
+				->join('ebb_groups g', 'u.gid=g.id', 'LEFT')
+				->where('g.Level', 1)
+				->or_where('g.Level', 2);
+				$notificationQ = $this->db->get();
+
+				//see if we have any subscribers.
+				if($notificationQ->num_rows() > 0) {
+					#email user.
+					$config = array();
+					if ($this->preference->getPreferenceValue("mail_type") == 2) {
+						$config['protocol'] = 'sendmail';
+						$config['mailpath'] = $this->preference->getPreferenceValue("sendmail_path");
+						$this->email->initialize($config);
+					} elseif ($this->preference->getPreferenceValue("mail_type") == 0) {
+						$config['protocol'] = 'smtp';
+						$config['smtp_host'] = $this->preference->getPreferenceValue("smtp_host");
+						$config['smtp_user'] = $this->preference->getPreferenceValue("smtp_user");
+						$config['smtp_pass'] = $this->preference->getPreferenceValue("smtp_pwd");
+						$config['smtp_port'] = $this->preference->getPreferenceValue("smtp_port");
+						$config['smtp_timeout'] = $this->preference->getPreferenceValue("smtp_timeout");
+						$this->email->initialize($config);
+					}
+
+					//loop through data and bind to an array.
+					foreach ($notificationQ->result() as $notify) {
+						$this->email->clear(); //reset email setting
+
+						//send out email.        	
+						$this->email->to($notify->Email);
+						$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
+						$this->email->subject($this->lang->line('reportsubject'));
+						$this->email->message($this->twig->renderNoStyle('/emails/'.$notify->Language.'/eml_report_topic.twig', array(
+						'REPORTED_BY' => $this->logged_user,
+						'REASON' => $this->input->post('reason', TRUE),
+						'MSG' => $this->input->post('msg', TRUE),
+						'BOARDADDR' => $this->boardUrl,
+						'TID' => $id
+						)));
+
+						//send out email.
+						$this->email->send();
+					}
 				}
 
-				//loop through data and bind to an array.
-				foreach ($notificationQ->result() as $notify) {
-					$this->email->clear(); //reset email setting
-					
-					//send out email.        	
-					$this->email->to($notify->Email);
-					$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
-					$this->email->subject($this->lang->line('reportsubject'));
-					$this->email->message($this->twig->renderNoStyle('/emails/'.$notify->Language.'/eml_report_topic.twig', array(
-					  'REPORTED_BY' => $this->logged_user,
-					  'REASON' => $this->input->post('reason', TRUE),
-					  'MSG' => $this->input->post('msg', TRUE),
-					  'BOARDADDR' => $this->boardUrl,
-					  'TID' => $id
-					  )));
+				//show success message.
+				$this->notifications('success', $this->lang->line('reportsent'));
 
-					//send out email.
-					$this->email->send();
-				}
+				//direct user to topic.
+				redirect('/boards/viewtopic/'.$id, 'location');
+
 			}
-			
-			//show success message.
-			$this->notifications('success', $this->lang->line('reportsent'));
-			
-			//direct user to topic.
-			redirect('/boards/viewtopic/'.$id, 'location');
-			
+		} else {
+			show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 		}
+		
 	}
 	
 	/**
@@ -1889,7 +1896,7 @@ class Boards extends EBB_Controller {
 			//render to HTML.
 			echo $this->twig->render($this->style, 'edit_post', array (
 			  'boardName' => $this->title,
-			  'pageTitle'=> $this->lang->line("edittopic"),
+			  'pageTitle'=> $this->lang->line("editpost"),
 			  'BOARD_URL' => $this->boardUrl,
 			  'APP_URL' => $this->boardUrl.APPPATH,
 			  'NOTIFY_TYPE' => $this->notifyType,

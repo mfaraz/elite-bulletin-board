@@ -5,7 +5,6 @@
 {% block bodyRender %}
 
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
-<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
 <!-- markItUp! toolbar settings -->
@@ -20,8 +19,8 @@
 {{VALIDATIONSUMMARY|raw}}<br />
 
 <!-- validation box. -->
-<div align="center" style="display:none;" id="div_ErrMsg">
-	<div class="ui-widget" style="width: 45%;">
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerContainer" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p id="validateRes"></p>
@@ -31,11 +30,11 @@
 
 <table border="0" class="table" cellpadding="1" cellspacing="1">
 <tr>
-	<td class="ui-widget-header" align="center">
+	<td class="ui-widget-header centerText">
 		{{LANG_POSTINGRULES}}
 	</td>
 </tr><tr>
-	<td class="ui-widget-content" align="center">
+	<td class="ui-widget-content centerText">
 		{{LANG_ALLOWSMILES}}: 
 		{% if ALLOWSMILES == 1 %}
 		<strong>{{LANG_YES}}</strong>
@@ -61,8 +60,8 @@
 </table><br />
 
 <!-- warning container -->
-<div align="center" style="display:none;" id="div_ErrMsg">
-	<div class="ui-widget" style="width: 45%;">
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerText" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
@@ -75,7 +74,7 @@
 <div id="DLG_upload">
 	{% if ATTACHMENTLIMIT > 0 %}
 	{{UPLOADFORM|raw}}
-		<input id="attach" name="attachment" type="file" /><br />
+		<input id="attach" name="userfile" type="file" /><br />
 		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
 		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
 		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
@@ -85,7 +84,7 @@
 	<script type="text/javascript">
 		$(function(){
 			$('#attach').jUploader({
-				LoadingGfx: "application/views/ClearBlue2/images/loading.gif",
+				LoadingGfx: "{{BOARD_URL}}application/views/ClearBlue2/images/loading.gif",
 				LoadingMsg: lang.attachLoading,
 				PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess,
@@ -106,21 +105,21 @@
 {% else %}
 {{NEWTOPICFORM|raw}}
 {% endif %}
-<div align="center">
-
-<div id="emoticons" class="ui-widget-content ui-corner-all" style="width:500px;" align="center">
+<div id="emoticons" class="ui-widget-content ui-corner-all centerContainer centerText" style="width:500px;">
 	{{SMILES|raw}}
 	<hr />
 	<a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
 </div><br />
-<div class="ui-widget-content ui-corner-all" style="width:400px;text-align:left;padding: 0 .7em;">
+<div class="ui-widget-content ui-corner-all centerContainer" style="width:400px;text-align:left;padding: 0 .7em;">
 {{LANG_TOPIC}}:<br /><input type="text" name="topic" class="text" size="30" id="topic" value="{{TOPIC}}" />
 </div>
-<textarea id="body" name="post" cols="80" rows="20">{{POSTTOPIC}}</textarea>
-<br /><input type="submit" value="{{LANG_EDITTOPIC}}" class="submit" />
+<div align="center">
+	<textarea id="body" name="post" cols="80" rows="20">{{POSTTOPIC}}</textarea>
+	<br /><input type="submit" value="{{LANG_EDITTOPIC}}" class="submit" />
+</div>
 <br />
-<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
-	<div style="text-align:center;">
+<div class="ui-widget-content ui-corner-all centerContainer" style="text-align:left;width:450px; padding: 0 .7em;">
+	<div class="centerText">
 		<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a>
 	</div>
 	{% if GAC_IMPORTANT == TRUE %}
@@ -147,7 +146,6 @@
 	{% endif %}
 </div>
 </form><br />
-</div>
 <script type="text/javascript">
 $('#topic').focus();
 

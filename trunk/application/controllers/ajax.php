@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/20/2012
+ * @version 06/22/2012
 */
 
 /**
@@ -33,7 +33,6 @@ class Ajax extends EBB_Controller {
 
 	/**
 	 * search for similar topics
-	 * @version 05/30/12
 	 * @example index.php/ajax/SimilarTopics
 	*/
 	public function SimilarTopics() {
@@ -85,6 +84,56 @@ class Ajax extends EBB_Controller {
 				} //END results.
 			} //END query keyword check.
 		} //END flood check.
+	}
+	
+	/**
+	 * search for topics/posts.
+	 * @example index.php/ajax/LiveSearch
+	*/
+	public function LiveSearch() {
+		
+	}
+	
+	/**
+	 * preview topic/post.
+	 * @example index.php/ajax/PreviewTopic
+	*/
+	public function PreviewTopic() {
+		//get our variable needed to grab the data from our editor.
+		$previewPost = $this->input->post('data', TRUE);
+
+		//see if the user added anytihng to preview.
+		if($previewPost == ""){
+			exit($this->lang->line('notopicbody'));
+		}else{
+			#format string.
+			$formatMsg = nl2br(smiles(BBCode(language_filter($previewPost, 1), true)));
+
+			#output formatted data.
+			echo $formatMsg;
+		}
+	}
+	
+	/**
+	 * perform check on settings.
+	 * @example index.php/ajax/PrefCheck/action
+	*/	
+	public function PrefCheck($action) {
+
+		switch($action) {
+			case 'attachment':
+				#see if user can add an attachment.
+				if(!$this->Groupmodel->validateAccess(1, 26)){
+					die('Attachments hsa been disabled by the site administrator.');
+				}else{
+					echo 'OK';
+				}
+			break;
+			default:
+				die($this->lang->line('invalidaction'));
+			break;
+
+		}
 	}
 	
 }

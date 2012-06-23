@@ -68,7 +68,6 @@ myBbcodeSettings = {
       {name:'Attachments', className:"attach", openWith:function(markItUp) { validateUploadAPI(); } },
       {separator:'---------------' },
       {name:'Clean', className:"clean", replaceWith:function(h) { return h.selection.replace(/\[(.*?)\]/g, "") } },
-      {name:'Spell Check', className:"spellChk", openWith:function(markItUp) { validateSpellAPI(markItUp); } },
       {name:'Preview', className:"preview", call:'preview' }
    ]
 }
@@ -135,7 +134,6 @@ limitedBbcodeSettings = {
 	  {name:'You Tube', openWith:'[youtube][![Video Code]!]', closeWith:'[/youtube]'},
       {separator:'---------------' },
       {name:'Clean', className:"clean", replaceWith:function(h) { return h.selection.replace(/\[(.*?)\]/g, "") } },
-      {name:'Spell Check', className:"spellChk", openWith:function(markItUp) { validateSpellAPI(markItUp); } },
       {name:'Preview', className:"preview", call:'preview' }
    ]
 }

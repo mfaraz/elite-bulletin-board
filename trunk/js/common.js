@@ -2,9 +2,9 @@
  * common.js
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2012
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/03/2012
+ * @version 06/22/2012
 */
 
 /**
@@ -37,20 +37,6 @@ function loadIframe(ele, src){
 }
 
 $(document).ready(function(){
-
-	//See if the Firebug Extension is used by an user visiting the site.
-	//if so, let them know it should be turned off.
-	if($.browser.mozilla){
-		if (window.console && window.console.firebug) {
-			/* firebug found! */
-			$('#fbWarn').show();
-			$('#fbWarnInfo').html(lang.fbWarning);
-		} else {
-			$("#fbWarn").hide();
-		}
-	} else {
-		$("#fbWarn").hide();
-	}
 
 	//small loader
 	$("#smloading").ajaxStart(function(){

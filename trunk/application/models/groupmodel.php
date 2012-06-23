@@ -267,7 +267,6 @@ class Groupmodel extends CI_Model {
 							return FALSE;
 						}	
 					} else {
-						//show_error($this->lang->line('invaliduser').'-'.$permissionAction.'-'.$this->gid.'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
 						return FALSE;
 					}
                 }
