@@ -7,8 +7,8 @@
 {{BREADCRUMB|raw}}<br />
 
 <!-- validation box. -->
-<div align="center" style="display:none;" id="div_ErrMsgLogin">
-	<div class="ui-widget" style="width: 45%;">
+<div style="display:none;" id="div_ErrMsgLogin">
+	<div class="ui-widget centerContainer" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsgLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p id="validateLogin"></p>
@@ -19,7 +19,7 @@
 {{LOGINFORM_FULL|raw}}
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
-<td colspan="2" class="ui-widget-header" align="center">::{{LANG_LOGIN}}::</td>
+<td colspan="2" class="ui-widget-header centerText">::{{LANG_LOGIN}}::</td>
 </tr><tr>
 <td class="ui-widget-content" width="50%">{{LANG_USERNAME}} [{{URL_TAG("login/register", LANG_REGISTER)|raw}}]</td>
 <td class="ui-widget-content" width="50%"><input type="text" name="username" class="text" size="30" tabindex="1" id="usr" />
@@ -34,7 +34,7 @@
 <td class="ui-widget-content" width="50%">&nbsp;</td>
 <td class="ui-widget-content" width="50%"><input type="checkbox" name="auto_login" value="1" />{{LANG_REMEMBERTXT}}</td>
 </tr><tr>
-<td colspan="2" class="ui-widget-header" align="center"><input type="submit" value="{{LANG_LOGIN}}" class="submit" /></td>
+<td colspan="2" class="ui-widget-header centerText"><input type="submit" value="{{LANG_LOGIN}}" class="submit" /></td>
 </tr>
 </table>
 </form>

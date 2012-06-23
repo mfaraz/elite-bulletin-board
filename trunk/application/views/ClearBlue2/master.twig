@@ -35,6 +35,10 @@
 <!-- validation js -->
 <script type="text/javascript" src="{{BOARD_URL}}js/validate.min.js"></script>
 
+<script type="text/javascript">
+	var boardUrl = '{{BOARD_URL}}';
+</script>
+
 <!-- /JAVASCRIPT FILES -->
 </head>
 <body>
@@ -62,26 +66,6 @@
 	<div id="confirmMsg"></div>
 </div>
 
-
-<!-- Used to warn about Firebug use -->
-<div class="ui-widget" id="fbWarn" style="display:none;">
-	<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
-		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-		<span id="fbWarnInfo"></span>
-		<span style="float: right;"><strong><a href="#close" onclick="$('#fbWarn').hide('blind', {}, 500);">X</a></strong></span></p>
-	</div>
-</div>
-		
-<!-- Code for help panel -->
-<div id="help" style="display:none">
-<!-- help content -->
-<p style="font-weight: bold;">{{LANG-HELP-TITLE}}</p>
-<p>{{LANG-HELP-BODY}}</p>
-<!-- End content -->
-</div>
-
-
-<!-- End code for help panel -->
 <div class="container">
 
 {# toggle login panel based on rank. #}
@@ -115,7 +99,7 @@
 	<!-- Login Modal -->
 	<div id="login" style="display:none" title="{{LANG_LOGIN}}">
 		<!-- validation box. -->
-		<div align="center" style="display:none;" id="div_ErrMsg_QLogin">
+		<div class="centerContainer" style="display:none;" id="div_ErrMsg_QLogin">
 			<div class="ui-widget">
 				<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 					<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg_QLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
@@ -123,7 +107,6 @@
 				</div>
 			</div>
 		</div>
-
 
 		{{LOGINFORM|raw}}
 
@@ -175,19 +158,19 @@
 
 <table border="0" class="table" cellspacing="1" cellpadding="3">
 <tr>
-<td class="ui-widget-header" valign="top">{{IMG("application/views/ClearBlue2/images/logo.gif")|raw}}</td>
+	<td class="ui-widget-header" valign="top">{{IMG("application/views/ClearBlue2/images/logo.gif")|raw}}</td>
 </tr><tr>
 
 {# setup menu by group policy. #}
 {% if groupAccess == 1 %}
 	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("login/LogOut/", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="acp/index.php">{{LANG_CP}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
 	</tr><tr>
-		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - <a href="#" onclick="$('#help').dialog('open');">{{LANG_HELP}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
+		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
 	</tr><tr>
 {%- elseif groupAccess == 2 or groupAccess == 3 -%}
 	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("login/LogOut/", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
 	</tr><tr>
-		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - <a href="#" onclick="$('#help').dialog('open');">{{LANG_HELP}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
+		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
 	</tr><tr>
 {%- else -%}
 	<td class="ui-widget-content">{{LANG_WELCOMEGUEST}}! <a href="#" onclick="$('#login').dialog('open');">{{LANG_LOGIN}}</a> | {{URL_TAG("login/register/", LANG_REGISTER)|raw}}</td>
@@ -198,7 +181,7 @@
 {% block bodyRender %}{% endblock %}
 </td>
 </tr><tr>
-<td align="center" width="100%" class=" ui-corner-left ui-corner-right ui-widget-content">{{LANG_POWERED}}: <a href="http://elite-board.us/" target="_blank">Elite Bulletin Board</a> &#169; 2006-2013</td>
+	<td width="100%" class=" ui-corner-left ui-corner-right ui-widget-content centerText">{{LANG_POWERED}}: <a href="http://elite-board.us/" target="_blank">Elite Bulletin Board</a> &#169; 2006-2013</td>
 </tr>
 </table>
 <span style="float:right;">{{IMG("application/views/ClearBlue2/images/fuelbyci.png")|raw}}</span>

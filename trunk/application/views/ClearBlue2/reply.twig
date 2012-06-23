@@ -5,7 +5,6 @@
 {% block bodyRender %}
 
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
-<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
 <!-- markItUp! toolbar settings -->
@@ -75,7 +74,7 @@
 <div id="DLG_upload">
 	{% if ATTACHMENTLIMIT > 0 %}
 	{{UPLOADFORM|raw}}
-		<input id="attach" name="attachment" type="file" /><br />
+		<input id="attach" name="userfile" type="file" /><br />
 		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
 		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
 		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
@@ -85,7 +84,7 @@
 	<script type="text/javascript">
 		$(function(){
 			$('#attach').jUploader({
-				LoadingGfx: "application/views/ClearBlue2/images/loading.gif",
+				LoadingGfx: "{{BOARD_URL}}application/views/ClearBlue2/images/loading.gif",
 				LoadingMsg: lang.attachLoading,
 				PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess,
@@ -127,9 +126,9 @@
 
 <div class="ui-widget-content" id="replyoverview">
 	<div style="text-align:center;">
-		<strong>{{LANG_TOPICREVIEW}}</strong>&nbsp;&bull;&nbsp;[<a href="#replyoverview" onClick="loadIframe('topicreview', 'index.php/boards/topicreview/{{TID}}');"><img src="application/views/ClearBlue2/images/reload.png" alt="{{LANG_RELOAD}}" /></a>]
+		<strong>{{LANG_TOPICREVIEW}}</strong>&nbsp;&bull;&nbsp;[<a href="#replyoverview" onClick="loadIframe('topicreview', 'index.php/boards/printable/{{TID}}');"><img src="application/views/ClearBlue2/images/reload.png" alt="{{LANG_RELOAD}}" /></a>]
 	</div>
-	<iframe src="index.php/boards/topicreview/{{TID}}" width="100%" id="topicreview" style="border:0px;"></iframe>
+	<iframe src="index.php/boards/printable/{{TID}}" width="100%" id="topicreview" style="border:0px;"></iframe>
 </div>
 
 <script type="text/javascript">

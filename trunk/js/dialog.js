@@ -4,22 +4,9 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2012
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/03/2012
+ * @version 06/22/2012
 */
 $(document).ready(function(){
-	//help dialog.
-	$('#help').dialog({
-		autoOpen: false,
-		modal: true,
-		show: 'fade',
-		closeOnEscape: true,
-		height: "auto",
-		width: 550,
-		resizable: false,
-		draggable: false,
-		title: lang.dlgHelp
-	});
-
 	//login box.
 	$('#login').dialog({
 		autoOpen: false,
@@ -38,6 +25,7 @@ $(document).ready(function(){
 			//clear form.
 			$("#user").val("");
 			$("#pass").val("");
+			$('#div_ErrMsg_QLogin').hide();
 		}
 	});
 

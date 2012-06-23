@@ -18,7 +18,7 @@ $(function(){
 	<tr>
 		<th class="ui-widget-header">::{{LANG_TICKER}}::</th>
 	</tr><tr>
-		<td class="ui-widget-content" align="center">
+		<td class="ui-widget-content centerText">
 		{{ANNOUNCEMENT|raw}}
 		</td>
 	</tr>
@@ -29,7 +29,7 @@ $(function(){
 {% for c in Category %}
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
-	<td colspan="7" class="ui-widget-header" align="center"><b>::{{c.Board}}::</b></td>
+	<td colspan="7" class="ui-widget-header centerText"><b>::{{c.Board}}::</b></td>
 </tr><tr class="ui-widget-content">
 	<th width="4%">&nbsp;</th><th width="56%">{{LANG_BOARD}}</th><th width="10%">{{LANG_TOPIC}}</th><th width="10%">{{LANG_POST}}</th><th width="20%">{{LANG_LASTPOSTDATE}}</th>
 </tr>
@@ -37,10 +37,10 @@ $(function(){
     	{# make sure we get the correct data in the right spots. #}
         {% if c.id == b.Category %}
 			<tr>
-			<td class="ui-widget-content" align="center">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("application/views/ClearBlue2/images/old.gif")|raw : IMG("application/views/ClearBlue2/images/new.gif")|raw }}</td>
+			<td class="ui-widget-content centerText">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("application/views/ClearBlue2/images/old.gif")|raw : IMG("application/views/ClearBlue2/images/new.gif")|raw }}</td>
 			<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/ClearBlue2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
-			<td class="ui-widget-header" align="center">{{b.id|counter("TopicCount")}}</td>
-			<td class="ui-widget-header" align="center">{{b.id|counter("PostCount")}}</td>
+			<td class="ui-widget-header centerText">{{b.id|counter("TopicCount")}}</td>
+			<td class="ui-widget-header centerText">{{b.id|counter("PostCount")}}</td>
 			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
 			</tr>
 		{%- endif -%}

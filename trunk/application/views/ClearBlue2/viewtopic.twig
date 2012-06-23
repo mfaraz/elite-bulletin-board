@@ -335,7 +335,6 @@ _________________<br />
 {% if LOGGEDUSER != "guest" and CANPOST_REPLY == TRUE %}
 
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
-<script type="text/javascript" src="{{BOARD_URL}}js/jquery.spellchecker.js"></script>
 <!-- markItUp! -->
 <script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
 <!-- markItUp! toolbar settings -->
@@ -346,8 +345,8 @@ _________________<br />
 <script type="text/javascript" src="{{BOARD_URL}}js/pEditor.js"></script>
 
 <!-- warning container -->
-<div align="center" style="display:none;" id="div_ErrMsg">
-	<div class="ui-widget" style="width: 45%;">
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerContainer" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
@@ -358,18 +357,18 @@ _________________<br />
 <div id="moreSmiles"></div>
 <div id="DLG_upload">
 	<!--START upload -->
-	<form action="upload.php" method="post" enctype="multipart/form-data">
-		<input id="attach" name="attachment" type="file" /><br />
-		<input type="submit" value="{LANG-UPLOAD}" id="fileUpload" />
-		<input type="reset" value="{LANG-CLEAR}" id="ClearList" />
-		<input type="button" value="{LANG-VIEWFILES}" id="AttachList" />
+	{{UPLOADFORM|raw}}
+		<input id="attach" name="userfile" type="file" /><br />
+		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
+		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
+		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
 	</form>
 	<div id="filelist"></div>
 
 	<script type="text/javascript">
 		$(function(){
 			$('#attach').jUploader({
-				LoadingGfx: "application/views/ClearBlue2/images/loading.gif",
+				LoadingGfx: "{{BOARD_URL}}application/views/ClearBlue2/images/loading.gif",
 				LoadingMsg: lang.attachLoading,
 				PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess,
@@ -386,24 +385,23 @@ _________________<br />
 </div>
 
 {{QREPLYFORM|raw}}
+<div id="emoticons" style="width:500px;" class="centerContainer">
+	{{SMILES|raw}}
+</div>
 <div align="center">
-	<div id="emoticons" style="width:500px;" align="center">
-		{{SMILES|raw}}
-	</div>
 	<textarea id="replyBody" name="reply_post" cols="80" rows="20"></textarea>
 	<br /><input type="submit" value="{{LANG_REPLY}}" class="submit" />
-
-	<br />
-	<div class="ui-widget-content ui-corner-all" style="text-align:left;width:450px; padding: 0 .7em;">
-		<div style="text-align:center;">
-			{{LANG_OPTIONS}}<br />
-			<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
-		</div>
-		<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
-		<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
-		<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
-		<input type="hidden" name="page" value="{{FORM_PAGE}}" />
+</div>
+<br />
+<div class="ui-widget-content ui-corner-all centerContainer" style="text-align:left;width:450px; padding: 0 .7em;">
+	<div class="centerText">
+		{{LANG_OPTIONS}}<br />
+		<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a> -  <a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
 	</div>
+	<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+	<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
+	<input type="hidden" name="page" value="{{FORM_PAGE}}" />
 </div>
 </form>
 

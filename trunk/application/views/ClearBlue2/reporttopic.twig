@@ -11,8 +11,8 @@
 {{VALIDATIONSUMMARY|raw}}<br />
 
 <!-- validation box. -->
-<div align="center" style="display:none;" id="div_ErrMsg">
-	<div class="ui-widget" style="width: 45%;">
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerContainer" style="width: 45%;">
 		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
 			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
 			<p id="validateRes"></p>
@@ -23,7 +23,7 @@
 {{REPORTTOPICFORM|raw}}
 <table border="0" class="table" cellspacing="1" cellpadding="1">
 <tr>
-	<td colspan="2" align="center" class="ui-widget-header" width="50%">{{pageTitle}}</td>
+	<td colspan="2" class="ui-widget-header centerText" width="50%">{{pageTitle}}</td>
 </tr><tr>
 	<td class="ui-widget-content" width="50%">{{LANG_REPORTEDBY}}</td>
 	<td class="ui-widget-content" width="50%">{{LOGGEDUSER}}</td>
@@ -42,7 +42,7 @@
 	<td class="ui-widget-content" width="50%">{{LANG_MESSAGE}}</td>
 	<td class="ui-widget-content" width="50%"><textarea name="msg" rows="5" cols="80" class="text" id="msg"></textarea></td>
 </tr><tr>
-	<td colspan="2" align="center" class="ui-widget-header"><input type="submit" name="submit" value="{{LANG_SUBMITREPORT}}" class="submit" /></td>
+	<td colspan="2" class="ui-widget-header centerText"><input type="submit" name="submit" value="{{LANG_SUBMITREPORT}}" class="submit" /></td>
 </tr>
 </table>
 </form>
