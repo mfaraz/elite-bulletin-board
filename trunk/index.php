@@ -1,6 +1,5 @@
 <?php
-ob_start();
-session_start();
+
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
@@ -204,5 +203,3 @@ require_once BASEPATH.'core/CodeIgniter.php';
 
 /* End of file index.php */
 /* Location: ./index.php */
-ob_end_flush();
-?>
