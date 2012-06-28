@@ -1,6 +1,7 @@
 <table border="0" class="table" cellspacing="1" cellpadding="1" id="attachment">
 	<tr class="centerText">
-		<td class="ui-widget-header" width="40%">{{LANG_FILENAME}}</td>
+		<td class="ui-widget-header" width="40%">&nbsp;</td>
+		<td class="ui-widget-header" width="40%">{{LANG_FILENAME}}</td>		
 		<td class="ui-widget-header" width="20%">{{LANG_FILESIZE}}</td>
 		<td class="ui-widget-header" width="20%">{{LANG_FILETYPE}}</td>
 	</tr>
@@ -12,6 +13,7 @@
 	{% else %}
 	{% for f in FILES %}
 	<tr>
+		<td><a href="#" class="delete" id="{{f.Filename}}"><img src="{{BOARD_URL}}application/views/ClearBlue2/images/delete.png" /></a></td>
 		<td class="ui-widget-content" width="40%">{{f.Filename}}</td>
 		<td class="ui-widget-content" width="20%">{{Byte2KB(f.File_Size)}} Kb</td>
 		<td class="ui-widget-content" width="20%">{{f.File_Type}}</td>

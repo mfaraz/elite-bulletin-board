@@ -577,12 +577,20 @@ class Boards extends EBB_Controller {
 				'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode'),
 				  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
 				  "LANG_CLEAR" => $this->lang->line("clearfile"),
-				  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+				  "LANG_ADDMOREFILES" => $this->lang->line("addMoreFiles"),
 				));
 			} else {
 				show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 			}
 		}
+		
+	}
+	
+	/**
+	 * download attachment from topic/post.
+	 * @example index.php/boards/download/5
+	*/
+	public function download($id) {
 		
 	}
     

@@ -308,7 +308,7 @@ _________________<br />
 {% if LOGGEDUSER != "guest" and ATTACH_BAR("post", r.author, r.pid) != FALSE %}
 <div class="attachheader">{{LANG_ATTACHMENTS}}</div>
 <div class="attachment">
-{% for a in ATTACH_BAR("topic", r.author, r.pid) %}
+{% for a in ATTACH_BAR("post", r.author, r.pid) %}
 {{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
 {% endfor %}
 </div>
@@ -361,20 +361,28 @@ _________________<br />
 		<input id="attach" name="userfile" type="file" /><br />
 		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
 		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
-		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
+		<input type="button" value="{{LANG_ADDMOREFILES}}" id="addMoreFiles" />
 	</form>
 	<div id="filelist"></div>
 
 	<script type="text/javascript">
 		$(function(){
 			$('#attach').jUploader({
+				lngOk: lang.Ok,
+				lngYes: lang.Yes,
+				lngNo: lang.No,
+				lngError: lang.Error,
+				duplicateTitle: lang.duplicateTitle,
+				duplicateMsg: lang.duplicateMsg,
 				LoadingGfx: "{{BOARD_URL}}application/views/ClearBlue2/images/loading.gif",
 				LoadingMsg: lang.attachLoading,
 				PendingMsg: lang.attachPending,
 				SuccessMsg: lang.attachSuccess,
 				FailureMsg: lang.attachFailed,
+				uploadLimitTitle: lang.attachLimitTitle,
 				uploadLimitMsg: lang.attachLimit,
 				uploadLimit: "{{ATTACHMENTLIMIT}}",
+				confirmDeleteTitle: lang.attachDeleteTitle,
 				deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
 				confirmDeletMsg: lang.attachDeletePrompt,
 				fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
