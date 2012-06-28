@@ -355,7 +355,11 @@ $lang['disablesmiles'] = 'Disable Smiles for this post';
 $lang['attachfile'] = 'File to Upload';
 $lang['uploadfile'] = ' Attach File';
 $lang['clearfile'] = 'Clear List';
+
 $lang['viewfiles'] = 'Manage Uploads';
+
+$lang['addMoreFiles'] = "Add More Files";
+
 $lang['delattach'] = 'Delete File';
 $lang['cantdelete'] = 'File could not be deleted, report this issue to the board admin.';
 $lang['fdeleteok'] = 'deleted successfully.';

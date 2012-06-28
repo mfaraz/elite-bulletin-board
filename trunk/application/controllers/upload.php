@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/03/2012
+ * @version 06/27/2012
 */
 
 /**
@@ -62,21 +62,24 @@ class Upload extends EBB_Controller {
 
 		if (!$this->upload->do_upload()) {
 			echo json_encode(array('status' => 'error', 'msg' => $this->upload->display_errors()));
-		} else { 		
+		} else {
 			$data = $this->upload->data();
+			
 			$fileNameSalt = CreateAttachmentSalt();
 			$encryptedFileName = sha1($data['file_name'].$fileNameSalt); //encrypt the filename to prevent sniffing.
 			
+			rename($data['full_path'], UPLOAD_PATH.$encryptedFileName);
+			
 			//setup attachment in db.
 			$this->Attachmentsmodel->setUserName($this->logged_user);
-			$this->Attachmentsmodel->getTiD(0); //at this stage, this is not important
-			$this->Attachmentsmodel->getPiD(0); //at this stage, this is not important
-			$this->Attachmentsmodel->getFileName($data['file_name']);
-			$this->Attachmentsmodel->getEncryptedFileName($encryptedFileName);
-			$this->Attachmentsmodel->getEncryptionSalt($fileNameSalt);
-			$this->Attachmentsmodel->getFileType($data['file_type']);
-			$this->Attachmentsmodel->getFileSize($data['file_size']);
-			$this->Attachmentsmodel->getDownloadCount(0);
+			$this->Attachmentsmodel->setTiD(0); //at this stage, this is not important
+			$this->Attachmentsmodel->setPiD(0); //at this stage, this is not important
+			$this->Attachmentsmodel->setFileName($data['file_name']);
+			$this->Attachmentsmodel->setEncryptedFileName($encryptedFileName);
+			$this->Attachmentsmodel->setEncryptionSalt($fileNameSalt);
+			$this->Attachmentsmodel->setFileType($data['file_type']);
+			$this->Attachmentsmodel->setFileSize($data['file_size']);
+			$this->Attachmentsmodel->setDownloadCount(0);
 			$this->Attachmentsmodel->CreateAttachment();
 
 			//set the data for the json array

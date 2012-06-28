@@ -4,7 +4,7 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2012
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/03/2012
+ * @version 06/26/2012
 */
 
 var lang = {
@@ -20,17 +20,22 @@ var lang = {
     dlgUploadMgr: "Attachment Manager",
     attachDeleted: "File was deleted successfully.",
 	attachDeletePrompt: "Are you sure you want to delete this file?",
+	attachDeleteTitle: "Delete File?",
     attachSuccess: "File Uploaded.",
     attachFailed: "Upload Failed.",
     attachPending: "Pending&hellip;",
     attachLoading: "Uploading File&hellip;",
     attachLimit: "You have reached your upload limit.",
+	duplicateTitle: "Duplicate Entry",
+	duplicateMsg: "already in pending list.",
+	uploadLimitTitle: "Limit Exceeded",
 	confDel: "Confirm Deletion",
 	genSuccess: "Success!",
 	cfmDel: "Are you sure you wish to delete this?",
 	Yes: "Yes",
 	No: "No",
 	Ok: 'Ok',
+	Error: "Error",
 	archiveConf: 'Archive message, are you sure?',
 	//VALIDATION
 	required: 'The %s field is required.',

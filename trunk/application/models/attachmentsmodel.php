@@ -329,8 +329,13 @@ class Attachmentsmodel extends CI_Model {
 		  'Download_Count' => $this->getDownloadCount()
         );
 
-		#add new user.
-		$this->db->insert('ebb_attachments', $data);
+		try {
+			#add new user.
+			$this->db->insert('ebb_attachments', $data);
+		} catch(Exception $e) {
+			 log_message('debug', $e->getMessage());
+		}
+
 	}
 	
 	/**

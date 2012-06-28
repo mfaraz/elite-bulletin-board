@@ -4,7 +4,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  *  EBB_Controller.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
  * @version 06/17/2012
 */

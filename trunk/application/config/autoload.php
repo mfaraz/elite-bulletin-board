@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('twig', 'database', 'Preference', 'session');
+$autoload['libraries'] = array('twig', 'database', 'Preference', 'session', 'firephp');
 
 
 /*

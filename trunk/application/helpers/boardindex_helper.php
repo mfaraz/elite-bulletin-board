@@ -6,12 +6,12 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/21/2012
+ * @version 06/27/2012
 */
 
 /**
  * Get a total of various things.
- * @version 1/12/12
+ * @version 06/27/12
  * @param int $id any kind of integer.
  * @param string $type The total we're looking for.
  * @access public
@@ -25,22 +25,26 @@ function GetCount($id, $type) {
 	switch($type) {
 		case 'TopicCount':
 			$ci->db->select('tid')->from('ebb_topics')->where('bid', $id);
-			return number_format($ci->db->count_all_results());
+			$topicQ = $ci->db->get();
+			return number_format($topicQ->num_rows());
 		break;
 		case 'PostCount':
 			$ci->db->select('pid')->from('ebb_posts')->where('bid', $id);
-			return number_format($ci->db->count_all_results());
+			$postQ = $ci->db->get();
+			return number_format($postQ->num_rows());
 		break;
 		case 'TopicReplies':
 			$ci->db->select('pid')->from('ebb_posts')->where('tid', $id);
-			return number_format($ci->db->count_all_results());
+			$postQ = $ci->db->get();
+			return number_format($postQ->num_rows());
 		break;
 		case 'TopicViews':
 			return number_format($id);
 		break;
 		case 'PollCount':
 			$ci->db->select('tid')->from('ebb_votes')->where('tid', $id);
-			return number_format($ci->db->count_all_results());
+			$pollQ = $ci->db->get();
+			return number_format($pollQ->num_rows());
 		break;
 		default:
 			return FALSE;//invalid choice.
@@ -53,13 +57,14 @@ function GetCount($id, $type) {
  * @param integer $vote the vote we're calculating.
  * @param integer $tid the topic id tosearch by
  * @return integer
- * @version 1/12/12
+ * @version 06/27/12
  */
 function CalcVotes($vote, $tid) {
 	//grab Codeigniter objects.
 	$ci =& get_instance();
 	$ci->db->select('tid')->from('ebb_votes')->where('Vote', $vote)->where('tid', $tid);
-	return $ci->db->count_all_results();
+	$pollQ = $ci->db->get();
+	return $pollQ->num_rows();
 }
 
 
@@ -68,7 +73,7 @@ function CalcVotes($vote, $tid) {
  * @param string $usr Logged In User
  * @param integer $tid TopicID
  * @return boolean
- * @version 1/12/12
+ * @version 06/27/12
  */
 function CheckVoteStatus($usr, $tid) {
 	
@@ -79,10 +84,10 @@ function CheckVoteStatus($usr, $tid) {
 		//grab Codeigniter objects.
 		$ci =& get_instance();
 		$ci->db->select('tid')->from('ebb_votes')->where('Username', $usr)->where('tid', $tid);
-		$voteCount = $ci->db->count_all_results();
+		$voteQ = $ci->db->get();
 
 		//see if logged in user already voted.
-		if ($voteCount == 1) {
+		if ($voteQ->num_rows() == 1) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -111,9 +116,9 @@ function CheckReadStatus($bid, $user) {
 
 /**
  * Check read status on a selected board.
- * @version 11/22/11
- * @param integer $tid - Topic ID to select a topic.
- * @param string $user - Username to check against.
+ * @version 06/27/12
+ * @param integer $tid Topic ID to select a topic.
+ * @param string $user Username to check against.
  * @return boolean
 *
 */
@@ -128,9 +133,9 @@ function readTopicStat($tid, $user){
 	}else{
 		//see if user visited the topic yet.
 		$ci->db->select('Topic')->from('ebb_read_topic')->where('Topic', $tid)->where('User', $user);
-		$readCt = $ci->db->count_all_results();
+		$readQ = $ci->db->get();
 
-		if ($readCt == 0) {
+		if ($readQ->num_rows() == 0) {
 			$icon = false; //UnRead.
 		} else {
 			$icon = true; //Read.
@@ -145,41 +150,43 @@ function readTopicStat($tid, $user){
  * @param integer $tid TopicID
  * @param integer $pid PostID (0 by default)
  * @return boolean
- * @version 11/12/11
+ * @version 06/27/12
  */
 function HasAttachment($tid) {
 
 	#obtain codeigniter object.
 	$ci =& get_instance();
 
-	#get reply count.
-	//@TODO: this should probably be in a loop.
-	$ci->db->select('pid, tid')->from('ebb_posts')->where('tid', 7);
-	$postQ = $ci->db->get();
-	$postID = $postQ->row();
-	$PostCT = $ci->db->count_all_results();
-
-	if ($PostCT == 0){
-		$attachPost = 0;
-	} else {
-		#see if any attachments are added to the reply of a topic.
-		$ci->db->select('id')->from('ebb_attachments')->where('pid', $postID->pid);
-		$attachPost = $ci->db->count_all_results();
-	}
-
 	//see if topic has attachment.
 	$ci->db->select('id')->from('ebb_attachments')->where('tid', $tid);
-	$attachTopic = $ci->db->count_all_results();
+	$topicQ = $ci->db->get();
 
 	//see if we have any attachments.
-	if($attachTopic == 1) {
+	if($topicQ->num_rows() > 0) {
 		return TRUE;
 	} else {
-		if ($attachPost == 1) {
-			return TRUE;
-		} else {
+		#get reply count.
+		$ci->db->select('pid, tid')->from('ebb_posts')->where('tid', $tid);
+		$postQ = $ci->db->get();
+
+		if ($postQ->num_rows() == 0) {
 			return FALSE;
+		} else {
+			#see if any attachments are added to the reply of a topic.
+			foreach ($postQ->result() as $row) {
+				$ci->db->select('id')->from('ebb_attachments')->where('pid', $row->pid);
+				$attachQ = $ci->db->get();
+
+				if ($attachQ->num_rows() > 0) {
+					$attachPost = TRUE;
+					break;
+				} else {
+					$attachPost = FALSE;
+				}
+			}
 		}
+		
+		return $attachPost;
 	} //END Topic Attachment Check.
 }
 
@@ -187,7 +194,7 @@ function HasAttachment($tid) {
  * Get a count of sub-boards.
  * @param int $boardID
  * @return int
- * @version 11/12/11
+ * @version 06/27/12
  */
 function GetSubBoardCount($boardID) {
 	
@@ -196,13 +203,15 @@ function GetSubBoardCount($boardID) {
 
 	//SQL grabbing count of all topics for this board.
 	$ci->db->select('id')->from('ebb_boards')->where('type', 3)->where('Category', $boardID);
-	return $ci->db->count_all_results();
+	$subBoardQ = $ci->db->get();
+	return $subBoardQ->num_rows();
+	
 }
 
 /**
  * Obtains a few stats about the board.
- * @version 9/28/11
- * @return int  - results of stats.
+ * @version 06/27/12
+ * @return integer|string
 */
 function boardStats($type){
 
@@ -214,17 +223,20 @@ function boardStats($type){
 	    case 'member':
 			#get member count.
 			$ci->db->select('id')->from('ebb_users')->where('active', 1);
-			return number_format($ci->db->count_all_results());
+			$memberQ = $ci->db->get();
+			return number_format($memberQ->num_rows());
 	    break;
 	    case 'topic':
 			#get topic count.
 			$ci->db->select('tid')->from('ebb_topics');
-			return number_format($ci->db->count_all_results());
+			$topicQ = $ci->db->get();
+			return number_format($topicQ->num_rows());
 		break;
 	    case 'post':
 			#get post count.
 			$ci->db->select('pid')->from('ebb_posts');
-			return number_format($ci->db->count_all_results());
+			$postQ = $ci->db->get();
+			return number_format($postQ->num_rows());
 	    break;
 	    case 'newuser':
 			#get newest user.
@@ -241,7 +253,8 @@ function boardStats($type){
 		case 'memberonline':
 			//get total members online.
 			$ci->db->distinct('Username')->from('ebb_online')->where('ip', '');
-			return number_format($ci->db->count_all_results());
+			$memberQ = $ci->db->get();
+			return number_format($memberQ->num_rows());
 		break;
 	    default:
 	        return (0);
@@ -249,19 +262,21 @@ function boardStats($type){
 	}
 }
 
-
 /**
  * Will list all sub-boards linked to a parent board.
- * @version 02/15/12
+ * @version 06/27/12
  * @param int $boardID - Board ID to search for any sub-boards.
- * @access public
+ * @return string
 */
 function getSubBoard($boardID) {
 
 	//grab Codeigniter objects.
 	$ci =& get_instance();
-
-	$subBoardQuery = $ci->db->query("SELECT id, Board FROM ebb_boards WHERE type='3' AND Category=? ORDER BY B_Order", $boardID);
+	
+	//$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
+	
+	$ci->db->select('id, Board')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
+	$subBoardQuery = $ci->db->get();
 	$countSub = $subBoardQuery->num_rows();
 	
 	if($countSub == 0){
@@ -283,17 +298,13 @@ function getSubBoard($boardID) {
 				$marker = '';
 			}
 
-			//TODO: use entity here
-
 			#board rules sql.
-			$boardRule = $ci->db->query("SELECT B_Read FROM ebb_board_access WHERE B_id=?", $row->id);
-			$readAccess = $boardRule->row();
-			
-			#see if user can view the board.
-			if ($ci->Groupmodel->validateAccess(0, $readAccess->B_Read)){
-				$subBoard .= sprintf("<i>%s</i>%s", anchor('boards/viewboard/'.$row->id, $row->Board), $marker);
-			}
+			$ci->Boardaccessmodel->GetBoardAccess($row->id);
 
+			#see if user can view the board.
+			if ($ci->Groupmodel->validateAccess(0, $ci->Boardaccessmodel->getBRead())){
+				$subBoard .= sprintf("<em>%s</em>%s", anchor('boards/viewboard/'.$row->id, $row->Board), $marker);
+			}
 		} #END forloop
 	}
 

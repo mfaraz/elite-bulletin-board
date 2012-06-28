@@ -412,8 +412,8 @@ BBCODE TAG CSS
 */
 
 .quote, .attachment, .styleinstaller, .smileinstaller, .modinstaller{
-	color: #fff;
-	background-color: #4b6c9e;
+	color: #000;
+	background-color: #E9E9E9;
 	border: 1px solid #163061;
 	margin: 1px;
 	padding: 1px;
@@ -423,8 +423,8 @@ BBCODE TAG CSS
 	white-space: nowrap;
 }
 .code{
-	color: #fff;
-	background-color: #4b6c9e;
+	color: #000;
+	background-color: #E9E9E9;
 	font-family: "courier new", monospace;
 	font-size: x-small;
 	line-height: 1.3em;
