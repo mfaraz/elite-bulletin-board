@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Process.php
-Last Modified: 11/11/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -100,12 +100,12 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$displayMsg = new notifySys($lang['nobid'], true);
 	$displayMsg->displayError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 
 #see if post form had a page number listed for refence(reply topics only).
 if(isset($_POST['page'])){
-	$pg = $db->filterMySQL($_POST['page']);
+	$pg = $db->filterMySQL(var_cleanup($_POST['page']));
 }else{
 	$pg = 1; 
 }
@@ -127,7 +127,7 @@ $boardAccess = $db->fetchResults();
 switch ($mode){
 	case 'topic':
 	//check for topic type rules.
-	$postType = $db->filterMySQL($_POST['post_type']);
+	$postType = $db->filterMySQL(var_cleanup($_POST['post_type']));
 		
 	#see if topic includes a poll.
 	$pollTopic = var_cleanup($_GET['polltopic']);
@@ -150,9 +150,9 @@ switch ($mode){
 	//get form values.
 	$topic = $db->filterMySQL(var_cleanup($_POST['topic']));
 	$post = $db->filterMySQL(var_cleanup($_POST['post']));
-	$no_smile = (isset($_POST['no_smile'])) ? $db->filterMySQL($_POST['no_smile']) : 0;
-	$no_bbcode = (isset($_POST['no_bbcode'])) ? $db->filterMySQL($_POST['no_bbcode']) : 0;
-	$subscribe = (isset($_POST['subscribe'])) ? $db->filterMySQL($_POST['subscribe']) : 0;
+	$no_smile = (isset($_POST['no_smile'])) ? 1 : 0;
+	$no_bbcode = (isset($_POST['no_bbcode'])) ? 1 : 0;
+	$subscribe = (isset($_POST['subscribe'])) ? 1 : 0;
 
 	#see if this topic has a poll.
 	if($pollTopic == true){
@@ -259,18 +259,6 @@ switch ($mode){
 			#direct user.
 			redirect('Post.php?mode=topic&bid='.$bid.'&polltopic='.$pollTopic, false, 0);
 		}
-	}
-
-	//set the disable variables to 0 if not selected.
-	if(empty($no_smile)){
-		$no_smile = 0;
-	}else{
-		$no_smile = 1;
-	}
-	if(empty($no_bbcode)){
-		$no_bbcode = 0;
-	}else{
-		$no_bbcode = 1;
 	}
 
 	//do some error checking
@@ -388,7 +376,7 @@ switch ($mode){
 			$displayMsg = new notifySys($lang['notid'], true);
 			$displayMsg->displayError();
 		}else{
-			$tid = $db->filterMySQL($_GET['tid']);
+			$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 		}
 
 		#check permission.
@@ -401,22 +389,10 @@ switch ($mode){
 		}
 
 		//get form values.
-		$no_smile = (isset($_POST['no_smile'])) ? $db->filterMySQL(var_cleanup($_POST['no_smile'])) : 0;
-		$no_bbcode = (isset($_POST['no_bbcode'])) ? $db->filterMySQL(var_cleanup($_POST['no_bbcode'])) : 0;
-		$subscribe = (isset($_POST['subscribe'])) ? var_cleanup($_POST['subscribe']) : 0;
+		$no_smile = (isset($_POST['no_smile'])) ? 1 : 0;
+		$no_bbcode = (isset($_POST['no_bbcode'])) ? 1 : 0;
+		$subscribe = (isset($_POST['subscribe'])) ? 1 : 0;
 		$reply_post = $db->filterMySQL(var_cleanup($_POST['reply_post']));
-
-		//set the disable variables to 0 if not selected.
-		if(empty($no_smile)){
-			$no_smile = 0;
-		}else{
-			$no_smile = 1; 
-		}
-		if(empty($no_bbcode)){
-			$no_bbcode = 0;
-		}else{
-			$no_bbcode = 1; 
-		}
 
 		//error check
 		if (empty($reply_post)){

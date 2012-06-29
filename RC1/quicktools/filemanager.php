@@ -3,7 +3,7 @@ define('IN_EBB', true);
 
 /**
 Filename: filemanager.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ if ($logged_user == "guest"){
     case 'delete':
         #get form values.
     	if(isset($_GET['id'])){
-    		$id = $db->filterMySQL($_GET['id']);
+    		$id = $db->filterMySQL(var_cleanup($_GET['id']));
     	}else{
 			echo $lang['noattachid'];
     	}

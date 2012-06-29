@@ -6,7 +6,7 @@ if (!defined('IN_EBB')) {
 }
 /**
 Filename: header.php
-Last Modified: 7/24/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -52,11 +52,11 @@ $boardPref = new preference();
 if ((isset($_COOKIE['ebbuser']) && ($_COOKIE['ebbpass'])) OR (isset($_SESSION['ebb_user'])) && ($_SESSION['ebb_pass'])){
 	#get username value.
 	if(isset($_SESSION['ebb_user'])){
-		$logged_user = $db->filterMySQL($_SESSION['ebb_user']);
-		$chkpwd = $db->filterMySQL($_SESSION['ebb_pass']);
+		$logged_user = $db->filterMySQL(var_cleanup($_SESSION['ebb_user']));
+		$chkpwd = $db->filterMySQL(var_cleanup($_SESSION['ebb_pass']));
 	}elseif(isset($_COOKIE['ebbuser'])){
-		$logged_user = $db->filterMySQL($_COOKIE['ebbuser']);
-		$chkpwd = $db->filterMySQL($_COOKIE['ebbpass']);
+		$logged_user = $db->filterMySQL(var_cleanup($_COOKIE['ebbuser']));
+		$chkpwd = $db->filterMySQL(var_cleanup($_COOKIE['ebbpass']));
 	}else{
    		$error = new notifySys("INVALID LOGIN METHOD!", true, true, __FILE__, __LINE__);
 		$error->genericError();

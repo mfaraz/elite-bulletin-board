@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: report.php
-Last Modified: 11/11/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@ case 'topic':
 		$displayMsg = new notifySys($lang['notid'], true);
 		$displayMsg->displayError();
 	}else{
-		$tid = $db->filterMySQL($_GET['tid']);
+		$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 	}
 
 	//check to see if topic exists or not and if it doesn't kill the program
@@ -145,7 +145,7 @@ case 'report_topic':
 		$displayMsg = new notifySys($lang['notid'], true);
 		$displayMsg->displayError();
 	}else{
-		$tid = $db->filterMySQL($_GET['tid']);
+		$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 	}
 
 	#load mail language file.
@@ -260,7 +260,7 @@ case 'post':
 		$displayMsg = new notifySys($lang['nopid'], true);
 		$displayMsg->displayError();
 	}else{
-		$pid = $db->filterMySQL($_GET['pid']);
+		$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 	}
 
 	//check to see if topic exists or not and if it doesn't kill the program
@@ -310,7 +310,7 @@ case 'report_post':
 		$displayMsg = new notifySys($lang['nopid'], true);
 		$displayMsg->displayError();
 	}else{
-		$pid = $db->filterMySQL($_GET['pid']);
+		$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 	}
 
 	#load mail language file.

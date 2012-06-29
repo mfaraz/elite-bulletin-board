@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: manage.php
-Last Modified: 7/29/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -160,7 +160,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$displayMsg = new notifySys($lang['nobid'], true);
 	$displayMsg->displayError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 
 #see if Topic ID was declared, if not terminate any further outputting.
@@ -168,13 +168,13 @@ if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$displayMsg = new notifySys($lang['notid'], true);
 	$displayMsg->displayError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 
 if((!isset($_GET['pid'])) or (empty($_GET['pid']))){
 	$pid = '';
 }else{
-	$pid = $db->filterMySQL($_GET['pid']);
+	$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 }
 
 switch ($mode){
@@ -184,7 +184,7 @@ case 'viewip':
 		$displayMsg = new notifySys($lang['noip'], true);
 		$displayMsg->displayError();
 	}else{
-		$ip = $db->filterMySQL($_GET['ip']);
+		$ip = $db->filterMySQL(var_cleanup($_GET['ip']));
 	}
 	
 	#see if a user added the user's name.
@@ -192,7 +192,7 @@ case 'viewip':
 		$displayMsg = new notifySys($lang['nouser'], true);
 		$displayMsg->displayError();
 	}else{
-		$u = $db->filterMySQL($_GET['u']);
+		$u = $db->filterMySQL(var_cleanup($_GET['u']));
 	}
 
 	//get number of users this ip matches.
@@ -225,7 +225,7 @@ case 'dnslookup':
 		$displayMsg = new notifySys($lang['noip'], true);
 		$displayMsg->displayError();
 	}else{
-		$ip = $db->filterMySQL($_GET['ip']);
+		$ip = $db->filterMySQL(var_cleanup($_GET['ip']));
 	}
 
 	#get DNS info.
@@ -247,7 +247,7 @@ case 'warn':
 		$displayMsg = new notifySys($lang['nousernameentered'], true);
 		$displayMsg->displayError();
 	}else{
-		$user = $db->filterMySQL($_GET['user']);
+		$user = $db->filterMySQL(var_cleanup($_GET['user']));
 	}
 
 	#see if username exist on db.
@@ -310,12 +310,12 @@ case 'warn':
 break;
 case 'warn_process':
 	#Form values.
-	$warnopt = $db->filterMySQL($_POST['warnopt']);
-	$reason = $db->filterMySQL($_POST['reason']);
-	$suspend = $db->filterMySQL($_POST['suspend']);
-	$contactopt = $db->filterMySQL($_POST['contactopt']);
-	$body = $db->filterMySQL($_POST['body']);
-	$user = $db->filterMySQL($_POST['user']);
+	$warnopt = $db->filterMySQL(var_cleanup($_POST['warnopt']);
+	$reason = $db->filterMySQL(var_cleanup($_POST['reason']);
+	$suspend = $db->filterMySQL(var_cleanup($_POST['suspend']);
+	$contactopt = $db->filterMySQL(var_cleanup($_POST['contactopt']);
+	$body = $db->filterMySQL(var_cleanup($_POST['body']));
+	$user = $db->filterMySQL(var_cleanup($_POST['user']));
 
 	#time variable for suspension.
 	$time = time();
@@ -612,8 +612,8 @@ case 'move':
 break;
 case 'move_process':
 	//process query
-	$board = $db->filterMySQL($_POST['board']);
-	$tid = $db->filterMySQL($_GET['tid']);
+	$board = $db->filterMySQL(var_cleanup($_POST['board']));
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 
 	#error check.
 	if(empty($board)){

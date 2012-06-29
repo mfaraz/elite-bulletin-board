@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: download.php
-Last Modified: 2/28/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@ include "config.php";
 include FULLPATH."/header.php";
 
 #obtain download ID.
-$id = $db->filterMySQL($_GET['id']);
+$id = $db->filterMySQL(var_cleanup($_GET['id']));
 
 #see if any important ids are left blank.
 if(empty($id)){

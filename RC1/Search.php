@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Search.php
-Last Modified: 7/7/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -94,8 +94,8 @@ if(isset($_GET['action'])){
 switch ($action){
 case 'user_result';
 	//get query text to perform search.
-	$search_type = $db->filterMySQL($_GET['search_type']);
-	$poster = $db->filterMySQL($_GET['poster']);
+	$search_type = $db->filterMySQL(var_cleanup($_GET['search_type']));
+	$poster = $db->filterMySQL(var_cleanup($_GET['poster']));
 
 	//flood check.
 	if (flood_check($logged_user, "search") == 1){
@@ -170,7 +170,7 @@ case 'user_result';
 		if(!isset($_GET['pg'])){
 		    $pg = 1;
 		}else{
-		    $pg = $db->filterMySQL($_GET['pg']);
+		    $pg = $db->filterMySQL(var_cleanup($_GET['pg']));
 		}
 
 		// Figure out the limit for the query based on the current page number.
@@ -199,10 +199,10 @@ case 'user_result';
 break;
 case 'result';
 	//get query text to perform search.
-	$search_type = $db->filterMySQL($_POST['search_type']);
-	$keyword = $db->filterMySQL($_POST['keyword']);
-	$poster = $db->filterMySQL($_POST['poster']);
-	$board = $db->filterMySQL($_POST['board']);
+	$search_type = $db->filterMySQL(var_cleanup($_POST['search_type']));
+	$keyword = $db->filterMySQL(var_cleanup($_POST['keyword']));
+	$poster = $db->filterMySQL(var_cleanup($_POST['poster']));
+	$board = $db->filterMySQL(var_cleanup($_POST['board']));
 
 	//flood check.
 	if (flood_check($logged_user, "search") == 1){
@@ -241,7 +241,7 @@ case 'result';
 		if(!isset($_GET['pg'])){
 		    $pg = 1;
 		}else{
-		    $pg = $db->filterMySQL($_GET['pg']);
+		    $pg = $db->filterMySQL(var_cleanup($_GET['pg']));
 		}
 		// Figure out the limit for the query based on the current page number.
 		$perPg = $boardPref->getPreferenceValue("per_page");
@@ -274,7 +274,7 @@ case 'result';
 		if(!isset($_GET['pg'])){
 		    $pg = 1;
 		}else{
-		    $pg = $db->filterMySQL($_GET['pg']);
+		    $pg = $db->filterMySQL(var_cleanup($_GET['pg']));
 		}
 
 		// Figure out the limit for the query based on the current page number.

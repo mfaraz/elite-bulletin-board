@@ -3,7 +3,7 @@ define('IN_EBB', true);
 
 /**
 Filename: preview.php
-Last Modified: 12/12/2010
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@ if ($logged_user == "guest"){
 	exit($lang['guesterror']);
 }else{
 	//get our variable needed to grab the data from our editor.
-	$previewPost = var_cleanup($_POST['data']);
+	$previewPost = $db->filterMySQL(var_cleanup($_POST['data']));
 
 	//see if the user added anytihng to preview.
 	if($previewPost == ""){

@@ -3,7 +3,7 @@ define('IN_EBB', true);
 
 /**
 Filename: viewgrouproster.php
-Last Modified: 12/12/2010
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ if ($logged_user == "guest"){
 	$displayMsg->genericError();
 }else{
 	#keyword variable.
-	$groupid = $db->filterMySQL($_GET['groupid']);
+	$groupid = $db->filterMySQL(var_cleanup($_GET['groupid']));
 	
 	#see if group ID is valid.
     $db->SQL = "SELECT id FROM ebb_groups WHERE id='$groupid'";

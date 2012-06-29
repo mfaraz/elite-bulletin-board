@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: topicreview.php
-Last Modified: 11/10/2010
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -31,14 +31,14 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$displayMsg = new notifySys($lang['nobid'], true);
 	$displayMsg->displayError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 #see if Topic ID was declared, if not terminate any further outputting.
 if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$displayMsg = new notifySys($lang['notid'], true);
 	$displayMsg->displayError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 #get board stats.
 $db->SQL = "SELECT Smiles, BBcode, Image FROM ebb_boards WHERE id='$bid'";

@@ -6,7 +6,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/29/2011
+ * @version 06/28/2012
 */
 
 #make sure the call is from an AJAX request.
@@ -49,7 +49,7 @@ switch ($action){
 			$displayMsg = new notifySys($lang['nopmid'], true);
 			exit($displayMsg->displayError());
 		}else{
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}
 
 		$pmObj = new PM($id, $logged_user); #setup PM object.
@@ -124,7 +124,7 @@ switch ($action){
 	case 'newMsg':
 		#see if a specific user is defined.
 		if(isset($_GET['user'])){
-			$user = $db->filterMySQL($_GET['user']);
+			$user = $db->filterMySQL(var_cleanup($_GET['user']));
 		}else{
 			$user = '';
 		}
@@ -152,8 +152,8 @@ switch ($action){
 	break;
 	case 'sendPM':
 		//get the values from the form.
-		$send = $db->filterMySQL($_POST['send']);
-		$subject = $db->filterMySQL($_POST['subject']);
+		$send = $db->filterMySQL(var_cleanup($_POST['send']));
+		$subject = $db->filterMySQL(var_cleanup($_POST['subject']));
 		$message = $db->filterMySQL(var_cleanup($_POST['message']));
 		$time = time();
 		$pmObj = new PM(0, $logged_user); #setup PM object.
@@ -289,7 +289,7 @@ switch ($action){
 			$displayMsg = new notifySys($lang['nopmid'], true);
 			exit($displayMsg->displayAjaxError("error"));
 		}else{
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}
 
 		//get data needed for reply.
@@ -319,9 +319,9 @@ switch ($action){
 	break;
 	case 'sendPMReply':
 		//get the values from the form.
-		$send = $db->filterMySQL($_POST['send']);
-		$subject = $db->filterMySQL($_POST['subject']);
-		$message = $db->filterMySQL(var_cleanup($_POST['message']));
+		$send = $db->filterMySQL(var_cleanup($_POST['send']));
+		$subject = $db->filterMySQL(var_cleanup($_POST['subject']));
+		$message = $db->filterMySQL(var_cleanup($_POST['message'])));
 		$time = time();
 		$pmObj = new PM(0, $logged_user); #setup PM object.
 
@@ -456,7 +456,7 @@ switch ($action){
 			$displayMsg = new notifySys($lang['nopmid'], true);
 			exit($displayMsg->displayAjaxError("warning"));
 		}else{
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}
 
 		$pmObj = new PM($id, $logged_user); #setup PM object.
@@ -472,7 +472,7 @@ switch ($action){
 			$displayMsg = new notifySys($lang['nopmid'], true);
 			exit($displayMsg->displayAjaxError("warning"));
 		}else{
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}
 
 		$pmObj = new PM($id, $logged_user); #setup PM object.
@@ -485,7 +485,7 @@ switch ($action){
 	default:
 	  	#get current folder location.
 		if(!empty($_GET['folder'])){
-			$pmFolder = $db->filterMySQL($_GET['folder']);
+			$pmFolder = $db->filterMySQL(var_cleanup($_GET['folder']));
 		}else{
 			$pmFolder = "Inbox";
 		}

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: Post.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -105,7 +105,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$displayMsg = new notifySys($lang['nobid'], true);
 	$displayMsg->displayError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 #get board bbcode rules.
 $db->SQL = "SELECT Smiles, BBcode, Image, type, Board FROM ebb_boards WHERE id='$bid'";
@@ -295,17 +295,17 @@ case 'reply':
 		$displayMsg = new notifySys($lang['notid'], true);
 		$displayMsg->displayError();
 	}else{
-		$tid = $db->filterMySQL($_GET['tid']);
+		$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 	}
 	#see if Post ID was declared, if not leave it blank as we're assuming no replies are yet created.
 	if((!isset($_GET['pid'])) or (empty($_GET['pid']))){
 		$pid = '';
 	}else{
-		$pid = $db->filterMySQL($_GET['pid']);
+		$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 	}
 	#see if a page number is found, otherwise its just page 1.
 	if(isset($_GET['pg'])){
-		$pg = $db->filterMySQL($_GET['pg']);
+		$pg = $db->filterMySQL(var_cleanup($_GET['pg']));
 	}else{
 		$pg = 1; 
 	}
@@ -321,8 +321,8 @@ case 'reply':
 
 	#see if user has quoted someone.
 	if(isset($_GET['quser'])){
-		$quser = $db->filterMySQL($_GET['quser']);
-		$type = $db->filterMySQL($_GET['type']);
+		$quser = $db->filterMySQL(var_cleanup($_GET['quser']));
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 		if((empty($quser)) and (empty($type))){
 			$quotetxt = ''; 
 		}else{

@@ -4,7 +4,7 @@ if (!defined('IN_EBB')) {
 }
 /**
 Filename: acpheader.php
-Last Modified: 7/25/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@ if (($groupAccess == 2) OR ($groupAccess == 0) OR ($groupAccess == 3)){
 #see if user confirmed login.
 if (isset($_COOKIE['ebbacpu']) and (isset($_COOKIE['ebbacpp']))){
 		#validate & filter values.
-		$acpUsr = $db->filterMySQL($_COOKIE['ebbacpu']);
-		$acpPwd = $db->filterMySQL($_COOKIE['ebbacpp']);
+		$acpUsr = $db->filterMySQL(var_cleanup($_COOKIE['ebbacpu']));
+		$acpPwd = $db->filterMySQL(var_cleanup($_COOKIE['ebbacpp']));
 		
 		#see if the ACP cookies matches the root-level cookies.
 		if($acpUsr != $logged_user){

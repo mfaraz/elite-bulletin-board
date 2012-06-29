@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: acp_login.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -69,9 +69,9 @@ if(isset($_GET['action'])){
 switch ( $action ){
 case 'auth':
 	//process login.
-	$username = $db->filterMySQL($_POST['username']);
-	$password = $db->filterMySQL($_POST['password']);
-	$sessionLength = $db->filterMySQL($_POST['sessionlength']);
+	$username = $db->filterMySQL(var_cleanup($_POST['username']));
+	$password = $db->filterMySQL(var_cleanup($_POST['password']));
+	$sessionLength = $db->filterMySQL(var_cleanup($_POST['sessionlength']));
 	if((empty($username)) OR (empty($password))){
 		#setup error session.
 		$_SESSION['errors'] = $lang['blank'];

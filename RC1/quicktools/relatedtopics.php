@@ -3,7 +3,7 @@ define('IN_EBB', true);
 
 /**
 Filename: relatedtopics.php
-Last Modified: 1/15/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ if ($logged_user == "guest"){
 		exit($lang['flood']);
 	}
 	#keyword variable.
-	$topic = $db->filterMySQL($_POST['topic']);
+	$topic = $db->filterMySQL(var_cleanup($_POST['topic']));
 
 	#if blank, simply do nothing.
 	if(empty($topic)){
