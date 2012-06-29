@@ -7,7 +7,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/26/2011
+ * @version 06/28/2012
 */
 
 #load up libraries.
@@ -37,7 +37,7 @@ if($boardPref->getPreferenceValue("board_directory") == "/"){
 #see if user is using SESSIONS or is using COOKIES.
 if(isset($_SESSION['ebb_user'])){
 	#call user class.
-	$usrAuth = new login($db->filterMySQL($_SESSION['ebb_user']), $db->filterMySQL($_SESSION['ebb_pass']));
+	$usrAuth = new login($db->filterMySQL(var_cleanup($_SESSION['ebb_user'])), $db->filterMySQL(var_cleanup($_SESSION['ebb_pass'])));
 
 	#execute logout procedure.
 	$usrAuth->logOut();
@@ -46,7 +46,7 @@ if(isset($_SESSION['ebb_user'])){
 	redirect('index.php', false, 0);
 }elseif(isset($_COOKIE['ebbuser'])){
 	#call user class.
-	$usrAuth = new login($db->filterMySQL($_COOKIE['ebbuser']), $db->filterMySQL($_COOKIE['ebbpass']));
+	$usrAuth = new login($db->filterMySQL(var_cleanup($_COOKIE['ebbuser'])), $db->filterMySQL(var_cleanup($_COOKIE['ebbpass'])));
 
 	#execute logout procedure.
 	$usrAuth->logOut();
@@ -54,7 +54,7 @@ if(isset($_SESSION['ebb_user'])){
 	#redirect user to index.php
 	redirect('index.php', false, 0);
 }else{
-	$displayMsg = new notifySys("INVALID LOGOUT METHOD!(".$_COOKIE['ebbuser'].")(".$_SESSION['ebb_user'].")", true);
+	$displayMsg = new notifySys("INVALID LOGOUT METHOD!", true);
 	$displayMsg->genericError();
 }
 ?>

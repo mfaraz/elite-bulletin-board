@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: vote.php
-Last Modified: 11/10/2010
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$error = new notifySys($lang['nobid'], true);
 	$error->genericError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 
 #see if Topic ID was declared, if not terminate any further outputting.
@@ -26,7 +26,7 @@ if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$error = new notifySys($lang['notid'], true);
 	$error->genericError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 
 #see if user added a poll option, if not terminate any further outputting.
@@ -34,7 +34,7 @@ if((!isset($_POST['vote'])) or (empty($_POST['vote']))){
 	$error = new notifySys($lang['novote'], true);
 	$error->genericError();
 }else{
-	$vote = $db->filterMySQL($_POST['vote']);
+	$vote = $db->filterMySQL(var_cleanup($_POST['vote']));
 }
 
 //get posting rules.

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: stylecp.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -110,7 +110,7 @@ case 'style_uninstall':
 		$error = new notifySys($lang['nosid'], true);
 		$error->displayError();
 	}else{
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}
 	
 	#see if any users are currently using the requested style.

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: login.php
-Last Modified: 11/11/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -129,7 +129,7 @@ case 'logout':
 	#see if user is using SESSIONS or is using COOKIES.
 	if(isset($_SESSION['ebb_user'])){
 		#call user class.
-    	$usrAuth = new login($db->filterMySQL($_SESSION['ebb_user']), $db->filterMySQL($_SESSION['ebb_pass']));
+    	$usrAuth = new login($db->filterMySQL(var_cleanup($_SESSION['ebb_user'])), $db->filterMySQL(var_cleanup($_SESSION['ebb_pass'])));
 
 		#execute logout procedure.
 		$usrAuth->logOut();
@@ -138,7 +138,7 @@ case 'logout':
 	    redirect('index.php', false, 0);
 	}elseif(isset($_COOKIE['ebbuser'])){
 		#call user class.
-    	$usrAuth = new login($db->filterMySQL($_COOKIE['ebbuser']), $db->filterMySQL($_COOKIE['ebbpass']));
+    	$usrAuth = new login($db->filterMySQL(var_cleanup($_COOKIE['ebbuser'])), $db->filterMySQL(var_cleanup($_COOKIE['ebbpass'])));
 
 		#execute logout procedure.
 		$usrAuth->logOut();
@@ -156,7 +156,7 @@ case 'verify_acct':
         $displayMsg = new notifySys($lang['noacctkey'], true);
 		$displayMsg->displayError();
 	}else{
-		$key = $db->filterMySQL($_GET['key']);
+		$key = $db->filterMySQL(var_cleanup($_GET['key']));
 	}
 	
 	#see if username is missing.

@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: generalcp.php
-Last Modified: 11/11/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -273,8 +273,8 @@ case 'add_smiles':
 	echo $tpl->outputHtml();
 break;
 case 'add_smiles_process':
-	$smile_code = $db->filterMySQL($_POST['smile_code']);
-	$smile_file = $db->filterMySQL($_POST['smile_file']);
+	$smile_code = $db->filterMySQL(var_cleanup($_POST['smile_code']));
+	$smile_file = $db->filterMySQL(var_cleanup($_POST['smile_file']));
 
 	#error checking.
 	if (empty($smile_code)){
@@ -323,7 +323,7 @@ case 'modify_smiles':
 		$error = new notifySys($lang['nosmid'], true);
 		$error->displayError();
 	}else{
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}
 	$db->SQL = "SELECT code, img_name FROM ebb_smiles WHERE id='$id'";
 	$smilesRes = $db->fetchResults();
@@ -369,7 +369,7 @@ case 'modify_smiles_process':
 		$error = new notifySys($lang['nosmid'], true);
 		$error->displayError();
 	}else{
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']);
 	}
 	$db->SQL = "select id from ebb_smiles where id='$id'";
 	$smileChk = $db->AffectedRows();
@@ -379,8 +379,8 @@ case 'modify_smiles_process':
 		$error = new notifySys($lang['smilenotexist'], true);
 		$error->displayError();
 	}	
-	$mod_smile_code = $db->filterMySQL($_POST['smile_code']);
-	$mod_smile_file = $db->filterMySQL($_POST['smile_file']);
+	$mod_smile_code = $db->filterMySQL(var_cleanup($_POST['smile_code']));
+	$mod_smile_file = $db->filterMySQL(var_cleanup($_POST['smile_file']));
 
 	#error check.
 	if (empty($mod_smile_code)){
@@ -429,7 +429,7 @@ case 'delete_smiles':
 		$error = new notifySys($lang['nosmid'], true);
 		$error->displayError();
 	}else{
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}
 	$db->SQL = "select id from ebb_smiles where id='$id'";
 	$smileChk = $db->AffectedRows();
@@ -469,8 +469,8 @@ case 'censor':
 	admin_censorlist();
 break;
 case 'censor_add':
-	$addcensor = $db->filterMySQL($_POST['addcensor']);
-	$censoraction = $db->filterMySQL($_POST['censoraction']);
+	$addcensor = $db->filterMySQL(var_cleanup($_POST['addcensor']));
+	$censoraction = $db->filterMySQL(var_cleanup($_POST['censoraction']));
 
 	#error check.
 	if (empty($addcensor)){
@@ -519,7 +519,7 @@ case 'censor_modify':
 		$error = new notifySys($lang['nocensorid'], true);
 		$error->displayError();
 	}else{
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}
 	$db->SQL = "SELECT id FROM ebb_censor WHERE id='$id'";
 	$censorChk = $db->AffectedRows();

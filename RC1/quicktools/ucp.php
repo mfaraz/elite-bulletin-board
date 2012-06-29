@@ -6,7 +6,7 @@ define('IN_EBB', true);
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 7/29/2011
+ * @version 06/28/2012
 */
 
 #make sure the call is from an AJAX request.
@@ -347,7 +347,7 @@ switch($mode) {
 			$displayMsg = new notifySys($lang['accessdenied'], false);
 			exit($displayMsg->displayAjaxError("error"));
 		}
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		$db->SQL = "select Enrollment from ebb_groups where id='$id'";
 		$statusCheck = $db->fetchResults();
 		$numChk = $db->affectedRows();
@@ -390,7 +390,7 @@ switch($mode) {
 
         #@TODO ucp-side of the new group system didn't get implemented completely. do better clean-up in RC2.
         #This field is not used at the moment and may not be needed. keep for now.
-        $id = $db->filterMySQL($_GET['id']);
+        $id = $db->filterMySQL(var_cleanup($_GET['id']));
 
 		//change gid to regular member.
 		$groupPolicy->changeGroupID(3);
@@ -665,7 +665,7 @@ switch($mode) {
 			$displayMsg = new notifySys($lang['invalidaction'], false);
 			exit($displayMsg->displayAjaxError("warning"));
 		}else{
-			$del = $db->filterMySQL($_GET['del']);
+			$del = $db->filterMySQL(var_cleanup($_GET['del']));
 		}
 		//process query
 		$db->SQL = "DELETE FROM ebb_topic_watch where username='$logged_user' and tid='$del'";

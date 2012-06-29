@@ -134,7 +134,7 @@ switch( $action ){
 case 'board_order':
 	#see if a board id was defined
 	if(isset($_GET['id'])){
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}else{
 		$error = new notifySys($lang['nobid'], true);
 		$error->displayError();
@@ -142,13 +142,13 @@ case 'board_order':
 
 	#see if board type was defined.
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();
 	}
 
-	$o = $db->filterMySQL($_GET['o']);
+	$o = $db->filterMySQL(var_cleanup($_GET['o']));
 
 	#set error values to default.
 	$error = 0;
@@ -156,7 +156,7 @@ case 'board_order':
 	if ($type == 1){
 		$cat = 0;
 	}else{
-		$cat = $db->filterMySQL($_GET['cat']);
+		$cat = $db->filterMySQL(var_cleanup($_GET['cat']));
 	}
 	$db->SQL = "SELECT B_Order, Board FROM ebb_boards WHERE id='$id' AND type='$type'";
 	$order_r = $db->fetchResults();
@@ -227,7 +227,7 @@ case 'board_order':
 break;
 case 'board_add':
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();
@@ -308,7 +308,7 @@ case 'board_add':
 break;
 case 'board_add_process':
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']);
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();;
@@ -318,7 +318,7 @@ case 'board_add_process':
 	if ($type == 1){
 		$board_name = $db->filterMySQL(var_cleanup($_POST['board_name']));
 		$description = 'null';
-		$readaccess = $db->filterMySQL($_POST['readaccess']);
+		$readaccess = $db->filterMySQL(var_cleanup($_POST['readaccess']);
 		$writeaccess = 4;
 		$replyaccess = 4;
 		$voteaccess = 4;
@@ -498,7 +498,7 @@ case 'board_add_process':
 break;
 case 'board_modify':
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();
@@ -509,7 +509,7 @@ case 'board_modify':
 	if($type == 1){
 		#see if a board id was defined
 		if(isset($_GET['id'])){
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}else{
 			$error = new notifySys($lang['nobid'], true);
 			$error->displayError();
@@ -534,7 +534,7 @@ case 'board_modify':
 	}else if($type == 2){
 		#see if a board id was defined
 		if(isset($_GET['id'])){
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']));
 		}else{
 			$error = new notifySys($lang['nobid'], true);
 			$error->displayError();
@@ -567,7 +567,7 @@ case 'board_modify':
 	}else{
 		#see if a board id was defined
 		if(isset($_GET['id'])){
-			$id = $db->filterMySQL($_GET['id']);
+			$id = $db->filterMySQL(var_cleanup($_GET['id']);
 		}else{
 			$error = new notifySys($lang['nobid'], true);
 			$error->displayError();
@@ -686,7 +686,7 @@ case 'board_modify':
 break;
 case 'board_modify_process':
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();
@@ -694,7 +694,7 @@ case 'board_modify_process':
 
 	#see if a board id was defined
 	if(isset($_GET['id'])){
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}else{
 		$error = new notifySys($lang['nobid'], true);
 		$error->displayError();
@@ -702,9 +702,9 @@ case 'board_modify_process':
 
 	#process data based on board type.
 	if($type == 1){
-		$modify_board_name = $db->filterMySQL($_POST['board_name']);
+		$modify_board_name = $db->filterMySQL(var_cleanup($_POST['board_name']));
 		$modify_description = 'null';
-		$modify_readaccess = $db->filterMySQL($_POST['readaccess']);
+		$modify_readaccess = $db->filterMySQL(var_cleanup($_POST['readaccess']));
 		$modify_writeaccess = 4;
 		$modify_replyaccess = 4;
 		$modify_voteaccess = 4;
@@ -738,18 +738,18 @@ case 'board_modify_process':
 			redirect('acp/boardcp.php?action=board_modify&amp;id='.$id.'&amp;type='.$type, false, 0);
 		}
 	}else{
-		$modify_board_name = $db->filterMySQL($_POST['board_name']);
-		$modify_description = $db->filterMySQL($_POST['description']);
-		$modify_readaccess = $db->filterMySQL($_POST['readaccess']);
-		$modify_writeaccess = $db->filterMySQL($_POST['writeaccess']);
-		$modify_replyaccess = $db->filterMySQL($_POST['replyaccess']);
-		$modify_voteaccess = $db->filterMySQL($_POST['voteaccess']);
-		$modify_pollaccess = $db->filterMySQL($_POST['pollaccess']);
-		$modify_catsel = $db->filterMySQL($_POST['catsel']);
-		$increment = $db->filterMySQL($_POST['increment']);
-		$modify_bbcode = $db->filterMySQL($_POST['bbcode']);
-		$modify_smiles = $db->filterMySQL($_POST['smiles']);
-		$modify_img = $db->filterMySQL($_POST['img']);
+		$modify_board_name = $db->filterMySQL(var_cleanup($_POST['board_name']));
+		$modify_description = $db->filterMySQL(var_cleanup($_POST['description']));
+		$modify_readaccess = $db->filterMySQL(var_cleanup($_POST['readaccess']));
+		$modify_writeaccess = $db->filterMySQL(var_cleanup($_POST['writeaccess']));
+		$modify_replyaccess = $db->filterMySQL(var_cleanup($_POST['replyaccess']));
+		$modify_voteaccess = $db->filterMySQL(var_cleanup($_POST['voteaccess']));
+		$modify_pollaccess = $db->filterMySQL(var_cleanup($_POST['pollaccess']));
+		$modify_catsel = $db->filterMySQL(var_cleanup($_POST['catsel']));
+		$increment = $db->filterMySQL(var_cleanup($_POST['increment']));
+		$modify_bbcode = $db->filterMySQL(var_cleanup($_POST['bbcode']));
+		$modify_smiles = $db->filterMySQL(var_cleanup($_POST['smiles']));
+		$modify_img = $db->filterMySQL(var_cleanup($_POST['img']));
 
 		//do some error checking.
 		if (empty($modify_board_name)){
@@ -863,7 +863,7 @@ break;
 case 'board_delete':
 	#see if board type is defined.
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$error = new notifySys($lang['noboardtype'], true);
 		$error->displayError();
@@ -871,7 +871,7 @@ case 'board_delete':
 		
 	#see if a board id was defined
 	if(isset($_GET['id'])){
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}else{
 		$error = new notifySys($lang['nobid'], true);
 		$error->displayError();
@@ -1094,8 +1094,8 @@ case 'prune':
 	echo $tpl->outputHtml();
 break;
 case 'prune_process':
-	$prune_age = $db->filterMySQL($_POST['prune_age']);
-	$boardsel = $db->filterMySQL($_POST['boardsel']);
+	$prune_age = $db->filterMySQL(var_cleanup($_POST['prune_age']));
+	$boardsel = $db->filterMySQL(var_cleanup($_POST['boardsel']));
 
 	//error check
 	if(empty($prune_age)){
@@ -1194,14 +1194,14 @@ break;
 default:
 	#get board type.
 	if(isset($_GET['type'])){
-		$type = $db->filterMySQL($_GET['type']);
+		$type = $db->filterMySQL(var_cleanup($_GET['type']));
 	}else{
 		$type = 1;
 	}
 
 	#get board id if needed.
 	if(isset($_GET['bid'])){
-		$bid = $db->filterMySQL($_GET['bid']);
+		$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 	}else{
 		$bid = 0;
 	}

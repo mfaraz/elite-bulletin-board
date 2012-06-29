@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: viewboard.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$error = new notifySys($lang['nobid'], true);
 	$error->genericError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 //check to see if board exists or not and if it doesn't kill the program
 $db->SQL = "select id from ebb_boards WHERE id='$bid'";
@@ -144,7 +144,7 @@ $count2 = 0;
 if(!isset($_GET['pg'])){
     $pg = 1;
 }else{
-    $pg = $db->filterMySQL($_GET['pg']);
+    $pg = $db->filterMySQL(var_cleanup($_GET['pg']));
 }
 #setup perPg setting value.
 $perPg = $boardPref->getPreferenceValue("per_page");

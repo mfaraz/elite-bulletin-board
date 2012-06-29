@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: edit.php
-Last Modified: 8/1/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -87,20 +87,20 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$displayMsg = new notifySys($lang['nobid'], true);
 	$displayMsg->displayError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 #see if Topic ID was declared, if not terminate any further outputting.
 if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$displayMsg = new notifySys($lang['notid'], true);
 	$displayMsg->displayError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 #see if Post ID was declared, if not leave it blank as we're assuming no replies are yet created.
 if(!isset($_GET['pid'])){
 	$pid = '';
 }else{
-	$pid = $db->filterMySQL($_GET['pid']);
+	$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 }
 
 if(isset($_GET['mode'])){
@@ -273,9 +273,9 @@ case 'edit_post':
 	if ($canEdit == true){
 		//get form values.
 		$reply_post = $db->filterMySQL(var_cleanup($_POST['reply_post']));
-		$subscribe = $db->filterMySQL($_POST['subscribe']);
-		$noSmile = $db->filterMySQL($_POST['no_smile']);
-		$noBbcode = $db->filterMySQL($_POST['no_bbcode']);
+		$subscribe = $db->filterMySQL(var_cleanup($_POST['subscribe']));
+		$noSmile = $db->filterMySQL(var_cleanup($_POST['no_smile']));
+		$noBbcode = $db->filterMySQL(var_cleanup($_POST['no_bbcode']));
 
 		//spam check.
 		$post_chk = language_filter($reply_post, 2);

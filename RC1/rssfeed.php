@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: rssfeed.php
-Last Modified: 7/30/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@ require_once FULLPATH."/header.php";
 
 #see if board id was defined.
 if(isset($_GET['bid'])){
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup(-$_GET['bid']));
 }else{
 	$error = new notifySys($lang['nobid'], true);
 	$error->genericError();

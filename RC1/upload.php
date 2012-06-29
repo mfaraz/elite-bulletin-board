@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: upload.php
-Last Modified: 2/28/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ if($groupPolicy->validateAccess(1, 26) == false){
 
 	#see if an ID was set.
 	if((isset($_GET['id'])) or (!empty($_GET['id']))){
-		$id = $db->filterMySQL($_GET['id']);
+		$id = $db->filterMySQL(var_cleanup($_GET['id']));
 	}else{
 		$id = 0;
 	}

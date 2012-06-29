@@ -3,7 +3,7 @@ define('IN_EBB', true);
 
 /**
 Filename: livesearch.php
-Last Modified: 12/12/2010
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ if ($logged_user == "guest"){
 	}
 
 	#keyword variable.
-	$keyword = $db->filterMySQL($_GET['q']);
+	$keyword = $db->filterMySQL(var_cleanup($_GET['q']));
 
 	#error check.
 	if(empty($keyword)){

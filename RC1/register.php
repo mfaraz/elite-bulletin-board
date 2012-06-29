@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: register.php
-Last Modified: 7/29/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -86,36 +86,36 @@ if(isset($_GET['action'])){
 switch ($action){
 	case 'process':
 		//get values from form.
-		$email = $db->filterMySQL($_POST['email']);
-		$username = $db->filterMySQL($_POST['username']);
-		$password = $db->filterMySQL($_POST['password']);
-		$vert_password = $db->filterMySQL($_POST['vert_password']);
-		$time_zone = $db->filterMySQL($_POST['time_zone']);
-		$time_format = $db->filterMySQL($_POST['time_format']);
-		$pm_notice = $db->filterMySQL($_POST['pm_notice']);
-		$show_email = $db->filterMySQL($_POST['show_email']);
-		$ustyle = $db->filterMySQL($_POST['style']);
-		$default_lang = $db->filterMySQL($_POST['default_lang']);		
+		$email = $db->filterMySQL(var_cleanup($_POST['email']));
+		$username = $db->filterMySQL(var_cleanup($_POST['username']));
+		$password = $db->filterMySQL(var_cleanup($_POST['password']));
+		$vert_password = $db->filterMySQL(var_cleanup($_POST['vert_password']));
+		$time_zone = $db->filterMySQL(var_cleanup($_POST['time_zone']));
+		$time_format = $db->filterMySQL(var_cleanup($_POST['time_format']));
+		$pm_notice = $db->filterMySQL(var_cleanup($_POST['pm_notice']));
+		$show_email = $db->filterMySQL(var_cleanup($_POST['show_email']));
+		$ustyle = $db->filterMySQL(var_cleanup($_POST['style']));
+		$default_lang = $db->filterMySQL(var_cleanup($_POST['default_lang']));
 		$IP = detectProxy();
 
 
 		#see if COPPA is enabled. if so, get the value.
 		if ($boardPref->getPreferenceValue("coppa") != 0) {
-			$coppavalid = $db->filterMySQL($_POST['coppavalid']);
+			$coppavalid = $db->filterMySQL(var_cleanup($_POST['coppavalid']));
 		} else {
 			$coppavalid = '';
 		}
 		
 		#see if CAPTCHA is enabled. if so, get the value.
 		if ($boardPref->getPreferenceValue("captcha") == 1) {
-			$captcha = $db->filterMySQL($_POST['captcha']);
+			$captcha = $db->filterMySQL(var_cleanup($_POST['captcha']));
 		} else {
 			$captcha = '';
 		}
 
 		#get form value only if board rules are enabled.
 		if ($boardPref->getPreferenceValue("rules_status") == 1) {
-			$iagree = $db->filterMySQL($_POST['iagree']);
+			$iagree = $db->filterMySQL(var_cleanup($_POST['iagree']));
 		} else {
 			$iagree = '';
 		}

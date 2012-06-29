@@ -2,7 +2,7 @@
 define('IN_EBB', true);
 /**
 Filename: delete.php
-Last Modified: 2/22/2011
+Last Modified: 06/28/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -86,7 +86,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$error = new notifySys($lang['nobid'], true);
 	$error->genericError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 
 #see if Topic ID was declared, if not terminate any further outputting.
@@ -94,14 +94,14 @@ if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$error = new notifySys($lang['notid'], true);
 	$error->genericError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 
 #see if Post ID was declared, if not leave it blank as we're assuming no replies are yet created.
 if((!isset($_GET['pid'])) or (empty($_GET['pid']))){
 	$pid = '';
 }else{
-	$pid = $db->filterMySQL($_GET['pid']);
+	$pid = $db->filterMySQL(var_cleanup($_GET['pid']));
 }
 
 if(isset($_GET['action'])){

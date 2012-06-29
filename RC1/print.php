@@ -18,7 +18,7 @@ if((!isset($_GET['bid'])) or (empty($_GET['bid']))){
 	$error = new notifySys($lang['nobid'], true);
 	$error->genericError();
 }else{
-	$bid = $db->filterMySQL($_GET['bid']);
+	$bid = $db->filterMySQL(var_cleanup($_GET['bid']));
 }
 
 #see if Topic ID was declared, if not terminate any further outputting.
@@ -26,7 +26,7 @@ if((!isset($_GET['tid'])) or (empty($_GET['tid']))){
 	$error = new notifySys($lang['notid'], true);
 	$error->genericError();
 }else{
-	$tid = $db->filterMySQL($_GET['tid']);
+	$tid = $db->filterMySQL(var_cleanup($_GET['tid']));
 }
 
 //topic & board query.
