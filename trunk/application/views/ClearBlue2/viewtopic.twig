@@ -354,6 +354,8 @@ _________________<br />
 	</div>
 </div>
 <div id="moreSmiles"></div>
+
+{% if ATTACHMENTLIMIT > 0 %}
 <div id="DLG_upload">
 	<!--START upload -->
 	{{UPLOADFORM|raw}}
@@ -363,8 +365,9 @@ _________________<br />
 		<input type="button" value="{{LANG_ADDMOREFILES}}" id="addMoreFiles" />
 	</form>
 	<div id="filelist"></div>
-
-	<script type="text/javascript">
+	<!--END upload -->
+</div>
+<script type="text/javascript">
 		$(function(){
 			$('#attach').jUploader({
 				lngOk: lang.Ok,
@@ -387,9 +390,8 @@ _________________<br />
 				fileMgrUrl: "{{BOARD_URL}}index.php/upload"
 			});
 		});
-	</script>
-	<!--END upload -->
-</div>
+</script>
+{% endif %}
 
 {{QREPLYFORM|raw}}
 <div id="emoticons" style="width:500px;" class="centerContainer">
