@@ -184,12 +184,11 @@
 <div class="attachheader">{{LANG_ATTACHMENTS}}</div>
 <div class="attachment">
 {% for a in ATTACH_BAR("topic", TOPIC_AUTHOR, TOPICID) %}
-{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{a.File_Size}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count|number_format}}<br />
 {% endfor %}
 </div>
 {% endif %}
 <br />
-
 _________________<br />
 {{nl_2_br(Spam_Filter(FormatMsg(DISABLE_SMILES, BOARDPREF_SMILES, DISABLE_BBCODE, BOARDPREF_BBCODE, BOARDPREF_IMAGE, AUTHOR_SIG),1))|raw}}</td>
 </tr>
@@ -309,7 +308,7 @@ _________________<br />
 <div class="attachheader">{{LANG_ATTACHMENTS}}</div>
 <div class="attachment">
 {% for a in ATTACH_BAR("post", r.author, r.pid) %}
-{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{ATTACH_FILE_SIZE(a.File_Size)}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count}}<br />
+{{URL_TAG("boards/download/"~a.id, a.Filename)|raw}} {{a.File_Size}} Kb {{LANG_DOWNLOADS}}: {{a.Download_Count|number_format}}<br />
 {% endfor %}
 </div>
 {% endif %}
@@ -385,7 +384,7 @@ _________________<br />
 				confirmDeleteTitle: lang.attachDeleteTitle,
 				deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
 				confirmDeletMsg: lang.attachDeletePrompt,
-				fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
+				fileMgrUrl: "{{BOARD_URL}}index.php/upload"
 			});
 		});
 	</script>

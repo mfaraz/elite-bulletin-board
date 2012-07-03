@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/27/2012
+ * @version 07/02/2012
 */
 
 /**
@@ -28,11 +28,9 @@ class Upload extends EBB_Controller {
 		//load attachments model.
 		$this->load->model(array('Attachmentsmodel'));
 		
-		#setup filters.
-		$this->twig->_twig_env->addFunction('Byte2KB', new Twig_Function_Function('getFileSize'));
-		
 		//render to HTML.
 		echo $this->twig->render($this->style, 'attachmentmanager', array (
+		  'BOARD_URL' => $this->boardUrl,
 		  'LANG_FILENAME' =>  $this->lang->line('filename'),
 		  'LANG_FILESIZE' => $this->lang->line('filesize'),
 		  'LANG_FILETYPE' => $this->lang->line('filetype'),
@@ -90,17 +88,13 @@ class Upload extends EBB_Controller {
 
 	/**
 	 * Deletes a file from the server.
-	 * @example index.php/upload/delete/
+	 * @example index.php/upload/delete/5
 	*/	
-	public function delete() {
-
-		//the filename from AJAX.
-		$file =  $this->input->post('filename', TRUE);
-
+	public function delete($id) {
 		//load attachments model.
 		$this->load->model(array('Attachmentsmodel'));
 		
-		$success = $this->Attachmentsmodel->DeleteAttachment($file);
+		$success = $this->Attachmentsmodel->DeleteAttachment($id);
 		
 		//see if the file successfully deleted.
 		if ($success) {
@@ -115,4 +109,3 @@ class Upload extends EBB_Controller {
 
 	}
 } //END Class
-?>
