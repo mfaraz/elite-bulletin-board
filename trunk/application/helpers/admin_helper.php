@@ -434,4 +434,3 @@ function admin_blacklist(){
 	$username_blacklist .= "</select>";
 	return ($username_blacklist);
 }
-?>

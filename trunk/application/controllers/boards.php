@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/22/2012
+ * @version 07/02/2012
 */
 
 /**
@@ -591,7 +591,49 @@ class Boards extends EBB_Controller {
 	 * @example index.php/boards/download/5
 	*/
 	public function download($id) {
-		
+		//guests are not allowed to access this page.
+		if ($this->groupAccess == 0) {
+			//alert user.
+			$this->notifications('warning', $this->lang->line('notloggedin'));
+
+			#direct user to login page.
+			redirect('/login/Login', 'location');
+		} else {
+			//load topic & attachments model.
+			$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
+			
+			//load helpers
+			$this->load->helper('download');
+			
+			//get file.
+			$attachData = $this->Attachmentsmodel->GetAttachment($id);
+			
+			//did the attachment data load correctly?
+			if ($attachData) {
+				
+				//increment download count.
+				$this->Attachmentsmodel->setDownloadCount($this->Attachmentsmodel->getDownloadCount() + 1);
+				$this->Attachmentsmodel->IncrementDownloadCounter();
+				
+				$dwnloadPath = UPLOAD_PATH.$this->Attachmentsmodel->getEncryptedFileName();
+				
+				#Send file for download.
+				$stream = fopen($dwnloadPath, 'rb');
+				if ($stream){
+					if (!feof($stream) && connection_status() == 0) {
+						#reset time limit for big files.
+						set_time_limit(0);
+						$fileData = fread($stream,filesize($dwnloadPath));
+					}
+					fclose($stream);
+
+					//force file to download.
+					force_download($this->Attachmentsmodel->getFileName(), $fileData);
+				}
+			} else {
+				show_error($this->lang->line('noattachments'),500,$this->lang->line('error'));
+			}
+		}
 	}
     
     /**
@@ -936,7 +978,9 @@ class Boards extends EBB_Controller {
 	
 	/**
 	 * New Topics form.
-	 * @version 05/29/12
+	 * @version 07/02/12
+	 * @params integer $bid Board ID
+	 * @params boolean $pollTopic Is this a poll topic?
 	 * @access private
 	*/
 	private function FORM_newtopic($bid, $pollTopic) {
@@ -1037,7 +1081,7 @@ class Boards extends EBB_Controller {
 		  "LANG_TOPICBODY" => $this->lang->line('topicbody'),
 		  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
 		  "LANG_CLEAR" => $this->lang->line("clearfile"),
-		  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+		  "LANG_ADDMOREFILES" => $this->lang->line("addMoreFiles"),
 		  "ATTACHMENTLIMIT" => $uploadLimit,
 		  "LANG_DISABLERTF" => $this->lang->line("disablertf"),
 		  "LANG_OPTIONS" => $this->lang->line("options"),
@@ -1258,6 +1302,7 @@ class Boards extends EBB_Controller {
 	 * @param integer $tid TopicID.
 	 * @param integer $quoteID Topic/Post ID.
 	 * @param integer $quoteType topic=1;post=2.
+	 * @version 07/02/12
 	 */
 	private function FORM_reply($tid, $quoteID=null, $quoteType=null) {
 		//load breadcrumb library
@@ -1369,7 +1414,7 @@ class Boards extends EBB_Controller {
 		  "QUOTE_BODY" => $quoteMsg,
 		  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
 		  "LANG_CLEAR" => $this->lang->line("clearfile"),
-		  "LANG_VIEWFILES" => $this->lang->line("viewfiles"),
+		  "LANG_ADDMOREFILES" => $this->lang->line("addMoreFiles"),
 		  "ATTACHMENTLIMIT" => $uploadLimit,
 		  "LANG_DISABLERTF" => $this->lang->line("disablertf"),
 		  "LANG_OPTIONS" => $this->lang->line("options"),
@@ -2235,8 +2280,6 @@ class Boards extends EBB_Controller {
 			}
 		}
 		echo '</channel></rss>';
-	}
-	
+	}	
 }
-
 /* Location: ./application/controllers/boards.php */

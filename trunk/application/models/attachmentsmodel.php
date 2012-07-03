@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * attachmentsmodel.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/03/12
+ * @version 06/30/12
 */
 
 /**
@@ -276,14 +276,64 @@ class Attachmentsmodel extends CI_Model {
 	/**
 	 * METHODS
 	*/
+	
+	/**
+	 * Increment download counter. 
+	 */
+	public function IncrementDownloadCounter() {
+		#setup values.
+		$data = array(
+		  'Download_Count' => $this->getDownloadCount()
+        );
+		
+		#update reply.
+		$this->db->where('id', $this->getId());
+		$this->db->update('ebb_attachments', $data);
+	}
+	
+	/**
+	 * Get a specific file based on its Attachment ID.
+	 * @access public
+	 * @param integer $id Attachment ID
+	 * @return boolean TRUE, everything loaded; FALSE, an error occurred.
+	 * @version 06/30/12
+	*/
+	public function GetAttachment($id) {
+		//SQL grabbing count of all topics for this board.
+		$this->db->select('id, tid, pid, Filename, encryptedFilename, encryptionSalt, File_Size, File_Type, Download_Count')
+		  ->from('ebb_attachments')
+		  ->where('id', $id);
+		$query = $this->db->get();
+		
+		//see if we have any records to show.
+		if($query->num_rows() > 0) {
+			$AttachmentData = $query->row();
+			
+			//setup property values.
+			$this->setId($AttachmentData->id);
+			$this->setTiD($AttachmentData->tid);
+			$this->setPiD($AttachmentData->pid);
+			$this->setFileName($AttachmentData->Filename);
+			$this->setEncryptedFileName($AttachmentData->encryptedFilename);
+			$this->setEncryptionSalt($AttachmentData->encryptionSalt);
+			$this->setFileSize($AttachmentData->File_Size);
+			$this->setFileType($AttachmentData->File_Type);
+			$this->setDownloadCount($AttachmentData->Download_Count);
+			
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 
 	/**
 	 * Get a list of files uploaded by defined user.
+	 * @access public
 	 * @param string $user user who uploaded the files.
-	 * @return boolean|array
+	 * @return boolean|array array of data and TRUE, everything loaded; FALSE, an error occurred.
 	 * @version 06/03/12
 	 */
-	public function GetAttachment($user) {
+	public function GetAttachments($user) {
 		
 		//setup reply data array.
 		$files = array();
@@ -333,7 +383,7 @@ class Attachmentsmodel extends CI_Model {
 			#add new user.
 			$this->db->insert('ebb_attachments', $data);
 		} catch(Exception $e) {
-			 log_message('debug', $e->getMessage());
+			 log_message('error', $e->getMessage());
 		}
 
 	}
@@ -360,30 +410,37 @@ class Attachmentsmodel extends CI_Model {
 
 	/**
 	 * Delete file from DB and file system.
+	 * @access public
 	 * @param string $file filename.
 	 * @return boolean
-	 * @version 06/03/12
+	 * @version 06/30/12
 	 */
-	public function DeleteAttachment($file) {
+	public function DeleteAttachment($id) {
 		
-		if (is_file(UPLOAD_PATH.$file)) {
-			$success = unlink(UPLOAD_PATH.$file);
+		$fileData = $this->GetAttachment($id);
+		
+		//did entity load?
+		if ($fileData) {
+			if (is_file(UPLOAD_PATH.$this->getEncryptedFileName())) {
+				$success = unlink(UPLOAD_PATH.$this->getEncryptedFileName());
 
-			//see if the file successfully deleted.
-			if ($success) {
-				//remove entry from db.
-				$this->db->where('Filename', $file);
-				$this->db->delete('ebb_attachments');
-				
-				return TRUE;
+				//see if the file successfully deleted.
+				if ($success) {
+					//remove entry from db.
+					$this->db->where('id', $this->getId());
+					$this->db->delete('ebb_attachments');
+
+					return TRUE;
+				} else {
+					return FALSE;
+				}
 			} else {
 				return FALSE;
 			}
 		} else {
 			return FALSE;
 		}
-		
+
 	}
 
 }
-?>

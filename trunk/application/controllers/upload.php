@@ -37,7 +37,7 @@ class Upload extends EBB_Controller {
 		  'LANG_FILESIZE' => $this->lang->line('filesize'),
 		  'LANG_FILETYPE' => $this->lang->line('filetype'),
 		  'LANG_NOFILES' => $this->lang->line('noattachments'),
-		  'FILES' => $this->Attachmentsmodel->GetAttachment($this->logged_user)
+		  'FILES' => $this->Attachmentsmodel->GetAttachments($this->logged_user)
 		));
 	}
 	
@@ -65,9 +65,9 @@ class Upload extends EBB_Controller {
 		} else {
 			$data = $this->upload->data();
 			
+			//encrypt the filename to prevent sniffing.
 			$fileNameSalt = CreateAttachmentSalt();
-			$encryptedFileName = sha1($data['file_name'].$fileNameSalt); //encrypt the filename to prevent sniffing.
-			
+			$encryptedFileName = sha1($data['file_name'].$fileNameSalt);
 			rename($data['full_path'], UPLOAD_PATH.$encryptedFileName);
 			
 			//setup attachment in db.

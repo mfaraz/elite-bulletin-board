@@ -287,5 +287,4 @@ class PM {
 			}
 		}
 	}
-} //END CLASS
-?>
+}//END CLASS

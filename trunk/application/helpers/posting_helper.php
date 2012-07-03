@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/20/2012
+ * @version 07/02/2012
 */
 
 /**
@@ -340,4 +340,3 @@ function update_topic($tid, $time, $postedUser, $newPid = null, $page = null) {
 	$ci->db->delete('ebb_read_topic');
 
 }
-?>
