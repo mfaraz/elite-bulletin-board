@@ -99,7 +99,7 @@ class Upload extends EBB_Controller {
 		//see if the file successfully deleted.
 		if ($success) {
 			//remove entry from db.
-			$this->db->where('Filename', $file);
+			$this->db->where('Filename', $id);
 			$this->db->delete('ebb_attachments');
 
 			echo json_encode(array('status' => 'success', 'msg' => $this->lang->line('fdeleteok')));
