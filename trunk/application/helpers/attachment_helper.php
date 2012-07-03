@@ -129,15 +129,3 @@ function GetAttachments($type, $user, $id){
 		return FALSE;
 	}
 }
-
-/**
-* Converts file size of bytes to Kb.
-* @version 01/11/12
-* @param string $file - file size to convert.
-* @return int - converted value of file size.
-*/
-function getFileSize($file){
-	$fileSize = ceil($file / 1024);
-
-	return ($fileSize);
-}

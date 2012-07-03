@@ -10,9 +10,6 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 	* @version 10/3/2011
 */
 
-
 class Settings extends EBB_Controller {
 
 }
-
-?>

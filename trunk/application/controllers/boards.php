@@ -456,7 +456,6 @@ class Boards extends EBB_Controller {
 				$this->twig->_twig_env->addFunction('FormatMsg', new Twig_Function_Function('FormatTopicBody'));
 				$this->twig->_twig_env->addFunction('Spam_Filter', new Twig_Function_Function('language_filter'));
 				$this->twig->_twig_env->addFunction('ATTACH_BAR', new Twig_Function_Function('GetAttachments'));
-				$this->twig->_twig_env->addFunction('ATTACH_FILE_SIZE', new Twig_Function_Function('getFileSize'));
 				$this->twig->_twig_env->addFunction('MATH_ROUND', new Twig_Function_Function('Round'));
 				$this->twig->_twig_env->addFunction('CALC_VOTE', new Twig_Function_Function('CalcVotes'));
 				$this->twig->_twig_env->addFunction('VOTECHECK', new Twig_Function_Function('CheckVoteStatus'));

@@ -279,11 +279,13 @@
 			
 				$("#jupload_juiDlg").text(msg);
 				$("#jupload_juiDlg").dialog({
+					autoOpen: true,
 					modal: true,
 					width: '500',
-					height: '125',
+					height: '175',
 					title:  title,
-					closeOnEscape: true,
+					closeOnEscape: false,
+					open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },
 					buttons: btnOk
 				});
 			},
@@ -304,7 +306,7 @@
 				var btnDelete = {};
 				 btnDelete[config.lngYes] = function() {
 				 	$(this).dialog('close');
-					$(e).load(config.deleteUrl, { filename: $(e).attr('id') }, function(res, status, xhr) {
+					$(e).load(config.deleteUrl+'/'+$(e).attr('id'), function(res, status, xhr) {
 						if (status == "error") {
 							jQUploader.showMsg(config.lngError,xhr.status + " " + xhr.statusText);
 						} else {
@@ -339,11 +341,13 @@
 
 				$("#jupload_juiDlg").text(config.confirmDeleteMsg);
 				$("#jupload_juiDlg").dialog({
+					autoOpen: true,
 					modal: true,
 					width: '300',
-					height: '125',
+					height: '175',
 					title:  config.confirmDeleteTitle,
-					closeOnEscape: true,
+					closeOnEscape: false,
+					open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); },
 					buttons: btnDelete
 				});
 			}
