@@ -13,7 +13,7 @@
 	{% else %}
 	{% for f in FILES %}
 	<tr>
-		<td><a href="#" class="delete" id="{{f.Filename}}"><img src="{{BOARD_URL}}application/views/ClearBlue2/images/delete.png" /></a></td>
+		<td><a href="#" class="delete" id="{{f.id}}"><img src="{{BOARD_URL}}application/views/ClearBlue2/images/delete.png" /></a></td>
 		<td class="ui-widget-content" width="40%">{{f.Filename}}</td>
 		<td class="ui-widget-content" width="20%">{{Byte2KB(f.File_Size)}} Kb</td>
 		<td class="ui-widget-content" width="20%">{{f.File_Type}}</td>

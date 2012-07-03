@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/17/2012
+ * @version 07/02/2012
 */
 
 /**
@@ -521,4 +521,3 @@ class Boardmodel extends CI_Model {
 	}
 
 }
-?>

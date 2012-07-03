@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
   * @author Elite Bulletin Board Team <http://elite-board.us>
   * @copyright  (c) 2006-2013
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 06/17/2012
+  * @version 07/02/2012
 */
 
 #Common language tags.
@@ -1018,4 +1018,3 @@ $lang['noboardselect'] = 'You did not select a board to prune from.';
 $lang['userprunetext'] = 'This will delete any user who has posted nothing. Just click on the link below to process the pruning. It could take a while depending on the number of 0 posters on your userlist.';
 $lang['beginuserprune'] = 'Begin User Pruning';
 $lang['userprunewarning'] = 'NOTE: This will delete new users who have been here longer than a week and posted nothing, please let them know before doing this!';
-?>

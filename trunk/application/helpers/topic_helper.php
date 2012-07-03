@@ -2,7 +2,7 @@
 if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 /**
 Filename: topic_function.php
-Last Modified: 11/22/2011
+Last Modified: 07/02/2012
 
 Term of Use:
 This program is free software; you can redistribute it and/or modify
@@ -39,4 +39,3 @@ function readBoardStat($bid, $user){
 
 	return ($readCt);
 }
-?>

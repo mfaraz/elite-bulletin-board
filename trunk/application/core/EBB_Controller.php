@@ -386,5 +386,4 @@ class EBB_Controller extends CI_Controller {
 			return TRUE;
 		}
 	}
-
-} //END Class.
+}//END Class.
