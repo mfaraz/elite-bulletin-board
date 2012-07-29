@@ -4,7 +4,7 @@
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/22/2012
+ * @version 07/09/2012
 */
 
 /**
@@ -107,6 +107,38 @@ function viewRoster(){
 			}
 		}); //END $.ajax(
 	}); //END .live
+}
+
+/**
+ * Process form via AJAX.
+ * @param string formID The ID of the form. 
+ * @param object onSuccess callback when successful.
+ * @param object onError callback when an error occurs.
+ * @version 07/09/12 
+*/
+function processForm(formID, onSuccess, onError) {
+	//call .ajax to call server.
+	$.post($('#'+formID).attr('action'), $('#'+formID).serialize(), function(frmData) {
+
+		//render JSON.
+		var json = $.parseJSON(frmData);
+
+		//process message.
+		FormResults(json.status, json.msg);
+		
+		//execute callback function if available.
+	    if (json.status == "success" && $.isFunction(onSuccess)) {
+	      onSuccess();
+	    }
+	}).error(function(xhr, tStat, err) {
+		var msg = lang.jsError + ": ";
+		FormResults("error", msg + xhr.status + " " + xhr.statusText);
+		
+		//execute callback function if available.
+	    if($.isFunction(onError)) {
+	      onError();
+	    }
+	}); //END $.post(
 }
 
 //900,000 = 15 minutes

@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  *  EBB_Controller.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2013
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/17/2012
+ * @version 07/28/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -20,6 +20,12 @@ class EBB_Controller extends CI_Controller {
 	 * @var string
 	 */
 	public $logged_user;
+	
+	/**
+	 * Current User's ID.
+	 * @var integer
+	 */
+	public $userID;
 
 	/**
 	 *  User's Group Access Level.
@@ -113,19 +119,21 @@ class EBB_Controller extends CI_Controller {
 		$this->db->delete('ebb_online', array('time <' => SESSION_TIMEOUT));
 		
 		#login setup
-		if ($this->session->userdata('ebbUser') <> FALSE) {
+		if ($this->session->userdata('ebbUserID') <> FALSE) { //$this->session->userdata('ebbUser') <> FALSE && 
 
 			//see if user is logged in via cookies.
 			if ($this->input->cookie('ebbUser', TRUE) <> FALSE) {
-				$ebbuser = $this->input->cookie('ebbUser', TRUE);
+				//$ebbuser = $this->input->cookie('ebbUser', TRUE);
+				$ebbuserid = $this->input->cookie('ebbUserID', TRUE);
 			} elseif ($this->session->userdata('ebbUser') <> FALSE) {
-				$ebbuser = $this->session->userdata('ebbUser');
+				//$ebbuser = $this->session->userdata('ebbUser');
+				$ebbuserid = $this->session->userdata('ebbUserID');
 			} else {
 				exit(show_error($this->lang->line('invalidlogin'), 500, $this->lang->line('error')));
 			} //END authenication check.
 
 			$params = array(
-			  'user' => $ebbuser
+			  'user' => $ebbuserid
 			);
 			$this->load->library('user', $params);
 
@@ -134,37 +142,46 @@ class EBB_Controller extends CI_Controller {
 
 				//load user model.
 				$this->load->model('Usermodel');
-				$this->Usermodel->getUser($ebbuser);
+				$userEntity = $this->Usermodel->getUser($ebbuserid);
 
-				//setup logged in user.
-				$this->gid = $this->Usermodel->getGid();
-				$this->logged_user = $this->Usermodel->getUserName();
-				$this->style = $this->Usermodel->getStyle();
-				$this->timeFormat = $this->Usermodel->getTimeFormat();
-				$this->timeZone = $this->Usermodel->getTimeZone();
-				$this->lng = $this->Usermodel->getLanguage();
-				$this->suspend_length = $this->Usermodel->getSuspendLength();
-				$this->suspend_time = $this->Usermodel->getSuspendTime();
+				if ($userEntity) {
+					//setup logged in user.
+					$this->gid = $this->Usermodel->getGid();
+					$this->logged_user = $this->Usermodel->getUserName();
+					$this->userID = $this->Usermodel->getId();
+					$this->style = $this->Usermodel->getStyle();
+					$this->timeFormat = $this->Usermodel->getTimeFormat();
+					$this->timeZone = $this->Usermodel->getTimeZone();
+					$this->lng = $this->Usermodel->getLanguage();
+					$this->suspend_length = $this->Usermodel->getSuspendLength();
+					$this->suspend_time = $this->Usermodel->getSuspendTime();
 
-				//get group data.
-				$this->Groupmodel->GetGroupData($this->gid);
+					//get group data.
+					$groupData = $this->Groupmodel->GetGroupData($this->gid);
+					
+					if ($groupData) {
+						#see if user is marked as banned.
+						if($this->Groupmodel->getPermissionType() == 6){
+							exit(show_error($this->lang->line('banned')));
+						}
 
-				#see if user is marked as banned.
-				if($this->Groupmodel->getPermissionType() == 6){
-					exit(show_error($this->lang->line('banned')));
+						//detect group status.
+						$this->groupAccess = $this->Groupmodel->getLevel();
+					} else {
+						show_error($this->lang->line('invalidgid'), 500, $this->lang->line('error'));
+					}
+
+					//see if a user is either suspended or banned.
+					//checkBan();
+
+					//update user's onhline status.
+					update_whosonline_users($this->userID);
+				} else {
+					show_error($this->lang->line('invaliduser'), 500, $this->lang->line('error'));
 				}
-
-				//detect group status.
-				$this->groupAccess = $this->Groupmodel->getLevel();
-				
-				//see if a user is either suspended or banned.
-				//checkBan();
-
-				//update user's onhline status.
-				update_whosonline_users($this->logged_user);
 			} else {
 				//session is invalid, log user out and clear session data.
-				$this->db->where('username', $ebbuser);
+				$this->db->where('username', $ebbuserid);
 				$this->db->delete('ebb_login_session');
 				
 				//clear online status session.
@@ -183,6 +200,7 @@ class EBB_Controller extends CI_Controller {
 		} else {
 			//guest account.
 			$this->logged_user = "guest";
+			$this->userID = 0;
 			$this->Groupmodel->IsGuest = TRUE;
 			$this->groupAccess = 0;
 			$this->groupProfile = 0;
@@ -202,7 +220,7 @@ class EBB_Controller extends CI_Controller {
 
 		//load up global settings.
 		$this->title = $this->preference->getPreferenceValue("board_name");
-		$this->boardUrl = $this->preference->getPreferenceValue("board_url");
+		$this->boardUrl = $this->config->item('base_url');
 
 	}
 	

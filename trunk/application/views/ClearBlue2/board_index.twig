@@ -38,10 +38,10 @@ $(function(){
         {% if c.id == b.Category %}
 			<tr>
 			<td class="ui-widget-content centerText">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("application/views/ClearBlue2/images/old.gif")|raw : IMG("application/views/ClearBlue2/images/new.gif")|raw }}</td>
-			<td class="ui-widget-content"><strong>{{URL_TAG("boards/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("boards/boardFeed/"~ b.id, IMG("application/views/ClearBlue2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
+			<td class="ui-widget-content"><strong>{{URL_TAG("/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("/feed/"~ b.id, IMG("application/views/ClearBlue2/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
 			<td class="ui-widget-header centerText">{{b.id|counter("TopicCount")}}</td>
 			<td class="ui-widget-header centerText">{{b.id|counter("PostCount")}}</td>
-			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("boards/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Posted_User}}</td>
+			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Username}}</td>
 			</tr>
 		{%- endif -%}
 

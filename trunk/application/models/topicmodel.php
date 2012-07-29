@@ -19,6 +19,7 @@ class Topicmodel extends CI_Model {
 	*/
 	
 	private $author;
+	private $uid;
 	private $tiD;
 	private $piD;
 	private $bid;
@@ -484,6 +485,30 @@ class Topicmodel extends CI_Model {
 	public function getDisableSmiles() {
 		return $this->disableSmiles;
 	}
+	
+	/**
+	 * set value for id
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @param mixed $uid
+	 * @return Usermodel
+	 */
+	public function &setUId($uid) {
+		$this->uid=$uid;
+		return $this;
+	}
+
+	/**
+	 * get value for id
+	 *
+	 * type:MEDIUMINT UNSIGNED,size:8,default:null,primary,unique,autoincrement
+	 *
+	 * @return mixed
+	 */
+	public function getUId() {
+		return $this->uid;
+	}
 
 	/**
 	 * set value for gid
@@ -776,8 +801,127 @@ class Topicmodel extends CI_Model {
 		$this->db->update('ebb_topics', $data);
 	}
 	
-	public function ModifyPoll() {
+	/**
+	 * Set a topic as locked or unlocked.
+	 * @version 07/03/12
+	 * @access public
+	 * @return boolean 
+	 */
+	public function ToggleTopicLock() {
+		if (!is_bool($this->getLocked())) {
+			return FALSE;
+		} else {
+			#setup values.
+			$data = array(
+			  'Locked' => ($this->getLocked()) ? 1 : 0
+			);
+
+			#update topic.
+			$this->db->where('tid', $this->getTiD());
+			$this->db->update('ebb_topics', $data);
+			return TRUE;
+		}
+	}	
+	
+	/**
+	 * Moves topic & replies to new defined board.
+	 * @param integer $origBoard The previous Board ID
+	 * @access public
+	 * @version 07/10/12
+	*/
+	public function MoveTopic($origBoard) {
+		#setup values.
+		$tData = array(
+		  'bid' => $this->getBid()
+        );
 		
+		#update topic.
+		$this->db->where('tid', $this->getTiD());
+		$this->db->update('ebb_topics', $tData);
+		
+		$this->db->select('pid')
+		  ->from('ebb_posts')
+		  ->where('tid', $this->getTiD());
+		$replyQuery = $this->db->get();
+		
+		//update the replies for this topic.
+		foreach ($replyQuery->result() as $posts) {
+			#setup values.
+			$pData = array(
+			'bid' => $this->getBid()
+			);
+
+			#update reply.
+			$this->db->where('tid', $posts->pid);
+			$this->db->update('ebb_posts', $pData);
+		}
+		
+		//update ebb_boards last post data.
+		$this->db->select('id')
+		  ->from('ebb_boards')
+		  ->where('id', $origBoard);
+		$boardQuery = $this->db->get();
+		
+		//see if board has any previous topics, if so update to use that.
+		if($boardQuery->num_rows() > 0) {
+			#setup values.
+			$bData = array(
+			  'last_update' => null,
+			  'Posted_User' => null,
+			  'tid' => null
+			);
+		} else {
+			$this->db->select('last_update, posted_user, tid')
+			  ->from('ebb_topics')
+			  ->where('bid', $origBoard)
+			  ->order_by('last_update', 'desc')
+			  ->limit(1);
+			$topicQuery = $this->db->get();
+			$TopicData = $topicQuery->row();
+			
+			#setup values.
+			$bData = array(
+			  'last_update' => $TopicData->last_update,
+			  'Posted_User' => $TopicData->posted_user,
+			  'tid' => $TopicData->tid
+			);
+		}
+		
+		#update old board location.
+		$this->db->where('id', $origBoard);
+		$this->db->update('ebb_boards', $bData);
+		
+		//see if new board location needs to get updated.
+		$this->db->select('last_update')
+		  ->from('ebb_boards')
+		  ->where('id', $this->getBid());
+		$newBoardQuery = $this->db->get();
+		$newBoardData = $newBoardQuery->row();
+		
+		$this->db->select('last_update, posted_user, tid')
+		  ->from('ebb_topics')
+		  ->where('tid', $this->getTiD())
+		  ->limit(1);
+		$tQuery = $this->db->get();
+		$tRes = $tQuery->row();
+		
+		//if no topic existed there before or the date is newer, update the board.
+		if($newBoardQuery->num_rows() == 0 || $newBoardData->last_update < $tRes->last_update) {
+			#setup values.
+			$nbData = array(
+			  'last_update' => $tRes->last_update,
+			  'Posted_User' => $tRes->posted_user,
+			  'tid' => $tRes->tid
+			);
+			
+			#update new board location.
+			$this->db->where('id', $this->getBid());
+			$this->db->update('ebb_boards', $nbData);
+		}
+	}
+	
+	public function ModifyPoll() {
+		//TODO: implement this either in RC2 or RC 3.
 	}
 	
 	/**
@@ -929,16 +1073,16 @@ class Topicmodel extends CI_Model {
 	/**
 	 * Grab topic data.
 	 * @param int $tid TopicID
-	 * @version 06/13/12
+	 * @version 07/16/12
 	 * @access public
 	 * @return boolean
 	*/
 	public function GetTopicData($tid) {
 
 		//fetch topic data.
-		$this->db->select('t.tid, t.bid, t.author, t.Topic, t.Body, t.topic_type, t.important, t.IP, t.Original_Date, t.last_update, t.pid, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
+		$this->db->select('t.tid, t.bid, t.author, u.Username, t.Topic, t.Body, t.topic_type, t.important, t.IP, t.Original_Date, t.last_update, t.pid, t.Locked, t.Views, t.Question, t.disable_bbcode, t.disable_smiles, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
 		  ->from('ebb_topics t')
-		  ->join('ebb_users u', 't.author=u.Username', 'LEFT')
+		  ->join('ebb_users u', 't.author=u.id', 'LEFT')
 		  ->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT')
 		  ->where('tid', $tid);
 		$query = $this->db->get();
@@ -949,7 +1093,8 @@ class Topicmodel extends CI_Model {
 			$TopicData = $query->row();
 
 			//populate properties with values.
-			$this->setAuthor($TopicData->author);
+			$this->setAuthor($TopicData->Username);
+			$this->setUId($TopicData->author);
 			$this->setBid($TopicData->bid);
 			$this->setBody($TopicData->Body);
 			$this->setDisableBbCode($TopicData->disable_bbcode);
@@ -981,14 +1126,15 @@ class Topicmodel extends CI_Model {
 	/**
 	 * Get a single reply record.
 	 * @param integer $pid Post ID
-	 * @version 06/13/12
+	 * @version 07/16/12
 	 * @return boolean
 	 */
 	public function GetReplyData($pid){
 		//fetch topic data.
-		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, t.Topic')
+		$this->db->select('p.author, u.Username, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, t.Topic')
 		  ->from('ebb_posts p')
 		  ->join('ebb_topics t', 'p.tid=t.tid', 'LEFT')
+		  ->join('ebb_users u', 'p.author=u.id', 'LEFT')
 		  ->where('p.pid', $pid);
 		$query = $this->db->get();
 
@@ -998,7 +1144,8 @@ class Topicmodel extends CI_Model {
 			$PostData = $query->row();
 
 			//populate properties with values.
-			$this->setAuthor($PostData->author);
+			$this->setAuthor($PostData->Username);
+			$this->setUId($PostData->author);
 			$this->setTopic($PostData->Topic);
 			$this->setPiD($PostData->pid);
 			$this->setTiD($PostData->tid);
@@ -1016,7 +1163,7 @@ class Topicmodel extends CI_Model {
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 06/20/12
+	 * @version 07/16/12
 	 * @param int $tid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
@@ -1029,9 +1176,9 @@ class Topicmodel extends CI_Model {
 		$replies = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
+		$this->db->select('u.Username, p.author, p.pid, p.tid, p.bid, p.Body, p.IP, p.Original_Date, p.disable_smiles, p.disable_bbcode, u.Post_Count, u.warning_level, u.Avatar, u.Sig, u.Custom_Title, g.profile, g.access_level')
 		  ->from('ebb_posts p')
-		  ->join('ebb_users u', 'p.author=u.Username', 'LEFT')
+		  ->join('ebb_users u', 'p.author=u.id', 'LEFT')
 		  ->join('ebb_permission_profile g', 'g.id=u.gid', 'LEFT')
 		  ->where('tid', $tid);
 		

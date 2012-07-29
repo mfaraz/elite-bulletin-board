@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
   * English.lang.php
   * @package Elite Bulletin Board v3
   * @author Elite Bulletin Board Team <http://elite-board.us>
-  * @copyright  (c) 2006-2013
+  * @copyright (c) 2006-2013
   * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-  * @version 07/02/2012
+  * @version 07/28/2012
 */
 
 #Common language tags.
@@ -14,7 +14,7 @@ $lang['login'] = 'Login';
 $lang['register'] = 'Register';
 $lang['logout'] = 'Logout';
 $lang['404'] = 'File does not exists.';
-$lang['loggedinas'] = 'Logged In As: ';
+$lang['loggedinas'] = 'Logged In As:';
 $lang['welcomeguest'] = 'Welcome Guest';
 $lang['yes'] = 'Yes';
 $lang['no'] = 'No';
@@ -79,6 +79,9 @@ $lang['noaction'] = 'No action was given by user.';
 #success notifications.
 $lang['deletetopicsuccess'] = 'Successfully Deleted Topic';
 $lang['deletereplysuccess'] = 'Successfully Deleted Reply';
+$lang['lockedtopicsuccess'] = 'Successfully Locked Topic';
+$lang['unlockedtopicsuccess'] = 'Successfully Unlocked Topic';
+
 
 #Menu-based language tags.
 $lang['nonewpm'] = 'You have no new messages';
@@ -319,7 +322,6 @@ $lang['actionbanned'] = 'Warning Reached Banning Status';
 $lang['actionsuspend'] = 'User got suspended';
 $lang['actionblank'] = 'No action listed, may be invalid entry.';
 $lang['contactsubject'] = 'A Notice from the staff at ';
-$lang['move'] = 'Here you can move a topic to another board. Select a new board and the topic and all things linked to it will be moved to the new location.';
 $lang['movetopic'] = 'Move Topic';
 $lang['noboard'] = 'You did not select a new board.';
 $lang['sameboard'] = 'The board you selected is where the topic already exist.';

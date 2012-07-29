@@ -18,7 +18,30 @@
 | Please see the user guide for complete details:
 |
 |	http://codeigniter.com/user_guide/general/routing.html
-|
+*/
+
+$route['viewboard/(:num)']  = "boards/viewboard/$1";
+$route['viewtopic/(:num)']  = "boards/viewtopic/$1";
+$route['feed/(:num)']  = "boards/boardFeed/$1";
+$route['latesttopics']  = "boards/latestPost";
+$route['reply/(:num)']  = "boards/reply/$1";
+$route['newtopic/(:num)']  = "boards/newtopic/$1";
+$route['newpoll/(:num)']  = "boards/newpoll/$1";
+$route['print/(:num)']  = "boards/printable/$1";
+$route['reporttopic/(:num)']  = "boards/reporttopic/$1";
+$route['download/(:num)']  = "boards/download/$1";
+$route['quote/(:num)/(:num)/(:num)']  = "boards/quote/$1/$2/$3";
+$route['deletetopic/(:num)']  = "boards/deletetopic/$1";
+$route['deletepost/(:num)']  = "boards/deletepost/$1";
+$route['editpost/(:num)']  = "boards/editpost/$1";
+$route['edittopic/(:num)']  = "boards/edittopic/$1";
+$route['activate/(:num)/(:num)']  = "login/ActivateAccount/$1/$2";
+$route['login']  = "login/LogIn";
+$route['logout']  = "login/LogOut";
+$route['register']  = "login/register";
+$route['resetpassword']  = "login/PasswordRecovery";
+
+/*
 | -------------------------------------------------------------------------
 | RESERVED ROUTES
 | -------------------------------------------------------------------------

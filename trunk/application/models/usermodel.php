@@ -4,15 +4,15 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * usermodel.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 05/15/2012
+ * @version 07/25/2012
 */
 
 /**
  * User Entity
  * @abstract CI_Model
- */
+*/
 class Usermodel extends CI_Model {
 
 	/**
@@ -858,15 +858,15 @@ class Usermodel extends CI_Model {
 
 	/**
 	 * Assign values from hash where the indexes match the tables field names
-	 * @version 05/15/12
-	 * @param string $user user we want to get info on from DB.
+	 * @version 07/16/12
+	 * @param integer $user user we want to get info on from DB.
 	 */
-	public function getUser($user) {
+	public function getUser($userID) {
 
 		//SQL grabbing count of all topics for this board.
 		$this->db->select('id, Username, Password, Email, gid, Custom_Title, last_visit, PM_Notify, Hide_Email,MSN, AOL, Yahoo, ICQ, WWW, Location, Avatar, Sig, Time_format, Time_Zone, Date_Joined, IP, Style, Language, Post_Count, last_post, last_search, failed_attempts, active, act_key, password_recovery_date, warning_level, suspend_length, suspend_time')
 		  ->from('ebb_users')
-		  ->where('Username', $user);
+		  ->where('id', $userID);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -907,17 +907,18 @@ class Usermodel extends CI_Model {
 			$this->setWarningLevel($userData->warning_level);
 			$this->setSuspendLength($userData->suspend_length);
 			$this->setSuspendTime($userData->suspend_time);
+			return TRUE;
 		} else {
-			//no record was found, throw an error.
-			show_error($this->lang->line('invaliduser').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
-			log_message('error', 'invalid username was provided.'.$user); //log error in error log.
+			return FALSE;			
+			log_message('error', 'invalid userID was provided.'.$userID); //log error in error log.
 		}
 	}
 
 	/**
 	 * Creates a new user.
 	 * @access Public
-	 * @version 05/15/12
+	 * @version 06/16/12
+	 * @return integer New User ID
 	*/
 	public function CreateUser() {
 		#setup values.
@@ -957,13 +958,16 @@ class Usermodel extends CI_Model {
 
 		#add new user.
 		$this->db->insert('ebb_users', $data);
+		
+		//get user id
+		return $this->db->insert_id();
 	}
 
 	/**
 	 * Update a current user.
 	 * @param array $data The field(s) we want to modify. (NULL will update everything).
 	 * @access Public
-	 * @version 05/15/12
+	 * @version 07/25/12
 	*/
 	public function UpdateUser($data = NULL) {
 		
@@ -1003,7 +1007,7 @@ class Usermodel extends CI_Model {
 		}
 
 		#update user.
-		$this->db->where('Username', $this->getUserName());
+		$this->db->where('id', $this->getId());
 		$this->db->update('ebb_users', $data);
 	}
 }

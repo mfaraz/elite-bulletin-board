@@ -14,7 +14,7 @@
 
 <!--RSS & ICO -->
 {{LinkTag("application/views/ClearBlue2/images/favicon.ico", "shortcut icon", "image/ico")|raw}}
-{{LinkTag("index.php/boards/latestPost", "alternate", "application/rss+xml", boardName)|raw}}
+{{LinkTag(INDEX_PAGE~"/latesttopics", "alternate", "application/rss+xml", boardName)|raw}}
 {{LinkTag("search/results", "search", "application/opensearchdescription+xml", boardName)|raw}}
 
 <!-- Language JS File. -->
@@ -111,13 +111,13 @@
 		{{LOGINFORM|raw}}
 
 		<p>
-		{{LANG_USERNAME}}&nbsp;[{{URL_TAG("login/register", LANG_REGISTER)|raw}}]<br />
+		{{LANG_USERNAME}}&nbsp;[{{URL_TAG("/register", LANG_REGISTER)|raw}}]<br />
 		<input type="text" name="username" class="text" size="30" id="username" tabindex="1" />
 		<div id="usererr"></div>
 		</p>
 
 		<p>
-		{{LANG_PASSWORD}}&nbsp;[{{URL_TAG("login/PasswordRecovery", LANG_FORGOT)|raw}}]<br />
+		{{LANG_PASSWORD}}&nbsp;[{{URL_TAG("/resetpassword", LANG_FORGOT)|raw}}]<br />
 		<input type="password" name="password" class="text" size="30" id="password" tabindex="2" />
 		<div id="passerr"></div>
 		</p>
@@ -163,17 +163,17 @@
 
 {# setup menu by group policy. #}
 {% if groupAccess == 1 %}
-	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("login/LogOut/", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="acp/index.php">{{LANG_CP}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
+	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("/logout", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="acp/index.php">{{LANG_CP}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
 	</tr><tr>
 		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
 	</tr><tr>
 {%- elseif groupAccess == 2 or groupAccess == 3 -%}
-	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("login/LogOut/", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
+	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("/logout", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
 	</tr><tr>
 		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
 	</tr><tr>
 {%- else -%}
-	<td class="ui-widget-content">{{LANG_WELCOMEGUEST}}! <a href="#" onclick="$('#login').dialog('open');">{{LANG_LOGIN}}</a> | {{URL_TAG("login/register/", LANG_REGISTER)|raw}}</td>
+	<td class="ui-widget-content">{{LANG_WELCOMEGUEST}}! <a href="#" onclick="$('#login').dialog('open');">{{LANG_LOGIN}}</a> | {{URL_TAG("/register", LANG_REGISTER)|raw}}</td>
 	</tr><tr>
 {%- endif -%}
 

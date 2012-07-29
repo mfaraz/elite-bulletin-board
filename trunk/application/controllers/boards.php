@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/20/2012
 */
 
 /**
@@ -44,7 +44,12 @@ class Boards extends EBB_Controller {
         	$data[] = $row;
 
 			//build second query.
-			$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page, Category')->from('ebb_boards')->where('type', 2)->where('Category',$row->id)->order_by("B_Order", "asc");
+			$this->db->select('b.id, b.Board, b.Description, b.last_update, u.Username, b.tid, b.last_page, b.Category')
+			  ->from('ebb_boards b')
+			  ->join('ebb_users u', 'b.Posted_User=u.id', 'LEFT')
+			  ->where('b.type', 2)
+			  ->where('b.Category',$row->id)
+			  ->order_by("b.B_Order", "asc");
 			$query2 = $this->db->get();
 			foreach ($query2->result() as $row2) {
 
@@ -69,6 +74,7 @@ class Boards extends EBB_Controller {
 		echo $this->twig->render($this->style, 'board_index', array (
             'boardName' => $this->title,
             'pageTitle'=> $this->lang->line('index'),
+			'INDEX_PAGE' => $this->config->item('index_page'),
             'BOARD_URL' => $this->boardUrl,
             'APP_URL' => $this->boardUrl.APPPATH,
             'NOTIFY_TYPE' => $this->notifyType,
@@ -79,6 +85,7 @@ class Boards extends EBB_Controller {
             'LANG_WELCOME'=> $this->lang->line('loggedinas'),
             'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
             'LOGGEDUSER' => $this->logged_user,
+			'LOGGEDUSERID' => $this->userID,
             'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
             'LANG_INFO' => $this->lang->line('info'),
             'LANG_LOGIN' => $this->lang->line('login'),
@@ -188,17 +195,17 @@ class Boards extends EBB_Controller {
 				$this->load->library(array('datetime_52', 'encrypt', 'pagination', 'breadcrumb'));
 
 				//record user coming in here
-				if ((!CheckReadStatus($id, $this->logged_user)) AND ($this->logged_user <> "guest")){
+				if ((!CheckReadStatus($id, $this->userID)) AND ($this->logged_user <> "guest")){
 					$data = array(
 					'Board' => $id,
-					'User' => $this->logged_user
+					'User' => $this->userID
 					);
 					$this->db->insert('ebb_read_board', $data);
 				}
 
 				//setup pagination.
 				$config = array();
-				$config['base_url'] = $this->boardUrl . 'index.php/boards/viewboard/'.$id;
+				$config['base_url'] = $this->boardUrl.$this->config->item('index_page').'/viewboard/'.$id;
 				$config['total_rows'] = GetCount($id, 'TopicCount');
 				$config['per_page'] = $this->preference->getPreferenceValue("per_page");
 				$config['uri_segment'] = 4;
@@ -232,6 +239,7 @@ class Boards extends EBB_Controller {
 				echo $this->twig->render($this->style, 'viewboard', array (
                     'boardName' => $this->title,
                     'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
+					'INDEX_PAGE' => $this->config->item('index_page'),
                     'BOARD_URL' => $this->boardUrl,
                     'APP_URL' => $this->boardUrl.APPPATH,
                     'NOTIFY_TYPE' => $this->notifyType,
@@ -242,6 +250,7 @@ class Boards extends EBB_Controller {
                     'LANG_WELCOME'=> $this->lang->line('loggedinas'),
                     'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
                     'LOGGEDUSER' => $this->logged_user,
+				    'LOGGEDUSERID' => $this->userID,
                     'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
                     'LANG_INFO' => $this->lang->line('info'),
                     'LANG_LOGIN' => $this->lang->line('login'),
@@ -426,7 +435,7 @@ class Boards extends EBB_Controller {
 				* Setup Pagination.
 				*/
 				$config = array();
-				$config['base_url'] = $this->boardUrl . 'index.php/boards/viewtopic/'.$id;
+				$config['base_url'] = $this->boardUrl.$this->config->item('index_page').'/viewtopic/'.$id;
 				$config['total_rows'] = GetCount($id, 'TopicReplies');
 				$config['per_page'] = $this->preference->getPreferenceValue("per_page");
 				$config['uri_segment'] = 4;
@@ -446,8 +455,8 @@ class Boards extends EBB_Controller {
 
 				//add breadcrumbs
 				$this->breadcrumb->append_crumb($this->title, '/');
-				$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
-				$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic');
+				$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard/'.$this->Topicmodel->getBid());
+				$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/viewtopic');
 
 				#setup filters.
 				$this->twig->_twig_env->addFilter('counter', new Twig_Filter_Function('GetCount'));
@@ -471,6 +480,7 @@ class Boards extends EBB_Controller {
 				echo $this->twig->render($this->style, 'viewtopic', array (
 				'boardName' => $this->title,
 				'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
+				'INDEX_PAGE' => $this->config->item('index_page'),
 				'BOARD_URL' => $this->boardUrl,
 				'APP_URL' => $this->boardUrl.APPPATH,
 				'NOTIFY_TYPE' => $this->notifyType,
@@ -481,6 +491,7 @@ class Boards extends EBB_Controller {
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 				'LOGGEDUSER' => $this->logged_user,
+				'LOGGEDUSERID' => $this->userID,
 				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 				'LANG_INFO' => $this->lang->line('info'),
 				'LANG_LOGIN' => $this->lang->line('login'),
@@ -518,6 +529,10 @@ class Boards extends EBB_Controller {
 				'LANG_DELPROMPT' => $this->lang->line('topiccon'),
 				'LANG_DELPROMPT2' => $this->lang->line('postcon'),
 				'TOPICID' => $id,
+				'MOVETOPICFORM' => form_open('maintenance/move/'),
+				'MOVETOPIC_SELECT' => boardListSelect($this->Topicmodel->getBid()),
+				'BOARDID' => $this->Topicmodel->getBid(),
+				'LANG_MOVETOPIC' => $this->lang->line('movetopic'),
 				'DISABLE_SMILES' => $disable_smiles,
 				'BOARDPREF_SMILES' => $boardpref_smiles,
 				'DISABLE_BBCODE' => $disable_bbcode,
@@ -529,6 +544,7 @@ class Boards extends EBB_Controller {
 				'TOPIC_SUBJECT' => $this->Topicmodel->getTopic(),
 				'TOPIC_BODY' => $this->Topicmodel->getBody(),
 				'TOPIC_AUTHOR' => $this->Topicmodel->getAuthor(),
+				'TOPIC_USERID' => $this->Topicmodel->getUId(),
 				'TOPIC_IP' => $this->Topicmodel->getIp(),
 				'TOPIC_POSTEDON' => $this->Topicmodel->getOriginalDate(),
 				'AUTHOR_GROUPNAME' => $this->Topicmodel->getGroupProfile(),
@@ -565,7 +581,7 @@ class Boards extends EBB_Controller {
 				'GAC_MOVEACL' => $CanMoveACL,
 				'GAC_TOGGLELOCKACL' => $CanToggleLockACL,
 				'QREPLYFORM' => form_open('boards/reply/'.$id, array('name' => 'frmQReply')),
-				  'UPLOADFORM' => form_open_multipart('upload/do_upload/'),
+				'UPLOADFORM' => form_open_multipart('upload/do_upload/'),
 				'SMILES' => form_smiles(),
 				'LANG_REPLY' => $this->lang->line('btnreply'),
 				'LANG_OPTIONS' => $this->lang->line('options'),
@@ -574,15 +590,14 @@ class Boards extends EBB_Controller {
 				'LANG_NOTIFY' => $this->lang->line('notify'),
 				'LANG_DISABLESMILES' => $this->lang->line('disablesmiles'),
 				'LANG_DISABLEBBCODE' => $this->lang->line('disablebbcode'),
-				  "LANG_UPLOAD" => $this->lang->line("uploadfile"),
-				  "LANG_CLEAR" => $this->lang->line("clearfile"),
-				  "LANG_ADDMOREFILES" => $this->lang->line("addMoreFiles"),
+				"LANG_UPLOAD" => $this->lang->line("uploadfile"),
+				"LANG_CLEAR" => $this->lang->line("clearfile"),
+				"LANG_ADDMOREFILES" => $this->lang->line("addMoreFiles"),
 				));
 			} else {
 				show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 			}
 		}
-		
 	}
 	
 	/**
@@ -596,7 +611,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		} else {
 			//load topic & attachments model.
 			$this->load->model(array('Topicmodel', 'Attachmentsmodel'));
@@ -719,7 +734,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -761,7 +776,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
-				redirect('/boards/viewboard/'.$bid, 'location');
+				redirect('/viewboard/'.$bid, 'location');
 				exit();
 			}
 			
@@ -776,7 +791,7 @@ class Boards extends EBB_Controller {
 			$time = time();
 			
 			//create new topic.
-			$this->Topicmodel->setAuthor($this->logged_user);
+			$this->Topicmodel->setAuthor($this->userID);
 			$this->Topicmodel->setBid($bid);
 			$this->Topicmodel->setTopic($this->input->post('topic', TRUE));
 			$this->Topicmodel->setBody($this->input->post('post', TRUE));
@@ -787,7 +802,7 @@ class Boards extends EBB_Controller {
 			$this->Topicmodel->setLastUpdate($time);
 			$this->Topicmodel->setOriginalDate($time);
 			$this->Topicmodel->setLocked(0);
-			$this->Topicmodel->setPostedUser($this->logged_user);
+			$this->Topicmodel->setPostedUser($this->userID);
 			$this->Topicmodel->setQuestion(null);
 			$this->Topicmodel->setTopicType(0);
 			$this->Topicmodel->setViews(0);
@@ -796,20 +811,20 @@ class Boards extends EBB_Controller {
 			
 			//see if user wants to subscribe to this topic.
 			if ($subscribe) {
-				subscriptionManager($this->logged_user, $newTopicId, "subscribe");
+				subscriptionManager($this->userID, $newTopicId, "subscribe");
 			}
 
 			#update board & topic details.
-			update_board($bid, $newTopicId, $time, $this->logged_user);
-			update_topic($newTopicId, $time, $this->logged_user);
+			update_board($bid, $newTopicId, $time, $this->userID);
+			update_topic($newTopicId, $time, $this->userID);
 			
 			//update user's last post.
-			update_user($this->logged_user);
+			update_user($this->userID);
 			
 			#see if this board can allow post count increase.
 			if($this->Boardmodel->getPostIncrement() == 1){
 				//get current post count then add on to it.
-				post_count($this->logged_user);
+				post_count($this->userID);
 			}
 			
 			//validate user can attach files.
@@ -817,7 +832,7 @@ class Boards extends EBB_Controller {
 				#see if user uploaded a file, if so lets assign the file to the topic.
 				$this->db->select('id')
 					->from('ebb_attachments')
-					->where('Username', $this->logged_user)
+					->where('Username', $this->userID)
 					->where('tid', 0)
 					->where('pid', 0);
 				$query = $this->db->get();
@@ -832,7 +847,7 @@ class Boards extends EBB_Controller {
 			}
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$newTopicId, 'location');
+			redirect('/viewtopic/'.$newTopicId, 'location');
 		}
 	}
 	
@@ -847,7 +862,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -891,7 +906,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
-				redirect('/boards/viewboard/'.$bid, 'location');
+				redirect('/viewboard/'.$bid, 'location');
 				exit();
 			}
 			
@@ -906,7 +921,7 @@ class Boards extends EBB_Controller {
 			$time = time();
 			
 			//create new topic.
-			$this->Topicmodel->setAuthor($this->logged_user);
+			$this->Topicmodel->setAuthor($this->userID);
 			$this->Topicmodel->setBid($bid);
 			$this->Topicmodel->setTopic($this->input->post('topic', TRUE));
 			$this->Topicmodel->setBody($this->input->post('post', TRUE));
@@ -917,7 +932,7 @@ class Boards extends EBB_Controller {
 			$this->Topicmodel->setLastUpdate($time);
 			$this->Topicmodel->setOriginalDate($time);
 			$this->Topicmodel->setLocked(0);
-			$this->Topicmodel->setPostedUser($this->logged_user);
+			$this->Topicmodel->setPostedUser($this->userID);
 			$this->Topicmodel->setQuestion($this->input->post('question', TRUE));
 			$this->Topicmodel->setTopicType(1);
 			$this->Topicmodel->setViews(0);
@@ -934,20 +949,20 @@ class Boards extends EBB_Controller {
 			
 			//see if user wants to subscribe to this topic.
 			if ($subscribe) {
-				subscriptionManager($this->logged_user, $newTopicId, "subscribe");
+				subscriptionManager($this->userID, $newTopicId, "subscribe");
 			}
 
 			#update board & topic details.
-			update_board($bid, $newTopicId, $time, $this->logged_user);
-			update_topic($newTopicId, $time, $this->logged_user);
+			update_board($bid, $newTopicId, $time, $this->userID);
+			update_topic($newTopicId, $time, $this->userID);
 			
 			//update user's last post.
-			update_user($this->logged_user);
+			update_user($this->userID);
 			
 			#see if this board can allow post count increase.
 			if($this->Boardmodel->getPostIncrement() == 1){
 				//get current post count then add on to it.
-				post_count($this->logged_user);
+				post_count($this->userID);
 			}
 			
 			//validate user can attach files.
@@ -955,7 +970,7 @@ class Boards extends EBB_Controller {
 				#see if user uploaded a file, if so lets assign the file to the topic.
 				$this->db->select('id')
 					->from('ebb_attachments')
-					->where('Username', $this->logged_user)
+					->where('Username', $this->userID)
 					->where('tid', 0)
 					->where('pid', 0);
 				$query = $this->db->get();
@@ -970,14 +985,14 @@ class Boards extends EBB_Controller {
 			}
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$newTopicId, 'location');
+			redirect('/viewtopic/'.$newTopicId, 'location');
 			
 		}
 	}
 	
 	/**
 	 * New Topics form.
-	 * @version 07/02/12
+	 * @version 07/20/12
 	 * @params integer $bid Board ID
 	 * @params boolean $pollTopic Is this a poll topic?
 	 * @access private
@@ -991,9 +1006,9 @@ class Boards extends EBB_Controller {
 		$this->Boardmodel->GetBoardSettings($bid);
 		
 		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$bid);
-		$this->breadcrumb->append_crumb($this->lang->line("posttopic"), '/boards/newtopic');
+		$this->breadcrumb->append_crumb($this->title, '/');
+		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard/'.$bid);
+		$this->breadcrumb->append_crumb($this->lang->line("posttopic"), '/newtopic');
 
 		//grab board preferences.
 		$boardpref_bbcode = $this->Boardmodel->getBbCode();
@@ -1025,6 +1040,7 @@ class Boards extends EBB_Controller {
 		echo $this->twig->render($this->style, 'newtopic', array (
 		  'boardName' => $this->title,
 		  'pageTitle'=> $this->lang->line("newtopic"),
+		  'INDEX_PAGE' => $this->config->item('index_page'),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
 		  'NOTIFY_TYPE' => $this->notifyType,
@@ -1036,6 +1052,7 @@ class Boards extends EBB_Controller {
 		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
+		  'LOGGEDUSERID' => $this->userID,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
@@ -1112,7 +1129,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -1133,7 +1150,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -1172,7 +1189,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('warning', $this->lang->line('flood'));
 
 				#direct user.
-				redirect('/boards/viewtopic/'.$tid, 'location');
+				redirect('/viewtopic/'.$tid, 'location');
 				exit();
 			}
 			
@@ -1187,7 +1204,7 @@ class Boards extends EBB_Controller {
 			$time = time();
 			
 			//create new topic.
-			$this->Topicmodel->setAuthor($this->logged_user);
+			$this->Topicmodel->setAuthor($this->userID);
 			$this->Topicmodel->setBid($this->Topicmodel->getBid());
 			$this->Topicmodel->setTiD($tid);
 			$this->Topicmodel->setTopic(null);
@@ -1199,7 +1216,7 @@ class Boards extends EBB_Controller {
 			$this->Topicmodel->setLastUpdate($time);
 			$this->Topicmodel->setOriginalDate($time);
 			$this->Topicmodel->setLocked(0);
-			$this->Topicmodel->setPostedUser($this->logged_user);
+			$this->Topicmodel->setPostedUser($this->userID);
 			$this->Topicmodel->setQuestion(null);
 			$this->Topicmodel->setTopicType(null);
 			
@@ -1207,20 +1224,20 @@ class Boards extends EBB_Controller {
 			
 			//see if user wants to subscribe to this topic.
 			if ($subscribe) {
-				subscriptionManager($this->logged_user, $tid, "subscribe");
+				subscriptionManager($this->userID, $tid, "subscribe");
 			}
 
 			#update board & topic details.
-			update_board($this->Topicmodel->getBid(), $tid, $time, $this->logged_user);
-			update_topic($tid, $time, $this->logged_user);
+			update_board($this->Topicmodel->getBid(), $tid, $time, $this->userID);
+			update_topic($tid, $time, $this->userID);
 			
 			//update user's last post.
-			update_user($this->logged_user);
+			update_user($this->userID);
 			
 			#see if this board can allow post count increase.
 			if($this->Boardmodel->getPostIncrement() == 1){
 				//get current post count then add on to it.
-				post_count($this->logged_user);
+				post_count($this->userID);
 			}
 			
 			//validate user can attach files.
@@ -1228,7 +1245,7 @@ class Boards extends EBB_Controller {
 				#see if user uploaded a file, if so lets assign the file to the topic.
 				$this->db->select('id')
 					->from('ebb_attachments')
-					->where('Username', $this->logged_user)
+					->where('Username', $this->userID)
 					->where('tid', 0)
 					->where('pid', 0);
 				$query = $this->db->get();
@@ -1243,10 +1260,10 @@ class Boards extends EBB_Controller {
 			}
 			
 			//new topic notification.
-			$this->db->select('u.Email, u.Language, tw.username')
+			$this->db->select('u.Email, u.Language, u.Username')
 			  ->from('ebb_topic_watch tw')
-			  ->join('ebb_users u', 'tw.username=u.Username', 'LEFT')
-			  ->where('tw.username !=', $this->logged_user)
+			  ->join('ebb_users u', 'tw.username=u.id', 'LEFT')
+			  ->where('tw.username !=', $this->userID)
 			  ->where('tw.tid', $tid)
 			  ->where('tw.read_status', 0);
 			$notificationQ = $this->db->get();
@@ -1278,7 +1295,7 @@ class Boards extends EBB_Controller {
 					$this->email->from($this->preference->getPreferenceValue("board_email"), $this->title);
 					$this->email->subject('RE: '.$this->Topicmodel->getTopic());
 					$this->email->message($this->twig->renderNoStyle('/emails/'.$notify->Language.'/eml_new_reply.twig', array(
-						'USERNAME' => $notify->username,
+						'USERNAME' => $notify->Username,
 						'AUTHOR' => $this->logged_user,						  
 						'TITLE' => $this->title,
 						'BOARDADDR' => $this->boardUrl,
@@ -1292,7 +1309,7 @@ class Boards extends EBB_Controller {
 			}
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$tid, 'location');
+			redirect('/viewtopic/'.$tid, 'location');
 		}
 	}
 	
@@ -1301,7 +1318,7 @@ class Boards extends EBB_Controller {
 	 * @param integer $tid TopicID.
 	 * @param integer $quoteID Topic/Post ID.
 	 * @param integer $quoteType topic=1;post=2.
-	 * @version 07/02/12
+	 * @version 07/20/12
 	 */
 	private function FORM_reply($tid, $quoteID=null, $quoteType=null) {
 		//load breadcrumb library
@@ -1321,15 +1338,16 @@ class Boards extends EBB_Controller {
 			if ($quoteType == 1) {
 				$quoteMsg = '[quote='.$this->Topicmodel->getAuthor().']'.$this->Topicmodel->getBody().'[/quote]';
 			} else {
-				$this->db->select('author, Body');
-				$this->db->from('ebb_posts');
-				$this->db->where('pid', $quoteID);
+				$this->db->select('u.Username, p.Body')
+				->from('ebb_posts p')
+				->join('ebb_users u', 'p.author=u.id', 'LEFT')
+				->where('p.pid', $quoteID);
 				$query = $this->db->get();
 				
 				//see if the post exists.
 				if($query->num_rows() > 0) {
 					$row = $query->row();
-					$quoteMsg = '[quote='.$row->author.']'.$row->Body.'[/quote]';
+					$quoteMsg = '[quote='.$row->Username.']'.$row->Body.'[/quote]';
 				} else {
 					$quoteMsg = '';
 				}
@@ -1339,9 +1357,9 @@ class Boards extends EBB_Controller {
 		}
 		
 		// add breadcrumbs
-		$this->breadcrumb->append_crumb($this->title, '/boards/');
-		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
-		$this->breadcrumb->append_crumb($this->lang->line("posttopic"), '/boards/newtopic');
+		$this->breadcrumb->append_crumb($this->title, '/');
+		$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard/'.$this->Topicmodel->getBid());
+		$this->breadcrumb->append_crumb($this->lang->line("postreply"), '/reply');
 
 		//grab board preferences.
 		$boardpref_bbcode = $this->Boardmodel->getBbCode();
@@ -1358,7 +1376,8 @@ class Boards extends EBB_Controller {
 		//render to HTML.
 		echo $this->twig->render($this->style, 'reply', array (
 		  'boardName' => $this->title,
-		  'pageTitle'=> $this->lang->line("newtopic"),
+		  'pageTitle'=> $this->lang->line("newreply"),
+		  'INDEX_PAGE' => $this->config->item('index_page'),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
 		  'NOTIFY_TYPE' => $this->notifyType,
@@ -1370,6 +1389,7 @@ class Boards extends EBB_Controller {
 		  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 		  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 		  'LOGGEDUSER' => $this->logged_user,
+		  'LOGGEDUSERID' => $this->userID,
 		  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 		  'LANG_INFO' => $this->lang->line('info'),
 		  'LANG_LOGIN' => $this->lang->line('login'),
@@ -1435,8 +1455,10 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
+		
+		$canVote = TRUE; //see if user can vote.
 		
 		//LOAD LIBRARIES
 		$this->load->library(array('encrypt'));
@@ -1453,32 +1475,37 @@ class Boards extends EBB_Controller {
 		//see if user can vote.
 		if (!$this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBVote())){
 			$this->notifications('error', $this->lang->line('cantvote'));
+			$canVote = FALSE;
 		} else {
 			if (!$this->Groupmodel->ValidateAccess(1, 36)){
 				$this->notifications('error', $this->lang->line('cantvote'));
+				$canVote = FALSE;
 			}
 		}
 		
-		//get vote from form.
-		$vote = $this->input->post('vote', TRUE);
-		
-		//ensure the user entered something.
-		if (!$vote) {
-			//something went wrong.
-			$this->notifications('error', $this->lang->line('novote'));
-		} else {
-			//load topic model.
-			$this->load->model('Topicmodel');
+		//process vote only if allowed to.
+		if ($canVote) {
+			//get vote from form.
+			$vote = $this->input->post('vote', TRUE);
 
-			//cast vote.
-			$this->Topicmodel->CastVote($this->logged_user, $id, $vote);
-			
-			//vote has been recorded.
-			$this->notifications('success', $this->lang->line('votecasted'));
+			//ensure the user entered something.
+			if (!$vote) {
+				//something went wrong.
+				$this->notifications('error', $this->lang->line('novote'));
+			} else {
+				//load topic model.
+				$this->load->model('Topicmodel');
+
+				//cast vote.
+				$this->Topicmodel->CastVote($this->userID, $id, $vote);
+
+				//vote has been recorded.
+				$this->notifications('success', $this->lang->line('votecasted'));
+			}
 		}
 		
 		//direct user to topic.
-		redirect('/boards/viewtopic/'.$id, 'location');
+		redirect('/viewtopic/'.$id, 'location');
 	}
 	
 	/**
@@ -1493,7 +1520,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -1509,8 +1536,8 @@ class Boards extends EBB_Controller {
 		if ($tData) {
 			// add breadcrumbs
 			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$this->Topicmodel->getTiD());
-			$this->breadcrumb->append_crumb($this->lang->line("reporttomod"), '/boards/reporttopic/'.$id);
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/viewtopic/'.$this->Topicmodel->getTiD());
+			$this->breadcrumb->append_crumb($this->lang->line("reporttomod"), '/reporttopic/'.$id);
 
 			//setup validation rules.
 			$this->form_validation->set_rules('reason', $this->lang->line('reason'), 'required|xss_clean');
@@ -1523,6 +1550,7 @@ class Boards extends EBB_Controller {
 				echo $this->twig->render($this->style, 'reporttopic', array (
 				'boardName' => $this->title,
 				'pageTitle'=> $this->lang->line("reporttomod"),
+				'INDEX_PAGE' => $this->config->item('index_page'),
 				'BOARD_URL' => $this->boardUrl,
 				'APP_URL' => $this->boardUrl.APPPATH,
 				'NOTIFY_TYPE' => $this->notifyType,
@@ -1532,6 +1560,7 @@ class Boards extends EBB_Controller {
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 				'LOGGEDUSER' => $this->logged_user,
+				'LOGGEDUSERID' => $this->userID,
 				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 				'LANG_INFO' => $this->lang->line('info'),
 				'LANG_LOGIN' => $this->lang->line('login'),
@@ -1620,7 +1649,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('success', $this->lang->line('reportsent'));
 
 				//direct user to topic.
-				redirect('/boards/viewtopic/'.$id, 'location');
+				redirect('/viewtopic/'.$id, 'location');
 
 			}
 		} else {
@@ -1641,7 +1670,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -1680,10 +1709,10 @@ class Boards extends EBB_Controller {
 		//see if any validation rules failed.
 		if ($this->form_validation->run() == FALSE) {
 			// add breadcrumbs
-			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
-			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$id);
-			$this->breadcrumb->append_crumb($this->lang->line("edittopic"), '/boards/edittopic/'.$id);
+			$this->breadcrumb->append_crumb($this->title, '/');
+			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard/'.$this->Topicmodel->getBid());
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/viewtopic/'.$id);
+			$this->breadcrumb->append_crumb($this->lang->line("edittopic"), '/edittopic/'.$id);
 
 			//grab board preferences.
 			$boardpref_bbcode = $this->Boardmodel->getBbCode();
@@ -1708,6 +1737,7 @@ class Boards extends EBB_Controller {
 			echo $this->twig->render($this->style, 'edit_topic', array (
 			  'boardName' => $this->title,
 			  'pageTitle'=> $this->lang->line("edittopic"),
+			  'INDEX_PAGE' => $this->config->item('index_page'),
 			  'BOARD_URL' => $this->boardUrl,
 			  'APP_URL' => $this->boardUrl.APPPATH,
 			  'NOTIFY_TYPE' => $this->notifyType,
@@ -1717,6 +1747,7 @@ class Boards extends EBB_Controller {
 			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 			  'LOGGEDUSER' => $this->logged_user,
+			  'LOGGEDUSERID' => $this->userID,
 			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 			  'LANG_INFO' => $this->lang->line('info'),
 			  'LANG_LOGIN' => $this->lang->line('login'),
@@ -1792,7 +1823,7 @@ class Boards extends EBB_Controller {
 			
 			//see if user wants to subscribe to this topic.
 			if ($subscribe) {
-				subscriptionManager($this->logged_user, $id, "subscribe");
+				subscriptionManager($this->userID, $id, "subscribe");
 			}
 		
 			//validate user can attach files.
@@ -1800,7 +1831,7 @@ class Boards extends EBB_Controller {
 				#see if user uploaded a file, if so lets assign the file to the topic.
 				$this->db->select('id')
 					->from('ebb_attachments')
-					->where('Username', $this->logged_user)
+					->where('Username', $this->userID)
 					->where('tid', 0)
 					->where('pid', 0);
 				$query = $this->db->get();
@@ -1815,7 +1846,7 @@ class Boards extends EBB_Controller {
 			}
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$id, 'location');
+			redirect('/viewtopic/'.$id, 'location');
 		}
 		
 	}
@@ -1831,7 +1862,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//load topic model.
@@ -1876,7 +1907,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('success', $this->lang->line('deletetopicsuccess'));
 				
 				#direct user to login page.
-				redirect('/board/viewboard/'.$this->Topicmodel->getBid(), 'location');
+				redirect('/viewboard/'.$this->Topicmodel->getBid(), 'location');
 			} else {
 				show_error($this->lang->line('accessdenied'),403,$this->lang->line('error'));
 			}
@@ -1897,7 +1928,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//LOAD LIBRARIES
@@ -1928,10 +1959,10 @@ class Boards extends EBB_Controller {
 		//see if any validation rules failed.
 		if ($this->form_validation->run() == FALSE) {
 			// add breadcrumbs
-			$this->breadcrumb->append_crumb($this->title, '/boards/');
-			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/boards/viewboard/'.$this->Topicmodel->getBid());
-			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/boards/viewtopic/'.$this->Topicmodel->getTiD());
-			$this->breadcrumb->append_crumb($this->lang->line("editpost"), '/boards/editpost/'.$id);
+			$this->breadcrumb->append_crumb($this->title, '/');
+			$this->breadcrumb->append_crumb($this->Boardmodel->getBoard(), '/viewboard/'.$this->Topicmodel->getBid());
+			$this->breadcrumb->append_crumb($this->Topicmodel->getTopic(), '/viewtopic/'.$this->Topicmodel->getTiD());
+			$this->breadcrumb->append_crumb($this->lang->line("editpost"), '/editpost/'.$id);
 
 			//grab board preferences.
 			$boardpref_bbcode = $this->Boardmodel->getBbCode();
@@ -1949,6 +1980,7 @@ class Boards extends EBB_Controller {
 			echo $this->twig->render($this->style, 'edit_post', array (
 			  'boardName' => $this->title,
 			  'pageTitle'=> $this->lang->line("editpost"),
+			  'INDEX_PAGE' => $this->config->item('index_page'),
 			  'BOARD_URL' => $this->boardUrl,
 			  'APP_URL' => $this->boardUrl.APPPATH,
 			  'NOTIFY_TYPE' => $this->notifyType,
@@ -1958,6 +1990,7 @@ class Boards extends EBB_Controller {
 			  'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 			  'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 			  'LOGGEDUSER' => $this->logged_user,
+			  'LOGGEDUSERID' => $this->userID,
 			  'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 			  'LANG_INFO' => $this->lang->line('info'),
 			  'LANG_LOGIN' => $this->lang->line('login'),
@@ -2026,7 +2059,7 @@ class Boards extends EBB_Controller {
 			
 			//see if user wants to subscribe to this topic.
 			if ($subscribe) {
-				subscriptionManager($this->logged_user, $this->Topicmodel->getTiD(), "subscribe");
+				subscriptionManager($this->userID, $this->Topicmodel->getTiD(), "subscribe");
 			}
 			
 			//validate user can attach files.
@@ -2034,7 +2067,7 @@ class Boards extends EBB_Controller {
 				#see if user uploaded a file, if so lets assign the file to the topic.
 				$this->db->select('id')
 					->from('ebb_attachments')
-					->where('Username', $this->logged_user)
+					->where('Username', $this->userID)
 					->where('tid', 0)
 					->where('pid', 0);
 				$query = $this->db->get();
@@ -2049,7 +2082,7 @@ class Boards extends EBB_Controller {
 			}
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
+			redirect('/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
 			
 		}
 	}
@@ -2065,7 +2098,7 @@ class Boards extends EBB_Controller {
 			$this->notifications('warning', $this->lang->line('notloggedin'));
 
 			#direct user to login page.
-			redirect('/login/Login', 'location');
+			redirect('/login', 'location');
 		}
 		
 		//load topic model.
@@ -2108,7 +2141,7 @@ class Boards extends EBB_Controller {
 				$this->notifications('success', $this->lang->line('deletereplysuccess'));
 				
 				#direct user to login page.
-				redirect('/board/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
+				redirect('/viewtopic/'.$this->Topicmodel->getTiD(), 'location');
 			} else {
 				show_error($this->lang->line('accessdenied'),403,$this->lang->line('error'));
 			}
@@ -2119,7 +2152,7 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
-	 * Getan RSS Feed for the selected Board.
+	 * Get RSS Feed for the selected Board.
 	 * @example index.php/boards/boardFeed/5
 	*/
 	public function boardFeed($id) {
@@ -2173,7 +2206,7 @@ class Boards extends EBB_Controller {
 					$gmttime = gmdate ("r", $row->PDATE);				
 					
 					echo '<item>
-					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<link>'.$this->boardUrl.$this->config->item('index_page').'/viewtopic/'.$row->tid.'</link>
 					<date>'. $gmttime .'</date>
 					<title>'.$row->Topic.'</title>
 					<description>'.$rss_desc.'</description>
@@ -2191,7 +2224,7 @@ class Boards extends EBB_Controller {
 					$gmttime = gmdate ("r", $row->TDATE);	
 
 					echo '<item>
-					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<link>'.$this->boardUrl.$this->config->item('index_page').'/viewtopic/'.$row->tid.'</link>
 					<date>'. $gmttime .'</date>
 					<title>'.$row->Topic.'</title>
 					<description>'.$rss_desc.'</description>
@@ -2204,7 +2237,7 @@ class Boards extends EBB_Controller {
 	}
 	
 	/**
-	 * Getan RSS Feed for the latest posts on the board.
+	 * Get RSS Feed for the latest posts on the board.
 	 * @example index.php/boards/latestpost/5
 	*/
 	public function latestPost() {
@@ -2251,7 +2284,7 @@ class Boards extends EBB_Controller {
 					$gmttime = gmdate ("r", $row->PDATE);				
 					
 					echo '<item>
-					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<link>'.$this->boardUrl.$this->config->item('index_page').'/viewtopic/'.$row->tid.'</link>
 					<date>'. $gmttime .'</date>
 					<title>'.$row->Topic.'</title>
 					<description>'.$rss_desc.'</description>
@@ -2269,7 +2302,7 @@ class Boards extends EBB_Controller {
 					$gmttime = gmdate ("r", $row->TDATE);	
 
 					echo '<item>
-					<link>'.$this->boardUrl.'index.php/boards/viewtopic/'.$row->tid.'</link>
+					<link>'.$this->boardUrl.$this->config->item('index_page').'/viewtopic/'.$row->tid.'</link>
 					<date>'. $gmttime .'</date>
 					<title>'.$row->Topic.'</title>
 					<description>'.$rss_desc.'</description>

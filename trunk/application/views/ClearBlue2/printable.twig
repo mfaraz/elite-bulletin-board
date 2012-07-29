@@ -8,7 +8,7 @@
 <body>
 	<h1 id="title">{{TOPIC_SUBJECT}}</h1>
 	
-	<small>{{URL_TAG("boards/viewtopic/"~TOPICID, LANG_VIEWORIGTOPIC)|raw}}</small><br /><br />
+	<small>{{URL_TAG("/viewtopic/"~TOPICID, LANG_VIEWORIGTOPIC)|raw}}</small><br /><br />
 	<dl id="posts">
 		<dt class="postheader">
 			<strong>{{LANG_POSTEDBY}}:</strong> {{TOPIC_AUTHOR}}<br />
@@ -23,7 +23,7 @@
 	{% for r in REPLYDATA %}
 	<dl id="posts">
 		<dt class="postheader">
-			<strong>{{LANG_POSTEDBY}}:</strong> {{r.author}}<br />
+			<strong>{{LANG_POSTEDBY}}:</strong> {{r.Username}}<br />
 			<strong>{{LANG_POSTED}}:</strong> {{r.Original_Date|PostedDate(TimeFormat, TimeZone)}}
 		</dt>
 		<dd class="postbody">

@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/16/2012
 */
 
 /**
@@ -26,7 +26,6 @@ class Boardmodel extends CI_Model {
     private $tiD;
     private $piD;
     private $lastPage;
-	//private $postLink;
 	private $type;
 	private $category;
 	private $smiles;
@@ -419,7 +418,6 @@ class Boardmodel extends CI_Model {
 
 	}
 
-
     /**
      * Load Entity with values from our database.
      * @param integer $bid
@@ -464,7 +462,7 @@ class Boardmodel extends CI_Model {
 	 * Get an array of sub-boards.
 	 * @param int $boardID
 	 * @return array
-	 * @version 05/25/12
+	 * @version 07/16/12
 	*/
 	public function GetSubBoards($boardID) {
 
@@ -472,7 +470,12 @@ class Boardmodel extends CI_Model {
 		$subboards = array();
 
 		#board sql.
-		$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
+		$this->db->select('b.id, b.Board, b.Description, b.last_update, u.Username, b.tid, b.last_page')
+		  ->from('ebb_boards b')
+		  ->join('ebb_users u', 'b.Posted_User=u.id', 'LEFT')
+		  ->where('type', 3)
+		  ->where('Category', $boardID)
+		  ->order_by("B_Order", "asc");
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -490,7 +493,7 @@ class Boardmodel extends CI_Model {
 
 	/**
 	 * Get a list of all replies to a topic.
-	 * @version 1/31/12
+	 * @version 07/16/12
 	 * @param int $bid Topic ID.
 	 * @param int $limit amount to show per page.
 	 * @param int $start what entry to start from.
@@ -503,7 +506,12 @@ class Boardmodel extends CI_Model {
 		$topics = array();
 
 		//SQL to get all topics from defined board.
-		$this->db->select('bid, last_update, Topic, author, posted_user, last_page, pid, tid, Views, topic_type, important, Locked')->from('ebb_topics')->where('bid', $bid)->order_by('last_update', 'desc')->limit($limit, $start);
+		$this->db->select('t.bid, t.last_update, t.Topic, u.Username, t.posted_user, t.last_page, t.pid, t.tid, t.Views, t.topic_type, t.important, t.Locked')
+		  ->from('ebb_topics t')
+		  ->join('ebb_users u', 't.author=u.id', 'LEFT')
+		  ->where('bid', $bid)
+		  ->order_by('last_update', 'desc')
+		  ->limit($limit, $start);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
