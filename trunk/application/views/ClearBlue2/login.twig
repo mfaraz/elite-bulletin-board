@@ -21,12 +21,12 @@
 <tr>
 <td colspan="2" class="ui-widget-header centerText">::{{LANG_LOGIN}}::</td>
 </tr><tr>
-<td class="ui-widget-content" width="50%">{{LANG_USERNAME}} [{{URL_TAG("login/register", LANG_REGISTER)|raw}}]</td>
+<td class="ui-widget-content" width="50%">{{LANG_USERNAME}} [{{URL_TAG("/register", LANG_REGISTER)|raw}}]</td>
 <td class="ui-widget-content" width="50%"><input type="text" name="username" class="text" size="30" tabindex="1" id="usr" />
 {{VALIDATION_USERNAME|raw}}
 </td>
 </tr><tr>
-<td class="ui-widget-content" width="50%">{{LANG_PASSWORD}} [{{URL_TAG("login/PasswordRecovery", LANG_FORGOT)|raw}}]</td>
+<td class="ui-widget-content" width="50%">{{LANG_PASSWORD}} [{{URL_TAG("/resetpassword", LANG_FORGOT)|raw}}]</td>
 <td class="ui-widget-content" width="50%"><input type="password" name="password" class="text" size="30" tabindex="2" id="pwd" />
 {{VALIDATION_PASSWORD|raw}}
 </td>

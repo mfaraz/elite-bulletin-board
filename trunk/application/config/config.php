@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= '';
+$config['base_url']	= 'http://192.168.1.74/ebbv3/';
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ $config['base_url']	= '';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php';
+$config['index_page'] = 'index.php?'; //index.php?
 
 /*
 |--------------------------------------------------------------------------
@@ -202,7 +202,7 @@ $config['log_path'] = '';
 | codes to set your own date formatting
 |
 */
-$config['log_date_format'] = 'Y-m-d H:i:s';
+$config['log_date_format'] = 'm-d-Y g:i:s a';
 
 /*
 |--------------------------------------------------------------------------
@@ -265,9 +265,9 @@ $config['sess_time_to_update']	= 300;
 | 'cookie_secure' =  Cookies will only be set if a secure HTTPS connection exists.
 |
 */
-$config['cookie_prefix']	= "ebb_";
-$config['cookie_domain']	= "";
-$config['cookie_path']		= "";
+$config['cookie_prefix']	= ""; //NOT USED ON THIS PROJECT.
+$config['cookie_domain']	= "192.168.1.74";
+$config['cookie_path']		= "/ebbv3/";
 $config['cookie_secure']	= FALSE;
 
 /*

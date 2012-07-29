@@ -4,11 +4,10 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * common_helper.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/16/2012
 */
-
 
 /**
  * Will format time based on user preference.
@@ -31,7 +30,7 @@ function datetimeFormatter($time, $format, $GMT) {
 /**
  * Loads a URL using cURL.
  * @param string $url
- * @version 6/24/11
+ * @version 07/16/12
  * @return string
  */
 function curlLoadFromUrl($url) {
@@ -50,8 +49,7 @@ function curlLoadFromUrl($url) {
 		curl_close($curl);
 		return $result;
 	} catch(Exception $e) {
-		$error = new notifySys($e, true, true, __FILE__, __LINE__);
-		$error->genericError();
+		show_error($e);
     }
   }
 
@@ -107,8 +105,8 @@ function checkInstall(){
 
 /**
  * loads data for infoBox.
- * @version 11/12/10
- * @return string - infobox data.
+ * @version 07/16/12
+ * @return string infobox data.
 */
 function informationPanel() {
 
@@ -132,7 +130,6 @@ function informationPanel() {
 		//loop through data.
 		foreach ($infoQ->result() as $ticker) {
 			$infoLst .= '<li>'.smiles(BBCode($ticker->information)).'</li>'."\n";
-			//$infoLst .= '<li>'.$ticker->information.'</li>'."\n";
 		}
 
 		#finish list.
@@ -145,7 +142,7 @@ function informationPanel() {
 /**
  * get a collection of unread topics for search engine results.
  * @version 10/5/09
- * @return integer $count - results of count.
+ * @return integer $count results of count.
 */
 function newpost_counter(){
 

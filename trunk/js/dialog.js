@@ -7,6 +7,27 @@
  * @version 06/22/2012
 */
 $(document).ready(function(){
+	
+	//modcp move topic.
+	$('#mod_move').dialog({
+		autoOpen: false,
+		modal: true,
+		closeOnEscape: true,
+		height: 150,
+		width: 250,
+		show: 'fade',
+		resizable: false,
+		draggable: false,
+		open: function(event, ui) {
+			//focus on form.
+			$("#movetopic").focus();
+		},
+		close: function(event, ui) {
+			//clear form.
+			$("#movetopic").val("");
+		}
+	});
+	
 	//login box.
 	$('#login').dialog({
 		autoOpen: false,

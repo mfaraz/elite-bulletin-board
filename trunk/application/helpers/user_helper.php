@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/06/2012
+ * @version 07/25/2012
 */
 
 /**
@@ -21,21 +21,24 @@ function whosonline() {
 	
 	$online = '';
 	
-	$ci->db->distinct('Username')->from('ebb_online')->where('ip', '');
+	$ci->db->select('u.id, u.Username')
+	  ->from('ebb_online o')
+	  ->join('ebb_users u', 'o.Username=u.id', 'LEFT')
+	  ->where('o.ip IS NULL');
 	$onlineLogged = $ci->db->get();
 	foreach ($onlineLogged->result() as $row) {
 	    #gain status of users.
 		$ci->load->model('Groupmodel', 'groupsonline');
 		$ci->load->model('Usermodel', 'usersonline');
-		$ci->usersonline->getUser($row->Username);
+		$ci->usersonline->getUser($row->id);
 		$ci->groupsonline->GetGroupData($ci->usersonline->getGid());
 
 		if ($ci->groupsonline->getLevel() == 1){
-			$online .=  '<strong>'.anchor('/users/view/'.$row->Username, $row->Username).'</strong>&nbsp;';
+			$online .=  '<strong>'.anchor('/users/view/'.$row->id, $row->Username).'</strong>&nbsp;';
 		}elseif ($ci->groupsonline->getLevel() == 2){
-			$online .=  '<em>'.anchor('/users/view/'.$row->Username, $row->Username).'</em>&nbsp;';
+			$online .=  '<em>'.anchor('/users/view/'.$row->id, $row->Username).'</em>&nbsp;';
 		}elseif($ci->groupsonline->getLevel() == 3){
-			$online .=  anchor('/users/view/'.$row->Username, $row->Username).'&nbsp;';
+			$online .=  anchor('/users/view/'.$row->id, $row->Username).'&nbsp;';
 		}else{
 			$online .= '&nbsp;';
 		}
@@ -109,7 +112,7 @@ function update_whosonline_users($user){
 	#obtain codeigniter object.
 	$ci =& get_instance();
 	
-	$ci->db->select('Username')->from('ebb_online')->where('Username', $user);
+	$ci->db->select('id')->from('ebb_online')->where('Username', $user);
 	
 	//see if we add or update online status.
 	if ($ci->db->count_all_results() == 0){
@@ -696,112 +699,6 @@ function LanguageList($language){
 	
 	//setup form based on user's selection.
 	return form_dropdown('language', $AssocArray, $language, 'class="text"');
-}
-
-
-/**
- * Get User's Avatar.
- * @param string $user Username to look for.
- * @version 12/5/11
- * @return string
- * @uses When using the UserModel isn't possible.
- */
-function GetAvatar($user) {
-
-	#obtain codeigniter object.
-	$ci =& get_instance();
-
-	#grab our avatar.
-	$ci->db->select('Avatar')->from('ebb_users')->where('Username', $user)->limit(1);
-	$userQ = $ci->db->get();
-	$Avatar_R = $userQ->row();
-
-	return $Avatar_R->Avatar;
-
-}
-
-/**
- * Get User's Post Count.
- * @param string $user Username to look for.
- * @version 12/5/11
- * @return string
- * @uses When using the UserModel isn't possible.
- */
-function GetPostCount($user) {
-
-	#obtain codeigniter object.
-	$ci =& get_instance();
-
-	#grab our post count.
-	$ci->db->select('Post_Count')->from('ebb_users')->where('Username', $user)->limit(1);
-	$userQ = $ci->db->get();
-	$Post_Count_R = $userQ->row();
-
-	return $Post_Count_R->Post_Count;
-
-}
-
-/**
- * Get User's Post Count.
- * @param string $user Username to look for.
- * @version 12/5/11
- * @return string
- * @uses When using the UserModel isn't possible.
- */
-function GetCustomTitle($user) {
-
-	#obtain codeigniter object.
-	$ci =& get_instance();
-
-	#grab our custom title.
-	$ci->db->select('Custom_Title')->from('ebb_users')->where('Username', $user)->limit(1);
-	$userQ = $ci->db->get();
-	$Custom_Title_R = $userQ->row();
-
-	return $Custom_Title_R->Custom_Title;
-
-}
-
-/**
- * Get User's Signature.
- * @param string $user Username to look for.
- * @version 12/5/11
- * @return string
- * @uses When using the UserModel isn't possible.
- */
-function GetSignature($user) {
-
-	#obtain codeigniter object.
-	$ci =& get_instance();
-
-	#grab our signature.
-	$ci->db->select('Sig')->from('ebb_users')->where('Username', $user)->limit(1);
-	$userQ = $ci->db->get();
-	$Sig_R = $userQ->row();
-
-	return $Sig_R->Sig;
-
-}
-
-/**
- * Get User's Warning Level.
- * @param string $user Username to look for.
- * @version 12/5/11
- * @return string
- * @uses When using the UserModel isn't possible.
- */
-function GetWarningLevel($user) {
-
-	#obtain codeigniter object.
-	$ci =& get_instance();
-
-	#get user's warning level.
-	$ci->db->select('warning_level')->from('ebb_users')->where('Username', $user)->limit(1);
-	$userQ = $ci->db->get();
-	$Warn_R = $userQ->row();
-
-	return $Warn_R->warning_level;
-	
 }
 
 /**

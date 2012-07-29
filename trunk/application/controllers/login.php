@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * login.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/17/2012
+ * @version 07/28/2012
 */
 
 /**
@@ -25,7 +25,7 @@ class Login extends EBB_Controller {
 	 * @example index.php/login
 	*/
 	public function index() {
-		redirect('/login/Login', 'location'); //redirect user to login form.
+		redirect('/login', 'location'); //redirect user to login form.
 	}
 	
 	/**
@@ -56,7 +56,7 @@ class Login extends EBB_Controller {
 				$this->load->library('breadcrumb');
 
 				// add breadcrumbs
-				$this->breadcrumb->append_crumb($this->title, '/boards/');
+				$this->breadcrumb->append_crumb($this->title, '/');
 				$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
 
 				//render to HTML.
@@ -71,6 +71,7 @@ class Login extends EBB_Controller {
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 				'LOGGEDUSER' => $this->logged_user,
+				'LOGGEDUSERID' => $this->userID,
 				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 				'LANG_INFO' => $this->lang->line('info'),
 				'LANG_LOGIN' => $this->lang->line('login'),
@@ -97,7 +98,6 @@ class Login extends EBB_Controller {
 				));
 			}
 		} else {
-
             //setup login object.
             $params = array(
 				  'usr' => $this->input->post('username', TRUE),
@@ -112,47 +112,54 @@ class Login extends EBB_Controller {
 			if($this->auth->validateLogin()) {
 			
 			    #see if user is inactive.
-				if($this->auth->isActive() == false) {
+				if($this->auth->isActive() == FALSE) {
 					$this->notifications('error', $this->lang->line('inactiveuser'));
-
-					redirect('/login/LogIn', 'location');
+					redirect('/login', 'location');
 				} else {
-				
 					#see if board is disabled.
-					if($this->preference->getPreferenceValue("board_status") == 0){
+					if($this->preference->getPreferenceValue("board_status") == 0) {
 						#see if user has proper rights to access under this limited operational status.
                         $this->load->model('Groupmodel', 'alc');
                         $this->load->model('Usermodel', 'usr');
 
                         //get group data.
-                        $this->usr->getUser($this->input->post('username', TRUE));
-                        $this->alc->GetGroupData($this->usr->getGid());
+                        $usrLoaded = $this->usr->getUser($this->auth->getUserID());
+						if ($usrLoaded) {
+							$groupLoaded = $this->alc->GetGroupData($this->usr->getGid());
+							if ($groupLoaded) {
+								if($this->alc->getLevel() == 1) {
+									#clear any failed login attempts from their record.
+									$this->auth->clearFailedLogin();
 
+									#setup cookie or session(based on user's preference.
+									$this->auth->logOn($remember);
+                                    
+                                    //show success message.
+                                    $this->notifications('success', $this->lang->line('loggedinas').' '.$this->usr->getUserName());
 
-						if($this->alc->getLevel() == 1){
-							#clear any failed login attempts from their record.
-							$this->auth->clearFailedLogin();
+									#direct user to their previous location.
+									redirect('/', 'location');
+								} else {
+									$this->notifications('error', $this->lang->line('offlinemsg'));
 
-							#setup cookie or session(based on user's preference.
-							$this->auth->logOn($remember);
-
-							#direct user to their previous location.
-       						redirect('/', 'location');
-						}else{
-							$this->notifications('error', $this->lang->line('offlinemsg'));
-
-							#direct user.
-       						redirect('/', 'location');
+									#direct user.
+									redirect('/', 'location');
+								}
+							} else {
+								show_error($this->lang->line('invalidgid'), 500, $this->lang->line('error'));
+							}
+						} else {
+							show_error($this->lang->line('invaliduser'), 500, $this->lang->line('error'));
 						}
-					}else{
+					} else {
 						#clear any failed login attempts from their record.
 						$this->auth->clearFailedLogin();
 
-						#setup cookie or session(based on user's preference.
+						#setup cookie or session(based on user's preference).
 						$this->auth->logOn($remember);
 						
 						//show success message.
-						$this->notifications('success', $this->lang->line('loggedinas'). $this->session->userdata('ebbUser'));
+						$this->notifications('success', $this->lang->line('loggedinas').' '.$this->input->post('username', TRUE));
 
 						#direct user to their previous location.
 	     				redirect('/', 'location');
@@ -171,7 +178,7 @@ class Login extends EBB_Controller {
 					$this->notifications('error', $this->lang->line('lockeduser'));
 
 					#direct user.
-     				redirect('/login/LogIn', 'location');
+     				redirect('/login', 'location');
 				}else{
 				    #add to failed login count.
 					$this->auth->setFailedLogin();
@@ -180,7 +187,7 @@ class Login extends EBB_Controller {
 					$this->notifications('error', $this->lang->line('invalidlogin'));
 
 					#direct user.
-     				redirect('/login/LogIn', 'location');
+     				redirect('/login', 'location');
 				}
 			} //END login validation.
 			
@@ -189,14 +196,14 @@ class Login extends EBB_Controller {
 	
 	/**
 	 * Activates inactive account.
-	 * @example index.php/login/ActivateAccount/12345/user
+	 * @example index.php/login/ActivateAccount/12345/5
 	*/
 	public function ActivateAccount($key, $u) {
 	
 		$this->db->select('active')
 		  ->from('ebb_users')
 		  ->where('act_key', $key)
-		  ->where('Username', $u);
+		  ->where('id', $u);
 		$query = $this->db->get();
 
 		//see if we have any records to show.
@@ -214,21 +221,21 @@ class Login extends EBB_Controller {
 			} else {
 				//set user as active.
 				$data = array('active' => 1);
-				$this->db->where('Username', $u);
+				$this->db->where('id', $u);
 				$this->db->update('ebb_users', $data);
 
 				#setup success message.
 				$this->notifications('success', $this->lang->line('correctinfo'));
 				
 				#direct user.
-				redirect('/login/LogIn', 'location');
+				redirect('/login', 'location');
 			}
 		} else {
 			#setup error message.
 			$this->notifications('error', $this->lang->line('incorrectinfo'));
 
 			#direct user.
-			redirect('/login/LogIn', 'location');
+			redirect('/login', 'location');
 		}
 	}
 	
@@ -261,9 +268,8 @@ class Login extends EBB_Controller {
 				$this->load->library('breadcrumb');
 
 				// add breadcrumbs
-				$this->breadcrumb->append_crumb($this->title, '/boards/');
-				$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
-				$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/login/PasswordRecovery');		
+				$this->breadcrumb->append_crumb($this->title, '/');
+				$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/resetpassword');		
 
 				//render to HTML.
 				echo $this->twig->render($this->style, 'lostpassword', array (
@@ -277,6 +283,7 @@ class Login extends EBB_Controller {
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 				'LOGGEDUSER' => $this->logged_user,
+				'LOGGEDUSERID' => $this->userID,
 				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 				'LANG_INFO' => $this->lang->line('info'),
 				'LANG_LOGIN' => $this->lang->line('login'),
@@ -379,7 +386,7 @@ class Login extends EBB_Controller {
 				$this->notifications('success', $this->lang->line('newpwdsent'));
 
 				#direct user.
-				redirect('/login/LogIn', 'location');
+				redirect('/login', 'location');
 			} else {
 				log_message('error', $this->email->print_debugger()); //log error for debugging.
 				show_error($this->lang->line('pwdrecoveremlfail'),500, $this->lang->line('error'));
@@ -394,14 +401,14 @@ class Login extends EBB_Controller {
 	public function LogOut() {
 
 		//session is invalid, log user out and clear session data.
-		$this->db->where('username', $this->logged_user);
+		$this->db->where('username', $this->userID);
 		$this->db->delete('ebb_login_session');
 		
 		//clear online status session.
-		$this->db->delete('ebb_online', array('Username' => $this->logged_user));
+		$this->db->delete('ebb_online', array('Username' => $this->userID));
 
 		#clear session data.				
-		$this->session->unset_userdata('ebbUser');
+		$this->session->unset_userdata('ebbUserID');
 		$this->session->unset_userdata('ebbLastActive');
 		$this->session->unset_userdata('ebbLoginKey');
 		
@@ -464,6 +471,7 @@ class Login extends EBB_Controller {
 				'LANG_WELCOME'=> $this->lang->line('loggedinas'),
 				'LANG_WELCOMEGUEST' => $this->lang->line('welcomeguest'),
 				'LOGGEDUSER' => $this->logged_user,
+				'LOGGEDUSERID' => $this->userID,
 				'LANG_JSDISABLED' => $this->lang->line('jsdisabled'),
 				'LANG_INFO' => $this->lang->line('info'),
 				'LANG_LOGIN' => $this->lang->line('login'),
@@ -595,8 +603,8 @@ class Login extends EBB_Controller {
 			$this->Usermodel->setSuspendLength(0);
 			$this->Usermodel->setSuspendTime(null);
 			
-			#insert user to DB.
-			$this->Usermodel->CreateUser();
+			#insert user to DB and get User ID generated for new user.
+			$newUID = $this->Usermodel->CreateUser();
 			
 			#email user.
 			$config = array();
@@ -650,6 +658,7 @@ class Login extends EBB_Controller {
 				$this->email->subject($this->lang->line('usersubject'));
 				$this->email->message($this->twig->renderNoStyle('/emails/'.$this->lng.'/eml_user_confirm.twig', array(
 				  'USERNAME' => $username,
+				  'UID' => $newUID,
 				  'TITLE' => $this->title,
 				  'BOARDADDR' => $this->boardUrl,
 				  'KEY' => $act_key
@@ -662,7 +671,7 @@ class Login extends EBB_Controller {
 				$this->notifications('warning', $this->lang->line('acctuser'));
 
 				#direct user.
-				redirect('/login/LogIn', 'location');
+				redirect('/login', 'location');
 			} elseif ($this->preference->getPreferenceValue("activation") == "Admin") {
 				//send out email.        	
 				$this->email->to($email);
@@ -680,7 +689,7 @@ class Login extends EBB_Controller {
 				$this->notifications('warning', $this->lang->line('acctadmin'));
 
 				#direct user.
-				redirect('/login/LogIn', 'location');
+				redirect('/login', 'location');
 			}
 			
 		}

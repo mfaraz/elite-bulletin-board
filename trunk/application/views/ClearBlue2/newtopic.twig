@@ -113,9 +113,9 @@
 			uploadLimitMsg: lang.attachLimit,
 			uploadLimit: "{{ATTACHMENTLIMIT}}",
 			confirmDeleteTitle: lang.attachDeleteTitle,
-			deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
+			deleteUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/delete",
 			confirmDeletMsg: lang.attachDeletePrompt,
-			fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
+			fileMgrUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/"
 		});
 	});
 </script>
@@ -212,7 +212,7 @@ $('#topic').change(function() {
 		$('#div_notice').show();
 
 		//call .ajax to call server.
-		$.post("{{BOARD_URL}}index.php/ajax/SimilarTopics", $('#frmNewTopic').serialize(),function(html){
+		$.post("{{BOARD_URL}}{{INDEX_PAGE}}/ajax/SimilarTopics", $('#frmNewTopic').serialize(),function(html){
 			$("#similar").html(html).removeClass("ui-state-error");
 		}); //END $.ajax(
 

@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * user.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/28/2012
 */
 
 class user{
@@ -20,7 +20,7 @@ class user{
 	private $user;
 	
 	/**
-	 *  CodeIgniter object.
+	 * CodeIgniter object.
 	 * @var object
 	*/
 	private $ci;
@@ -28,8 +28,7 @@ class user{
     /**
 	 * Setup User class structure.
 	 * @param string $params our parameters for this object.
-	 * @version 03/09/12
-	 * @access public
+	 * @version 07/28/12
 	*/
 	public function __construct($params){
 		
@@ -40,7 +39,7 @@ class user{
 		
 		#run a validation on the username entered.
 		if($this->checkUsername() == false){
-			exit(show_error($this->lang->line('invaliduser').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error')));
+			exit(show_error($this->ci->lang->line('invaliduser').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->ci->lang->line('error')));
 			log_message('error', 'invalid username was provided: '.$this->user); //log error in error log.
 		}
 	}
@@ -48,7 +47,6 @@ class user{
     /**
 	 * Clear User data member.
 	 * @version 09/28/09
-	 * @access public
 	*/
 	public function __destruct(){
   		unset($this->user);
@@ -56,13 +54,13 @@ class user{
 	
 	/**
 	 * see if username entered is valid.
-	 * @version 03/04/12
+	 * @version 07/28/12
 	 * @return boolean
 	 * @access private
 	*/
 	private function checkUsername(){
 	    #check against the database to see if the username match.
-		$this->ci->db->select('id')->from('ebb_users')->where('Username', $this->user)->limit(1);
+		$this->ci->db->select('id')->from('ebb_users')->where('id', $this->user)->limit(1);
 		$validateStatus = $this->ci->db->count_all_results();
 
 		#setup bool. value to see if user is active or not.
@@ -142,13 +140,13 @@ class user{
 	 * Obtains Status on any new Messages for defined user.
 	 * @param string $ucpMode determines if we want it in notification mode or just the count.
 	 * @access Public
-	 * @version 6/5/2011
-	 * @return  total new PMs to user.
+	 * @version 07/25/2012
+	 * @return integer total new PMs to user.
 	*/
 	public function getNewPMCount($ucpMode=false){
 
 		#total of new PM messages.
-		$this->ci->db->select('Read_Status')->from('ebb_pm')->where('Reciever', $this->user)->where('Read_Status', '');
+		$this->ci->db->select('Read_Status')->from('ebb_pm')->where('Receiver', $this->user)->where('Read_Status', '');
 		$newPm = $this->ci->db->count_all_results();
 
 		//see if we're trying to get a count only.
@@ -163,23 +161,6 @@ class user{
 
 			return($pmMsg);
 		}
-	}
-
-	/**
-	 * Obtains user's password salt when having to change their passwords.
-	 * @version 10/28/11
-	 * @return password salt.
-	 * @access public
-	*/
-	
-	public function getPasswordSalt(){
-
-	    #obtain password salt.
-		$this->ci->db->select('salt')->from('ebb_users')->where('Username', $this->user)->limit(1);
-		$query = $this->ci->db->get();
-		$pwdSlt = $query->row();
-
-		return($pwdSlt->salt);
 	}
 
 	/**

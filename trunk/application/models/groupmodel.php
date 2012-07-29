@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * groupmodel.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/28/2012
 */
 
 /**
@@ -24,7 +24,12 @@ class Groupmodel extends CI_Model {
 	private $enrollment;
 	private $level;
 	private $permissionType;
-	public $IsGuest = FALSE; //flag to see if user is a guest or not.
+	
+	/**
+	 * flag to see if user is a guest or not.
+	 * @var boolean
+	*/
+	public $IsGuest = FALSE;
 
 	public function __construct() {
         parent::__construct();
@@ -205,9 +210,10 @@ class Groupmodel extends CI_Model {
 			$this->setEnrollment($GroupData->Enrollment);
 			$this->setLevel($GroupData->Level);
 			$this->setPermissionType($GroupData->permission_type);
+			return TRUE;
 		} else {
 			//no record was found, throw an error.
-			show_error($this->lang->line('invalidgid').'<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			return FALSE;
 			log_message('error', 'invalid GroupID was provided.'); //log error in error log.
 		}
 

@@ -100,9 +100,9 @@
 			uploadLimitMsg: lang.attachLimit,
 			uploadLimit: "{{ATTACHMENTLIMIT}}",
 			confirmDeleteTitle: lang.attachDeleteTitle,
-			deleteUrl: "{{BOARD_URL}}index.php/upload/delete",
+			deleteUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/delete",
 			confirmDeletMsg: lang.attachDeletePrompt,
-			fileMgrUrl: "{{BOARD_URL}}index.php/upload/"
+			fileMgrUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/"
 		});
 	});
 </script>
@@ -133,9 +133,9 @@
 
 <div class="ui-widget-content" id="replyoverview">
 	<div style="text-align:center;">
-		<strong>{{LANG_TOPICREVIEW}}</strong>&nbsp;&bull;&nbsp;[<a href="#replyoverview" onClick="loadIframe('topicreview', 'index.php/boards/printable/{{TID}}');"><img src="application/views/ClearBlue2/images/reload.png" alt="{{LANG_RELOAD}}" /></a>]
+		<strong>{{LANG_TOPICREVIEW}}</strong>&nbsp;&bull;&nbsp;[<a href="#replyoverview" onClick="loadIframe('topicreview', '{{INDEX_PAGE}}/print/{{TID}}');"><img src="application/views/ClearBlue2/images/reload.png" alt="{{LANG_RELOAD}}" /></a>]
 	</div>
-	<iframe src="index.php/boards/printable/{{TID}}" width="100%" id="topicreview" style="border:0px;"></iframe>
+	<iframe src="{{INDEX_PAGE}}/print/{{TID}}" width="100%" id="topicreview" style="border:0px;"></iframe>
 </div>
 
 <script type="text/javascript">

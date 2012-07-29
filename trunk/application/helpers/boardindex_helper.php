@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/27/2012
+ * @version 07/16/2012
 */
 
 /**
@@ -70,10 +70,10 @@ function CalcVotes($vote, $tid) {
 
 /**
  * Check to see defined user casted a vote.
- * @param string $usr Logged In User
+ * @param integer $usr Logged In User
  * @param integer $tid TopicID
  * @return boolean
- * @version 06/27/12
+ * @version 07/16/12
  */
 function CheckVoteStatus($usr, $tid) {
 	
@@ -97,9 +97,9 @@ function CheckVoteStatus($usr, $tid) {
 
 /**
  * checks to see if a board has neww topics or not.
- * @version 11/22/11
- * @param int $bid Board ID.
- * @param string $user user to check against.
+ * @version 07/16/12
+ * @param integer $bid Board ID.
+ * @param integer $user user to check against.
  * @access public
 */
 function CheckReadStatus($bid, $user) {
@@ -116,9 +116,9 @@ function CheckReadStatus($bid, $user) {
 
 /**
  * Check read status on a selected board.
- * @version 06/27/12
+ * @version 07/16/12
  * @param integer $tid Topic ID to select a topic.
- * @param string $user Username to check against.
+ * @param integer $user Username to check against.
  * @return boolean
 *
 */
@@ -247,12 +247,12 @@ function boardStats($type){
 	    break;
 		case 'guestonline':
 			//get total guest online.
-			$ci->db->distinct('ip')->from('ebb_online')->where('Username', '');
+			$ci->db->distinct('ip')->from('ebb_online')->where('Username IS NULL');
 			return number_format($ci->db->count_all_results());
 		break;
 		case 'memberonline':
 			//get total members online.
-			$ci->db->distinct('Username')->from('ebb_online')->where('ip', '');
+			$ci->db->distinct('Username')->from('ebb_online')->where('ip IS NULL');
 			$memberQ = $ci->db->get();
 			return number_format($memberQ->num_rows());
 		break;
@@ -264,7 +264,7 @@ function boardStats($type){
 
 /**
  * Will list all sub-boards linked to a parent board.
- * @version 06/27/12
+ * @version 07/16/12
  * @param int $boardID - Board ID to search for any sub-boards.
  * @return string
 */
@@ -272,8 +272,6 @@ function getSubBoard($boardID) {
 
 	//grab Codeigniter objects.
 	$ci =& get_instance();
-	
-	//$this->db->select('id, Board, Description, last_update, Posted_User, tid, last_page')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
 	
 	$ci->db->select('id, Board')->from('ebb_boards')->where('type', 3)->where('Category', $boardID)->order_by("B_Order", "asc");
 	$subBoardQuery = $ci->db->get();
