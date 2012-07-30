@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://192.168.1.74/ebbv3/';
+$config['base_url']	= '';
 
 /*
 |--------------------------------------------------------------------------
@@ -266,7 +266,7 @@ $config['sess_time_to_update']	= 300;
 |
 */
 $config['cookie_prefix']	= ""; //NOT USED ON THIS PROJECT.
-$config['cookie_domain']	= "192.168.1.74";
+$config['cookie_domain']	= "";
 $config['cookie_path']		= "/ebbv3/";
 $config['cookie_secure']	= FALSE;
 
