@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/28/2012
+ * @version 07/29/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -119,14 +119,12 @@ class EBB_Controller extends CI_Controller {
 		$this->db->delete('ebb_online', array('time <' => SESSION_TIMEOUT));
 		
 		#login setup
-		if ($this->session->userdata('ebbUserID') <> FALSE) { //$this->session->userdata('ebbUser') <> FALSE && 
+		if ($this->session->userdata('ebbUserID') <> FALSE) {
 
 			//see if user is logged in via cookies.
-			if ($this->input->cookie('ebbUser', TRUE) <> FALSE) {
-				//$ebbuser = $this->input->cookie('ebbUser', TRUE);
+			if ($this->input->cookie('ebbUserID', TRUE) <> FALSE) {
 				$ebbuserid = $this->input->cookie('ebbUserID', TRUE);
-			} elseif ($this->session->userdata('ebbUser') <> FALSE) {
-				//$ebbuser = $this->session->userdata('ebbUser');
+			} elseif ($this->session->userdata('ebbUserID') <> FALSE) {
 				$ebbuserid = $this->session->userdata('ebbUserID');
 			} else {
 				exit(show_error($this->lang->line('invalidlogin'), 500, $this->lang->line('error')));
