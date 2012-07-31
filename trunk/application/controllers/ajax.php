@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * ajax.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 06/22/2012
+ * @version 07/30/2012
 */
 
 /**
@@ -76,7 +76,7 @@ class Ajax extends EBB_Controller {
 
 						//see if the user can access this spot.
 						if ($this->Groupmodel->validateAccess(0, $this->Boardaccessmodel->getBRead())){
-							echo '<em>'.anchor('/boards/viewtopic/'.$row->tid, $row->Topic).'</em> - '.$row->author.'<br />';
+							echo '<em>'.anchor('/viewtopic/'.$row->tid, $row->Topic).'</em> - '.$row->author.'<br />';
 						}
 					}
 				} else {

@@ -1,0 +1,173 @@
+{% extends "master.twig" %}
+
+{% block title %}{{boardName}} - {{pageTitle}}{% endblock %}
+
+{% block bodyRender %}
+
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.jUploader.js"></script>
+<!-- markItUp! -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.markitup.js"></script>
+<!-- markItUp! toolbar settings -->
+<script type="text/javascript" src="{{BOARD_URL}}js/set.js"></script>
+<!-- API detection -->
+<script type="text/javascript" src="{{BOARD_URL}}js/validateAPI.js"></script>
+<!-- Rich text editor file -->
+<script type="text/javascript" src="{{BOARD_URL}}js/tEditor.js"></script>
+
+{{BREADCRUMB|raw}}<br />
+
+{{VALIDATIONSUMMARY|raw}}<br />
+
+<!-- validation box. -->
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerContainer" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p id="validateRes"></p>
+		</div>
+	</div>
+</div>
+
+<table border="0" class="table" cellpadding="1" cellspacing="1">
+<tr>
+	<td class="ui-widget-header centerText">
+		{{LANG_POSTINGRULES}}
+	</td>
+</tr><tr>
+	<td class="ui-widget-content centerText">
+		{{LANG_ALLOWSMILES}}: 
+		{% if ALLOWSMILES == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+		&nbsp;|&nbsp;
+		{{LANG_ALLOWBBCODE}}:
+		{% if ALLOWBBCODE == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+		&nbsp;|&nbsp;
+		{{LANG_ALLOWIMG}}: 
+		{% if ALLOWIMG == 1 %}
+		<strong>{{LANG_YES}}</strong>
+		{% else %}
+		<strong>{{LANG_NO}}</strong>
+		{% endif %}
+	</td>
+</tr>
+</table><br />
+
+<!-- warning container -->
+<div style="display:none;" id="div_ErrMsg">
+	<div class="ui-widget centerText" style="width: 45%;">
+		<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+			<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+			<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+			<strong>Alert:</strong>&nbsp;<span id="ErrMsg"></span></p>
+		</div>
+	</div>
+</div>
+
+<div id="moreSmiles"></div>
+<div id="DLG_upload">
+	{% if ATTACHMENTLIMIT > 0 %}
+	{{UPLOADFORM|raw}}
+		<input id="attach" name="userfile" type="file" /><br />
+		<input type="submit" value="{{LANG_UPLOAD}}" id="fileUpload" />
+		<input type="reset" value="{{LANG_CLEAR}}" id="ClearList" />
+		<input type="button" value="{{LANG_VIEWFILES}}" id="AttachList" />
+	</form>
+	<div id="filelist"></div>
+
+	<script type="text/javascript">
+		$(function(){
+			$('#attach').jUploader({
+				LoadingGfx: "{{BOARD_URL}}themes/{{THEME_NAME}}/images/loading.gif",
+				LoadingMsg: lang.attachLoading,
+				PendingMsg: lang.attachPending,
+				SuccessMsg: lang.attachSuccess,
+				FailureMsg: lang.attachFailed,
+				uploadLimitMsg: lang.attachLimit,
+				uploadLimit: "{{ATTACHMENTLIMIT}}",
+				deleteUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/delete",
+				confirmDeletMsg: lang.attachDeletePrompt,
+				fileMgrUrl: "{{BOARD_URL}}{{INDEX_PAGE}}/upload/"
+			});
+		});
+	</script>
+	{% endif %}
+</div>
+
+{% if POLLOPTION == TRUE %}
+{{NEWPOLLFORM|raw}}
+{% else %}
+{{NEWTOPICFORM|raw}}
+{% endif %}
+<div id="emoticons" class="ui-widget-content ui-corner-all centerContainer centerText" style="width:500px;">
+	{{SMILES|raw}}
+	<hr />
+	<a href="#smiles" onclick="$('#moreSmiles').dialog('open');">{{LANG_SMILES}}</a>
+</div><br />
+<div class="ui-widget-content ui-corner-all centerContainer" style="width:400px;text-align:left;padding: 0 .7em;">
+{{LANG_TOPIC}}:<br /><input type="text" name="topic" class="text" size="30" id="topic" value="{{TOPIC}}" />
+</div>
+<div align="center">
+	<textarea id="body" name="post" cols="80" rows="20">{{POSTTOPIC}}</textarea>
+	<br /><input type="submit" value="{{LANG_EDITTOPIC}}" class="submit" />
+</div>
+<br />
+<div class="ui-widget-content ui-corner-all centerContainer" style="text-align:left;width:450px; padding: 0 .7em;">
+	<div class="centerText">
+		<a href="#editor" class="toggle"><span>{{LANG_DISABLERTF}}</span></a>
+	</div>
+	{% if GAC_IMPORTANT == TRUE %}
+		{% if POSTTYPE == 1 %}
+		{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" checked=checked />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" />{{LANG_NORMAL}}<br />
+		{% else %}
+		{{LANG_POSTTYPE}}:&nbsp;<input type="radio" name="post_type" value="1" />{{LANG_IMPORTANT}}&nbsp;<input type="radio" name="post_type" value="0" checked=checked />{{LANG_NORMAL}}<br />
+		{% endif %}
+	{% else %}
+	<input type="hidden" name="post_type" value="0" />
+	{% endif %}
+	<input type="checkbox" name="subscribe" value="1" />{{LANG_NOTIFY}}<br />
+	
+	{% if DISABLESMILES == 1 %}
+	<input type="checkbox" name="no_smile" value="1" checked=checked />{{LANG_DISABLESMILES}}<br />
+	{% else %}
+	<input type="checkbox" name="no_smile" value="1" />{{LANG_DISABLESMILES}}<br />
+	{% endif %}
+	
+	{% if DISABLEBBCODE == 1 %}
+	<input type="checkbox" name="no_bbcode" value="1" checked=checked />{{LANG_DISABLEBBCODE}}
+	{% else %}
+	<input type="checkbox" name="no_bbcode" value="1" />{{LANG_DISABLEBBCODE}}
+	{% endif %}
+</div>
+</form><br />
+<script type="text/javascript">
+$('#topic').focus();
+
+new FormValidator('frmEditTopic', [{
+	name: 'topic',
+	display: '{{LANG_TOPIC}}',
+	rules: 'required|max_length[50]'
+},{
+	name: 'post',
+	display: '{{LANG_TOPICBODY}}',
+	rules: 'required|min_length[10]'
+}], function(errors, event) {
+
+	if (errors.length > 0) {
+		$('#validateRes').empty();
+		$('#validateRes').append(errors.join('<br />'));
+		$('#div_ErrMsg').show();
+	} else {
+		event.returnValue = true; //allow form to process.
+	}
+
+});
+</script>
+
+{% endblock %}

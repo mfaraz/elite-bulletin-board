@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<!--  Base CSS -->
+{{LinkTag("themes/"~THEME_NAME~"/style.css")|raw}}
+{{LinkTag("themes/"~THEME_NAME~"/jui.css")|raw}}
+
+<!--  markItUp! toolbar skin -->
+{{LinkTag("themes/"~THEME_NAME~"/bbcode.css")|raw}}
+{{LinkTag("themes/"~THEME_NAME~"/skin.css")|raw}}
+
+<!--RSS & ICO -->
+{{LinkTag("themes/"~THEME_NAME~"/images/favicon.ico", "shortcut icon", "image/ico")|raw}}
+{{LinkTag(INDEX_PAGE~"/latesttopics", "alternate", "application/rss+xml", boardName)|raw}}
+{{LinkTag("search/results", "search", "application/opensearchdescription+xml", boardName)|raw}}
+
+<!-- Language JS File. -->
+<script type="text/javascript" src="{{BOARD_URL}}js/lang/{{LANG}}/{{LANG}}.lang.js"></script>
+
+<!-- REQUIRED, CORE -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery-1.7.2.min.js"></script>
+<script src="{{BOARD_URL}}js/jquery-ui-1.8.22.min.js" type="text/javascript"></script>
+
+<!-- PLUGINS USED ALL AROUND EBB -->
+<script type="text/javascript" src="{{BOARD_URL}}js/dialog.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/common.js"></script>
+
+<!-- notification plug-in. -->
+<script type="text/javascript" src="{{BOARD_URL}}js/jquery.jnotify.min.js"></script>
+<script type="text/javascript" src="{{BOARD_URL}}js/notify.js"></script>
+
+<!-- validation js -->
+<script type="text/javascript" src="{{BOARD_URL}}js/validate.min.js"></script>
+
+<script type="text/javascript">
+	var boardUrl = '{{BOARD_URL}}';
+</script>
+
+<!-- /JAVASCRIPT FILES -->
+</head>
+<body>
+<!-- No javascript? let user know its required. -->
+<noscript>
+	<div id="loadingBackGround_nojs">
+		<div id="loadingMessage_nojs">
+			<strong>{{LANG_INFO}}</strong><br />
+			<strong>{{LANG_JSDISABLED}}</strong>
+		</div>
+	</div>
+</noscript>
+
+{# Used for our notification system #}
+{% if NOTIFY_MSG != "" %}
+<script type="text/javascript">
+	FormResults("{{NOTIFY_TYPE}}", "{{NOTIFY_MSG}}"); //display message.
+</script>
+{% endif %}
+
+<div id="notifyContainer" style="display:none;"></div>
+
+<!-- Used to confirm actions (will replace older method) -->
+<div id="confirmDlg">
+	<div id="confirmMsg"></div>
+</div>
+
+<div class="container">
+
+{# toggle login panel based on rank. #}
+{% if groupAccess == 1 %}
+
+	<!-- START searchBar -->
+	<div id="qSearch" style="display:none" title="{{LANG_QUICKSEARCH}}">
+	<form method="get" action="#">
+	<input type="text" id="searchKeyword" class="text" size="30" />&nbsp;
+	<input type="button" value="{{LANG_SEARCH}}" id="iSearch" class="submit" />
+	</form>
+	<div id="lsloading"></div>
+	<div id="livesearch"></div>
+	</div>
+	<!-- END searchBar -->
+
+{%- elseif groupAccess == 2 or groupAccess == 3 -%}
+
+	<!-- START searchBar -->
+	<div id="qSearch" style="display:none" title="{{LANG_QUICKSEARCH}}">
+	<form method="get" action="#">
+	<input type="text" id="searchKeyword" class="text" size="30" />&nbsp;
+	<input type="button" value="{{LANG_SEARCH}}" id="iSearch" class="submit" />
+	</form>
+	<div id="lsloading"></div>
+	<div id="livesearch"></div>
+	</div>
+	<!-- END searchBar -->
+	
+{%- else -%}
+	<!-- Login Modal -->
+	<div id="login" style="display:none" title="{{LANG_LOGIN}}">
+		<!-- validation box. -->
+		<div class="centerContainer" style="display:none;" id="div_ErrMsg_QLogin">
+			<div class="ui-widget">
+				<div class="ui-state-error ui-corner-all" style="padding: 0 .7em;text-align:left;">
+					<span style="float: right;font-weight:bold;"><a href="#close" onclick="$('#div_ErrMsg_QLogin').hide('blind', {}, 500);" class="ui-icon ui-icon-circle-close">&nbsp;</a></span>
+					<p id="validateQLogin"></p>
+				</div>
+			</div>
+		</div>
+
+		{{LOGINFORM|raw}}
+
+		<p>
+		{{LANG_USERNAME}}&nbsp;[{{URL_TAG("/register", LANG_REGISTER)|raw}}]<br />
+		<input type="text" name="username" class="text" size="30" id="username" tabindex="1" />
+		<div id="usererr"></div>
+		</p>
+
+		<p>
+		{{LANG_PASSWORD}}&nbsp;[{{URL_TAG("/resetpassword", LANG_FORGOT)|raw}}]<br />
+		<input type="password" name="password" class="text" size="30" id="password" tabindex="2" />
+		<div id="passerr"></div>
+		</p>
+
+		<p>
+		<input type="checkbox" name="auto_login" value="1" />{{LANG_REMEMBERTXT}}
+		</p>
+
+		<p>
+		<input type="submit" value="{{LANG_LOGIN}}" class="submit" />
+		</p>
+		</form>
+	    <script type="text/javascript">
+
+		new FormValidator('frmQLogin', [{
+			name: 'username',
+			display: '{{LANG_USERNAME}}',
+			rules: 'required'
+		}, {
+			name: 'password',
+			display: '{{LANG_PASSWORD}}',
+			rules: 'required'
+		}], function(errors, event) {
+
+			if (errors.length > 0) {
+				$('#validateQLogin').empty();
+				$('#validateQLogin').append(errors.join('<br />'));
+				$('#div_ErrMsg_QLogin').show();
+			} else {
+				event.returnValue = true; //allow form to process.
+			}
+
+		});
+		</script>
+
+	</div>
+{%- endif -%}
+
+<table border="0" class="table" cellspacing="1" cellpadding="3">
+<tr>
+	<td class="ui-widget-header" valign="top">{{IMG("themes/"~THEME_NAME~"/images/logo.gif")|raw}}</td>
+</tr><tr>
+
+{# setup menu by group policy. #}
+{% if groupAccess == 1 %}
+	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("/logout", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="acp/index.php">{{LANG_CP}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
+	</tr><tr>
+		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
+	</tr><tr>
+{%- elseif groupAccess == 2 or groupAccess == 3 -%}
+	<td class="ui-widget-content">{{LANG_WELCOME}} <b>{{LOGGEDUSER}}</b> [{{URL_TAG("/logout", LANG_LOGOUT)|raw}}]<br /><a href="Profile.php#/PM/Inbox">{{NEWPM}}</a><br /><a href="Search.php?action=newposts">{{LANG_NEWPOSTS}}</a></td>
+	</tr><tr>
+		<td class="ui-widget-content" align="center">{{URL_TAG("/", LANG_HOME)|raw}} - <a href="#" onclick="$('#qSearch').dialog('open');">{{LANG_SEARCH}}</a> - {{URL_TAG("users/memberslist/", LANG_MEMBERLIST)|raw}} - {{URL_TAG("users/", LANG_PROFILE)|raw}}</td>
+	</tr><tr>
+{%- else -%}
+	<td class="ui-widget-content">{{LANG_WELCOMEGUEST}}! <a href="#" onclick="$('#login').dialog('open');">{{LANG_LOGIN}}</a> | {{URL_TAG("/register", LANG_REGISTER)|raw}}</td>
+	</tr><tr>
+{%- endif -%}
+
+<td valign="top" class="td">
+{% block bodyRender %}{% endblock %}
+</td>
+</tr><tr>
+	<td width="100%" class=" ui-corner-left ui-corner-right ui-widget-content centerText">{{LANG_POWERED}}: <a href="http://elite-board.us/" target="_blank">Elite Bulletin Board</a> &#169; 2006-2013</td>
+</tr>
+</table>
+<span style="float:right;">{{IMG("themes/"~THEME_NAME~"/images/fuelbyci.png")|raw}}</span>
+</div>
+</body>
+</html>

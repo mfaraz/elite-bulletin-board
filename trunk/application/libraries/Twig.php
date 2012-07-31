@@ -7,7 +7,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright  (c) 2006-2011
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 12/01/2011
+ * @version 07/30/2012
  * CREDIT
  * @author Bennet Matschullat <bennet.matschullat@giantmedia.de>
  * @since 07.03.2011 - 12:00:39
@@ -43,7 +43,7 @@ class Twig {
         
         // register autoloader        
         Twig_Autoloader::register();
-        //log_message('debug', 'twig autoloader loaded');
+        log_message('debug', 'twig autoloader loaded');
         
         // init paths
         $this->_template_dir = $this->ci->config->item('template_dir');
@@ -63,45 +63,19 @@ class Twig {
 
 	/**
 	 * render a twig template file
-	 * @param int $styleID The style ID to look for.
+	 * @param string $controller the controller that the template is related to.
 	 * @param string $template template name
 	 * @param array $data contains all varnames'
 	 * @param boolean $render
 	 * @param boolean $return
 	 * @return mixed
-	 * @version 12/01/11
+	 * @version 07/30/12
 	*/
-    public function render($styleID, $template, $data = array(), $render = true) {
-
-		#do a check to see if the styleID used is valid.
-		if($this->StyleCheck($styleID) == 0){
-			show_error('Invalid Style Selected.<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->ci->lang->line('error'));
-		}else{
-			#get the style template path from the db.
-			$this->ci->db->select('Temp_Path')->from('ebb_style')->where('id', $styleID);
-			$styleQ = $this->ci->db->get();
-			$theme = $styleQ->row();
-
-			//load up the template.
-			$template = $this->_twig_env->loadTemplate($theme->Temp_Path.'/'.$template.'.twig');
-			return ($render)?$template->render($data):$template;
-		}
+    public function render($controller, $template, $data = array(), $render = true) {
+		//load up the template.
+		$template = $this->_twig_env->loadTemplate($controller.'/'.$template.'.twig');
+		return ($render)?$template->render($data):$template;
     }
-
-	/**
-	 * An internal function to ensure the user is using a valid style ID.
-	 * @param integer $styleID style to validate
-	 * @access Private
-	 * @return boolean
-	*/
-	private function StyleCheck($styleID){
-	    #get the style template path from the db.
-		$this->ci->db->select('id')->from('ebb_style')->where('id', $styleID);
-		$validateStyle = $this->ci->db->get();
-
-		#return the numeric value.
-		return ($validateStyle->num_rows());
-	}
 
 	/**
 	 * render a twig template file with no style required.
