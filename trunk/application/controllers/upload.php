@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
  * upload.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2011
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/02/2012
+ * @version 07/30/2012
 */
 
 /**
@@ -29,8 +29,9 @@ class Upload extends EBB_Controller {
 		$this->load->model(array('Attachmentsmodel'));
 		
 		//render to HTML.
-		echo $this->twig->render($this->style, 'attachmentmanager', array (
+		echo $this->twig->render(strtolower(__CLASS__), 'attachmentmanager', array (
 		  'BOARD_URL' => $this->boardUrl,
+		  'THEME_NAME' => $this->getStyleName(),
 		  'LANG_FILENAME' =>  $this->lang->line('filename'),
 		  'LANG_FILESIZE' => $this->lang->line('filesize'),
 		  'LANG_FILETYPE' => $this->lang->line('filetype'),

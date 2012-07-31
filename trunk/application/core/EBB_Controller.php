@@ -237,6 +237,24 @@ class EBB_Controller extends CI_Controller {
 	}
 	
 	/**
+	 * Get the name of the style.
+	 * @return string the name of the style
+	 */
+	public function getStyleName() {
+		#get the style template path from the db.
+		$this->db->select('Temp_Path')->from('ebb_style')->where('id', $this->style);
+		$styleQ = $this->db->get();
+
+		if($styleQ->num_rows() > 0) {
+			$theme = $styleQ->row();
+			return $theme->Temp_Path;
+		} else {
+			show_error('Invalid Style Selected.<hr />File:'.__FILE__.'<br />Line:'.__LINE__, 500, $this->lang->line('error'));
+			return FALSE;
+		}
+	}
+	
+	/**
 	 * CI FORM VALIDATION METHODS.
 	*/
 	

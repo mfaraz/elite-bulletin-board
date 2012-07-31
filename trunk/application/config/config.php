@@ -26,7 +26,7 @@ $config['base_url']	= '';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php?'; //index.php?
+$config['index_page'] = ''; //use index.php? if mod_rewrite is not available to you.
 
 /*
 |--------------------------------------------------------------------------

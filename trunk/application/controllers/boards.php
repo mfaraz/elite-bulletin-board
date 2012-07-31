@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * boards.php
  * @package Elite Bulletin Board v3
  * @author Elite Bulletin Board Team <http://elite-board.us>
- * @copyright  (c) 2006-2013
+ * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/20/2012
+ * @version 07/30/2012
 */
 
 /**
@@ -71,8 +71,9 @@ class Boards extends EBB_Controller {
 		$this->twig->_twig_env->addFunction('boardInfo', new Twig_Function_Function('boardStats'));
 
 		//render to HTML.
-		echo $this->twig->render($this->style, 'board_index', array (
+		echo $this->twig->render(strtolower(__CLASS__), 'board_index', array (
             'boardName' => $this->title,
+			'THEME_NAME' => $this->getStyleName(),
             'pageTitle'=> $this->lang->line('index'),
 			'INDEX_PAGE' => $this->config->item('index_page'),
             'BOARD_URL' => $this->boardUrl,
@@ -236,8 +237,9 @@ class Boards extends EBB_Controller {
 				$this->twig->_twig_env->addFilter('SubBoards', new Twig_Filter_Function('getSubBoard'));
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'viewboard', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'viewboard', array (
                     'boardName' => $this->title,
+					'THEME_NAME' => $this->getStyleName(),
                     'pageTitle'=> $this->lang->line('viewboard').' - '.$this->Boardmodel->getBoard(),
 					'INDEX_PAGE' => $this->config->item('index_page'),
                     'BOARD_URL' => $this->boardUrl,
@@ -477,8 +479,9 @@ class Boards extends EBB_Controller {
 				$boardpref_image = $this->Boardmodel->getImage();
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'viewtopic', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'viewtopic', array (
 				'boardName' => $this->title,
+				'THEME_NAME' => $this->getStyleName(),
 				'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
 				'INDEX_PAGE' => $this->config->item('index_page'),
 				'BOARD_URL' => $this->boardUrl,
@@ -694,8 +697,9 @@ class Boards extends EBB_Controller {
 				$boardpref_image = $this->Boardmodel->getImage();
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'printable', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'printable', array (
                     'boardName' => $this->title,
+					'THEME_NAME' => $this->getStyleName(),
                     'pageTitle'=> $this->lang->line('viewtopic').' - '.$this->Topicmodel->getTopic(),
                     'TimeFormat' => $this->timeFormat,
                     'TimeZone' => $this->timeZone,
@@ -1037,9 +1041,10 @@ class Boards extends EBB_Controller {
 		}
 		
 		//render to HTML.
-		echo $this->twig->render($this->style, 'newtopic', array (
+		echo $this->twig->render(strtolower(__CLASS__), 'newtopic', array (
 		  'boardName' => $this->title,
 		  'pageTitle'=> $this->lang->line("newtopic"),
+		  'THEME_NAME' => $this->getStyleName(),
 		  'INDEX_PAGE' => $this->config->item('index_page'),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
@@ -1374,9 +1379,10 @@ class Boards extends EBB_Controller {
 		}
 		
 		//render to HTML.
-		echo $this->twig->render($this->style, 'reply', array (
+		echo $this->twig->render(strtolower(__CLASS__), 'reply', array (
 		  'boardName' => $this->title,
 		  'pageTitle'=> $this->lang->line("newreply"),
+		  'THEME_NAME' => $this->getStyleName(),
 		  'INDEX_PAGE' => $this->config->item('index_page'),
 		  'BOARD_URL' => $this->boardUrl,
 		  'APP_URL' => $this->boardUrl.APPPATH,
@@ -1547,9 +1553,10 @@ class Boards extends EBB_Controller {
 			//see if any validation rules failed.
 			if ($this->form_validation->run() == FALSE) {
 				//render to HTML.
-				echo $this->twig->render($this->style, 'reporttopic', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'reporttopic', array (
 				'boardName' => $this->title,
 				'pageTitle'=> $this->lang->line("reporttomod"),
+				'THEME_NAME' => $this->getStyleName(),
 				'INDEX_PAGE' => $this->config->item('index_page'),
 				'BOARD_URL' => $this->boardUrl,
 				'APP_URL' => $this->boardUrl.APPPATH,
@@ -1734,9 +1741,10 @@ class Boards extends EBB_Controller {
 			}
 
 			//render to HTML.
-			echo $this->twig->render($this->style, 'edit_topic', array (
+			echo $this->twig->render(strtolower(__CLASS__), 'edit_topic', array (
 			  'boardName' => $this->title,
 			  'pageTitle'=> $this->lang->line("edittopic"),
+			  'THEME_NAME' => $this->getStyleName(),
 			  'INDEX_PAGE' => $this->config->item('index_page'),
 			  'BOARD_URL' => $this->boardUrl,
 			  'APP_URL' => $this->boardUrl.APPPATH,
@@ -1977,9 +1985,10 @@ class Boards extends EBB_Controller {
 			}
 
 			//render to HTML.
-			echo $this->twig->render($this->style, 'edit_post', array (
+			echo $this->twig->render(strtolower(__CLASS__), 'edit_post', array (
 			  'boardName' => $this->title,
 			  'pageTitle'=> $this->lang->line("editpost"),
+			  'THEME_NAME' => $this->getStyleName(),
 			  'INDEX_PAGE' => $this->config->item('index_page'),
 			  'BOARD_URL' => $this->boardUrl,
 			  'APP_URL' => $this->boardUrl.APPPATH,
@@ -2160,13 +2169,12 @@ class Boards extends EBB_Controller {
 		//load libraries/helpers/etc
 		$this->load->helper('text');
 		
-		if ($this->Boardmodel->ValidateBoardID($id) == 0) {
+		if (!$this->Boardmodel->GetBoardSettings($id)) {
 			show_error($this->lang->line('doesntexist'),404,$this->lang->line('error'));
 		}elseif ($this->Boardmodel->getType() == 1) {
 			redirect('/', 'location');
 		}
-		
-		$this->Boardmodel->GetBoardSettings($id);
+
 		$this->Boardaccessmodel->GetBoardAccess($id);
 		
 		//fetch topic data.

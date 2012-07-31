@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/28/2012
+ * @version 07/30/2012
 */
 
 /**
@@ -60,9 +60,10 @@ class Login extends EBB_Controller {
 				$this->breadcrumb->append_crumb($this->lang->line('login'), '/login');
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'login', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'login', array (
 				'boardName' => $this->title,
 				'BOARD_URL' => $this->boardUrl,
+				'THEME_NAME' => $this->getStyleName(),
 				'APP_URL' => $this->boardUrl.APPPATH,
 				'NOTIFY_TYPE' => $this->notifyType,
 				'NOTIFY_MSG' =>  $this->notifyMsg,
@@ -272,9 +273,10 @@ class Login extends EBB_Controller {
 				$this->breadcrumb->append_crumb($this->lang->line('passwordrecovery'), '/resetpassword');		
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'lostpassword', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'lostpassword', array (
 				'boardName' => $this->title,
 				'BOARD_URL' => $this->boardUrl,
+				'THEME_NAME' => $this->getStyleName(),
 				'APP_URL' => $this->boardUrl.APPPATH,
 				'NOTIFY_TYPE' => $this->session->flashdata('NotifyType'),
 				'NOTIFY_MSG' =>  $this->session->flashdata('NotifyMsg'),
@@ -459,10 +461,11 @@ class Login extends EBB_Controller {
 				$this->breadcrumb->append_crumb($this->lang->line('register'), '/login/register');
 
 				//render to HTML.
-				echo $this->twig->render($this->style, 'register', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'register', array (
 				'boardName' => $this->title,
 				'BOARD_URL' => $this->boardUrl,
 				'APP_URL' => $this->boardUrl.APPPATH,
+				'THEME_NAME' => $this->getStyleName(),
 				'NOTIFY_TYPE' => $this->notifyType,
 				'NOTIFY_MSG' =>  $this->notifyMsg,
 				'LANG' => $this->lng,

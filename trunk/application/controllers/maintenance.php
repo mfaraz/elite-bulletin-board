@@ -4,9 +4,9 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
 	* maintenance.php
 	* @package Elite Bulletin Board v3
 	* @author Elite Bulletin Board Team <http://elite-board.us>
-	* @copyright  (c) 2006-2013
+	* @copyright (c) 2006-2013
 	* @license http://opensource.org/licenses/gpl-license.php GNU Public License
-	* @version 07/10/2012
+	* @version 07/30/2012
 */
 
 class Maintenance extends EBB_Controller {
@@ -43,9 +43,10 @@ class Maintenance extends EBB_Controller {
 		//see if any validation rules failed.
 			if ($this->form_validation->run() == FALSE) {
 				//render to HTML.
-				echo $this->twig->render($this->style, 'warnuser', array (
+				echo $this->twig->render(strtolower(__CLASS__), 'warnuser', array (
 				  'boardName' => $this->title,
 				  'pageTitle'=> $this->lang->line("modcp").' - '.$this->lang->line("warnuser"),
+				  'THEME_NAME' => $this->getStyleName(),
 				  'BOARD_URL' => $this->boardUrl,
 				  'APP_URL' => $this->boardUrl.APPPATH,
 				  'NOTIFY_TYPE' => $this->notifyType,
@@ -123,7 +124,7 @@ class Maintenance extends EBB_Controller {
 			$this->notifications('success', $this->lang->line('lockedtopicsuccess'));
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$id, 'location');
+			redirect('/viewtopic/'.$id, 'location');
 		} else {
 			show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 		}
@@ -150,7 +151,7 @@ class Maintenance extends EBB_Controller {
 			$this->notifications('success', $this->lang->line('unlockedtopicsuccess'));
 			
 			//direct user to topic.
-			redirect('/boards/viewtopic/'.$id, 'location');
+			redirect('/viewtopic/'.$id, 'location');
 		} else {
 			show_error($this->lang->line('doesntexist'), 403, $this->lang->line('error'));
 		}
@@ -187,7 +188,7 @@ class Maintenance extends EBB_Controller {
 				$this->notifications('success', $this->lang->line('deletetopicsuccess'));
 				
 				#direct user to view board.
-				redirect('/board/viewboard/'.$this->Topicmodel->getBid(), 'location');
+				redirect('/viewboard/'.$this->Topicmodel->getBid(), 'location');
 			} else {
 				show_error($this->lang->line('accessdenied'),403,$this->lang->line('error'));
 			}
@@ -228,11 +229,11 @@ class Maintenance extends EBB_Controller {
 			if ($moveTopic == FALSE) {
 				//display error message.
 				$this->notifications('error', $this->lang->line('noboard'));
-				redirect('/board/viewboard/'.$origBoard, 'location');
+				redirect('/viewboard/'.$origBoard, 'location');
 			} elseif ($moveTopic == $origBoard) {
 				//display error message.
 				$this->notifications('error', $this->lang->line('sameboard'));
-				redirect('/board/viewboard/'.$origBoard, 'location');
+				redirect('/viewboard/'.$origBoard, 'location');
 			} else {
 				$this->Topicmodel->setBid($moveTopic);
 				$this->Topicmodel->setTiD($topicID);
