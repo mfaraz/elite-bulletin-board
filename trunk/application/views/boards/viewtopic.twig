@@ -282,12 +282,12 @@ _________________<br />
     <b>{{r.Username}}</b><br />
 	{{r.Custom_Title}}<br />
 	<em>{{r.profile}}</em><br />
-	{%if r.access_level == 1 %}
-		{{IMG("themes/"~THEME_NAME~"/images/adminstar.gif")|raw}}
-	{%elseif r.access_level == 2 %}
-		{{IMG("themes/"~THEME_NAME~"/images/modstar.gif")|raw}}
+ 	{%if r.access_level == 1 %}
+		<div class="board-common-icons admin-star"></div>
+ 	{%elseif r.access_level == 2 %}
+		<div class="board-common-icons mod-star"></div>
 	{%elseif r.access_level == 3 %}
-		{{IMG("themes/"~THEME_NAME~"/images/fullstar.gif")|raw}}
+		<div class="board-common-icons user-star"></div>
 	{%endif%}
 
 	<br /><br />
