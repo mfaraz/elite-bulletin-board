@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {exit('No direct script access allowed');}
  * @author Elite Bulletin Board Team <http://elite-board.us>
  * @copyright (c) 2006-2013
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 07/29/2012
+ * @version 07/30/2012
 */
 
 class EBB_Controller extends CI_Controller {
@@ -102,7 +102,7 @@ class EBB_Controller extends CI_Controller {
 	/**
 	 * Loads global data.
 	 * @access Public
-	 * @version 05/14/12
+	 * @version 07/30/12
 	 */
 	public function __construct() {
 
@@ -230,6 +230,7 @@ class EBB_Controller extends CI_Controller {
 	 * setup notification messages.
 	 * @param string $type the type of message being broadcasted.
 	 * @param string $msg the message to broadcast to user.
+	 * @version 06/17/12
 	 */
 	public function notifications($type, $msg) {
 		$this->session->set_flashdata('NotifyType', $type);
@@ -238,7 +239,8 @@ class EBB_Controller extends CI_Controller {
 	
 	/**
 	 * Get the name of the style.
-	 * @return string the name of the style
+	 * @return string|boolean the name of the style or FALSE if theme is not found.
+	 * @version 07/30/12
 	 */
 	public function getStyleName() {
 		#get the style template path from the db.

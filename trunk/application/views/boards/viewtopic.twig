@@ -159,11 +159,11 @@
 	{{AUTHOR_CTITLE}}<br />
 	<em>{{AUTHOR_GROUPNAME}}</em><br />
 	{%if AUTHOR_GROUPLEVEL == 1 %}
-		{{IMG("themes/"~THEME_NAME~"/images/adminstar.gif")|raw}}
+		<div class="board-common-icons admin-star"></div>
 	{%elseif AUTHOR_GROUPLEVEL == 2 %}
-		{{IMG("themes/"~THEME_NAME~"/images/modstar.gif")|raw}}
+		<div class="board-common-icons mod-star"></div>
 	{%elseif AUTHOR_GROUPLEVEL == 3 %}
-		{{IMG("themes/"~THEME_NAME~"/images/fullstar.gif")|raw}}
+		<div class="board-common-icons user-star"></div>
 	{%endif%}
 	<br /><br />
 

@@ -19,7 +19,6 @@ class Boards extends EBB_Controller {
  		parent::__construct();
 		$this->load->model(array('Boardmodel', 'Boardaccessmodel'));
 		$this->load->helper(array('common', 'posting'));
-
 	}
 	
 	/**

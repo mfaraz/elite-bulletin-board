@@ -16,7 +16,7 @@
 </tr>
 {% for b in SUBBOARDDATA %}
 <tr>
-	<td class="ui-widget-content centerText">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("themes/"~THEME_NAME~"/images/old.gif")|raw : IMG("themes/"~THEME_NAME~"/images/new.gif")|raw }}</td>
+	<td class="ui-widget-content centerText">{{ b.id|ReadStat(LOGGEDUSER) ?  '<div class="board-status-icon old_topic centerContainer"></div>' : '<div class="board-status-icon new_topic centerContainer"></div>' }}</td>
 	<td class="ui-widget-content"><strong>{{URL_TAG("/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("/feed/"~ b.id, IMG("themes/"~THEME_NAME~"/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
 	<td class="ui-widget-content centerText">{{b.id|counter("TopicCount")}}</td>
 	<td class="ui-widget-content centerText">{{b.id|counter("PostCount")}}</td>
@@ -71,21 +71,21 @@
 <td class="ui-widget-content centerText" width="5%">
 {# icon setup. #}
 {% if t.important == 1 %}
-{{IMG("themes/"~THEME_NAME~"/images/important.png")|raw}}
+<div class="board-status-icon important_topic centerContainer"></div>
 {% elseif t.Locked == 1 %}
-{{IMG("themes/"~THEME_NAME~"/images/locked.png")|raw}}
+<div class="board-status-icon locked_topic centerContainer"></div>
 {% elseif t.topic_type == 1 %}
-{{IMG("themes/"~THEME_NAME~"/images/poll.gif")|raw}}
+<div class="board-status-icon poll_topic centerContainer"></div>
 {% elseif t.tid|counter("TopicReplies") >= 15 %}
 {# topic is popular. #}
-{{IMG("themes/"~THEME_NAME~"/images/hottopic.gif")|raw}}
+<div class="board-status-icon hot_topic centerContainer"></div>
 {% elseif t.tid|TopicReadStat(LOGGEDUSER) %}
-{{IMG("themes/"~THEME_NAME~"/images/old.gif")|raw}}
+<div class="board-status-icon old_topic centerContainer"></div>
 {% else %}
-{{IMG("themes/"~THEME_NAME~"/images/new.gif")|raw}}
+<div class="board-status-icon new_topic centerContainer"></div>
 {% endif %}
 </td>
-<td width="40%" class="ui-widget-content">{{ Attachment(t.tid) ? IMG("themes/"~THEME_NAME~"/images/attachment.png")|raw : "" }} {{URL_TAG("/viewtopic/"~ t.tid, t.Topic)|raw}}</td>
+<td width="40%" class="ui-widget-content">{{ Attachment(t.tid) ? '<div class="board-status-icon-attachment floatLeft"></div>&nbsp;' : "" }} {{URL_TAG("/viewtopic/"~ t.tid, t.Topic)|raw}}</td>
 <td width="15%" class="ui-widget-content">{{t.Username}}</td>
 <td width="10%" class="ui-widget-content centerText">{{t.tid|counter("TopicReplies")}}</td>
 <td width="10%" class="ui-widget-content centerText">{{t.Views|counter("TopicViews")}}</td>
@@ -96,13 +96,13 @@
 {% endif %}
 </table><br />
 
-<div class="ui-widget-content ui-corner-all centerContainer" style="text-align:left;width:600px;padding:0 .7em;">
-	{{IMG("themes/"~THEME_NAME~"/images/important.png")|raw}}&nbsp;{{LANG_IMPORTANTTOPIC}}&nbsp;
-	{{IMG("themes/"~THEME_NAME~"/images/locked.png")|raw}}&nbsp;{{LANG_LOCKTOPIC}}&nbsp;
-	{{IMG("themes/"~THEME_NAME~"/images/poll.gif")|raw}}&nbsp;{{LANG_POLLTOPIC}}&nbsp;
-	{{IMG("themes/"~THEME_NAME~"/images/hottopic.gif")|raw}}&nbsp;{{LANG_HOTTOPIC}}&nbsp;
-	{{IMG("themes/"~THEME_NAME~"/images/old.gif")|raw}}&nbsp;{{LANG_OLDPOST}}&nbsp;
-	{{IMG("themes/"~THEME_NAME~"/images/new.gif")|raw}}&nbsp;{{LANG_NEWPOST}}
+<div class="ui-widget-content ui-corner-all centerContainer" style="width:600px;padding:0 .7em;overflow: hidden;">
+	<div class="board-status-icon important_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_IMPORTANTTOPIC}}&nbsp;</div>
+	<div class="board-status-icon locked_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_LOCKTOPIC}}&nbsp;</div>
+	<div class="board-status-icon poll_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_POLLTOPIC}}&nbsp;</div>
+	<div class="board-status-icon hot_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_HOTTOPIC}}&nbsp;</div>
+	<div class="board-status-icon old_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_OLDPOST}}&nbsp;</div>
+	<div class="board-status-icon new_topic floatLeft"></div><div class="floatLeft">&nbsp;{{LANG_NEWPOST}}&nbsp;</div>
 </div>
 
 <script type="text/javascript">
