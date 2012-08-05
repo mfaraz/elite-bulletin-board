@@ -1,7 +1,7 @@
 /*
 ========================================
 Filename: style.css
-Last Modified: 07/30/2012
+Last Modified: 08/03/2012
 ClearBlue2 CSS template file for Elite Bulletin Board v3.0.0 RC2
 ========================================
 */
@@ -11,6 +11,18 @@ ClearBlue2 CSS template file for Elite Bulletin Board v3.0.0 RC2
 COMMON CSS
 ==============================
 */
+BODY {
+	background-color: #163061;
+	color : #fff;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	font-size:.9em;	
+}
+
+img {
+	border: 0px;
+}
+
+
 .centerContainer {
 	margin: 0 auto;
 }
@@ -18,6 +30,44 @@ COMMON CSS
 .centerText {
 	text-align: center;
 }
+
+.floatLeft {
+	float: left;
+}
+
+.floatRight {
+	float: right;
+}
+
+/*
+==============================
+Icon Sprite
+==============================
+*/
+.board-status-icon { width: 23px; height: 182px; background-image:url(images/icons-sprite.png); background-position:0 0; }
+.board-status-icon.hot_topic { background-position: 0 0; width: 23px; height: 24px; }
+.board-status-icon.important_topic { background-position: 0 -34px; width: 23px; height: 24px; }
+.board-status-icon.locked_topic { background-position: 0 -68px; width: 23px; height: 24px; }
+.board-status-icon.new_topic { background-position: 0 -102px; width: 16px; height: 18px; }
+.board-status-icon.old_topic { background-position: 0 -130px; width: 16px; height: 18px; }
+.board-status-icon.poll_topic { background-position: 0 -158px; width: 15px; height: 24px; }
+.board-status-icon-attachment { background-image:url(images/bbcode-sprite.png); background-position: 0 -107px; width: 15px; height: 15px; }
+
+/*
+==============================
+Common Sprite
+==============================
+*/
+.board-common-icons { width: 250px; height: 350px; background-image:url(images/common-sprite.png); background-position:0 0; }
+.board-common-icons.admin-star { background-position: 0 0; width: 94px; height: 10px; }
+.board-common-icons.mod-star { background-position: 0 -25px; width: 83px; height: 10px; }
+.board-common-icons.user-star { background-position: 0 -50px; width: 48px; height: 10px; }
+.board-common-icons.close { background-position: 0 -75px; width: 16px; height: 15px; }
+.board-common-icons.delete { background-position: 0 -105px; width: 14px; height: 13px; }
+.board-common-icons.reload { background-position: 0 -133px; width: 14px; height: 15px; }
+.board-common-icons.rss { background-position: 0 -163px; width: 12px; height: 12px; cursor: pointer; }
+.board-common-icons.logo { background-position: 0 -190px; width: 250px; height: 100px; }
+.board-common-icons.poweredbyci { background-position: 0 -307px; width: 120px; height: 43px; }
 
 /*
 ==============================
@@ -271,13 +321,6 @@ MISC. CSS
 ==============================
 */
 
-BODY {
-	background-color: #163061;
-	color : #fff;
-	font-family : Verdana, Arial, Helvetica, sans-serif;
-	font-size:.9em;	
-}
-
 div.container {
 	position: absolute;
 	left: 45px;
@@ -285,10 +328,9 @@ div.container {
 	line-height: 100%;
 }
 
-img{
-	border: 0px;
-}
-
+/*
+@todo replace any usage of this with floatRight.
+*/
 .close{
 	float:right;
 }
@@ -331,16 +373,18 @@ UPLOAD CSS
 	padding-left: 10px;
 }
 .uploadData .close {
-	background-image: url(images/close.png);
-	height: 16px;
+	background-image:url(images/common-sprite.png);
+	background-position: 0 -75px;
 	width: 16px;
+	height: 16px;
 	position: absolute;
 	top: 5px;
 	right: 5px;
 	cursor: pointer;
 }
 .uploadData .delete {
-	background-image: url(images/delete.png);
+	background-image:url(images/common-sprite.png);
+	background-position: 0 -105px;
 	height: 16px;
 	width: 16px;
 	position: absolute;
@@ -466,6 +510,10 @@ BBCODE TAG CSS
 	font-size: x-small;
 	line-height: 1.2em;
 }
+
+/*
+@todo replace any usage of this with floatRight.
+*/
 .postopt{
 	float: right;
 }

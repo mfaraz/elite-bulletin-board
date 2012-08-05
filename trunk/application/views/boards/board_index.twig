@@ -37,11 +37,11 @@ $(function(){
     	{# make sure we get the correct data in the right spots. #}
         {% if c.id == b.Category %}
 			<tr>
-			<td class="ui-widget-content centerText">{{ b.id|ReadStat(LOGGEDUSER) ?  IMG("themes/"~THEME_NAME~"/images/old.gif")|raw : IMG("themes/"~THEME_NAME~"/images/new.gif")|raw }}</td>
-			<td class="ui-widget-content"><strong>{{URL_TAG("/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;{{URL_TAG("/feed/"~ b.id, IMG("themes/"~THEME_NAME~"/images/rss.png"))|raw}} <br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
-			<td class="ui-widget-header centerText">{{b.id|counter("TopicCount")}}</td>
-			<td class="ui-widget-header centerText">{{b.id|counter("PostCount")}}</td>
-			<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Username}}</td>
+				<td class="ui-widget-content">{{ b.id|ReadStat(LOGGEDUSER) ? '<div class="board-status-icon old_topic centerContainer"></div>' : '<div class="board-status-icon new_topic centerContainer"></div>' }}</td>
+				<td class="ui-widget-content"><span class="floatLeft"><strong>{{URL_TAG("/viewboard/"~ b.id, b.Board)|raw}}</strong>&nbsp;</span><div class="board-common-icons rss floatLeft" onclick="gotoUrl('{{BOARD_URL}}{{INDEX_PAGE}}/feed/{{b.id}}');"></div><br />{{b.Description|raw}}<br />{{b.id|SubBoards|raw}}</td>
+				<td class="ui-widget-header centerText">{{b.id|counter("TopicCount")}}</td>
+				<td class="ui-widget-header centerText">{{b.id|counter("PostCount")}}</td>
+				<td class="ui-widget-content">{{b.last_update|PostedDate(TimeFormat, TimeZone)}}<br />{{URL_TAG("/viewtopic/"~ b.tid~"/"~b.last_page, LANG_POSTEDBY)|raw}} {{b.Username}}</td>
 			</tr>
 		{%- endif -%}
 
@@ -56,7 +56,7 @@ $(function(){
 <td class="ui-widget-content">
 {{LANG_NEWESTMEMBER}}: {{boardInfo("newuser")}}<br />
 <b>{{ boardInfo("topic") }}</b> {{LANG_TOTALTOPIC}} / <b>{{ boardInfo("post") }}</b> {{LANG_TOTALPOST}} / <b>{{ boardInfo("member") }}</b> {{LANG_TOTALUSER}}</td>
-<td class="ui-widget-content">{{IMG("themes/"~THEME_NAME~"/images/new.gif")|raw}}{{LANG_NEWPOST}}<br />{{IMG("themes/"~THEME_NAME~"/images/old.gif")|raw}}{{LANG_OLDPOST}}</td>
+<td class="ui-widget-content"><div class="board-status-icon old_topic"></div>{{LANG_NEWPOST}}<br />  <div class="board-status-icon new_topic"></div>{{LANG_OLDPOST}}</td>
 </tr>
 </table><br />
 
